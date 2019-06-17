@@ -351,31 +351,24 @@ eatkeys (){ #: digest user key inputs
 program_lights (){
 	# echo lj $lj
 	# echo "(----------program_lights ()---------)" #-- TRACER
-# 	local temp=
+	local dish=${!args[(($lj+$i+2))]} #: find the value of each dish arg
+	echo $dish
+	echo $i
+	# read -p hi
 # 	local program=
-# 	case $op in
-# 	"C")			#: CHOICE
-# 		IFS="/"
-# 		subz=1
-# 		set -- "${subvals[$i]}" 
-# 		local -a svals=($*) #: setting svals array for substituting in final args
-# 		unset IFS
-# 		;;
-# 	"T")			#: TOGGLE
-# 		a=a
-
-# 		;;
-# 	"I")			#: TOGGLE
-# 		secret=0
-# 		;;			
-# 	"*")
-# 		limit=30 #: arbitray high limit for string entry
-# 		secret=0
-# 		;;
-# 	*)
-# 		;;
-# esac
-	val="x$lj"
+	case $dish in
+	"neg-control")			#: CHOICE
+		val=neg
+		;;
+	"pos-control")			#: TOGGLE
+		val=pos
+		;;
+	*)
+		val=otter
+		;;
+esac
+	# read -p hello
+	# val="x$lj"
 	eval ${largs[$lj]}=$val
 }
 init_colors (){
