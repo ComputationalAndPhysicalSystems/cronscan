@@ -120,7 +120,7 @@ blurbs+=("note other setup")
 #: menu blurbs
 mblurbs+=("LOAD from file")
 mblurbs+=("SAVE program")
-mblurbs+=("QUIT program")
+mblurbs+=("QUIT")
 
 #: subsections
 subs+=("_exp")
@@ -358,13 +358,13 @@ program_lights (){
 # 	local program=
 	case $dish in
 	"neg-control")			#: CHOICE
-		val=neg
+		val=off
 		;;
 	"pos-control")			#: TOGGLE
-		val=pos
+		val=blue
 		;;
 	*)
-		val=otter
+		val=blue
 		;;
 esac
 	# read -p hello
