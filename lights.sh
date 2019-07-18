@@ -41,6 +41,9 @@ LED[2]="$B"
 LED[3]="$B"
 LED[4]="$B"
 
+
+echo "turning lights $1"
+
 if [ "$OPTION" == "on" ]; then
 	for i in ${!LED[@]}; do
 		echo "<+$i*${LED[$i]}>" > $DEVICE
