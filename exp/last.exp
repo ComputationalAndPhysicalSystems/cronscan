@@ -1,7 +1,7 @@
 #exp parameters
-EXP='LeoBlue1'
+EXP='t3'
 SCANNERS='2'
-INT='5'
+INT='3'
 RES='100'
 REF='off'
 XFER='off'

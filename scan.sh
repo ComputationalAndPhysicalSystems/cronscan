@@ -14,7 +14,7 @@ export SANE_USB_WORKAROUND=1
 
 echo "==Beginning Scan=="
 date
-echo "Scan ID: $ENUM"
+echo "Scanner count: $ENUM"
 echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $LOCAL_DIR"
 
 # Create experiment direcotry if it doesn't already exist
@@ -27,7 +27,7 @@ SCANNER_LIST=$(scanimage -f "%d%n")
 SCANNER_COUNT=$(echo "$SCANNER_LIST" | wc -l)
 
 # Have we stored information about scanner count?
-if [ ! -f "$LOCAL_DIR/printers" ]; then
+if [ ! -f "$LOCAL_DIR/scanners" ]; then
     echo "$SCANNER_COUNT" > "$LOCAL_DIR/scanners"
 fi
 
@@ -41,11 +41,11 @@ fi
 
 for scanner in $SCANNER_LIST; do
     scanner_safename=${scanner//:/_}
-    FILENAME=$scanner_safename.$(date +%s).tiff
+    FILENAME=$scanner_safename.$(date +%s).png
 
     echo "Scanning $scanner to $FILENAME"
 
-    scanimage -d $scanner --mode Color --format tiff --resolution $RESOLUTION > $LOCAL_DIR/$FILENAME
+    scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $LOCAL_DIR/$FILENAME
 done
 echo "Delaying for $DELAY seconds"
 sleep $DELAY

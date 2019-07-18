@@ -530,8 +530,6 @@ cronit (){
 
 	[[ $REF > 0 ]] && \
 
-	printf "\$sp/scan.sh $REF \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
-	[[ $LIGHTS == "on" ]] && \
 	printf "\$sp/lights.sh off 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	printf "\$sp/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	[[ $LIGHTS == "on" ]] && \
