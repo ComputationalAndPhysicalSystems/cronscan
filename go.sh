@@ -59,7 +59,7 @@ declare -a subvals #: the value to store in the associated EXP ARG, if different
 declare -a trueopts
 # declare -a lprog
 
-keys=(e s i r z x l a f o)
+keys=(e s i r z x l a f o c)
 mkeys=(F S Q)
 
 opts+=("*/...")
@@ -72,11 +72,13 @@ opts+=("T")
 opts+=("*/...")
 opts+=("*/...")
 opts+=("*/...")
+opts+=("*/...")
 
 subvals+=("")
 subvals+=("C/^")
 subvals+=("")
 subvals+=("C/100/300/600")
+subvals+=("")
 subvals+=("")
 subvals+=("")
 subvals+=("")
@@ -94,6 +96,7 @@ trueopts+=("")
 trueopts+=("")
 trueopts+=("")
 trueopts+=("")
+trueopts+=("")
 
 args+=("EXP")
 args+=("SCANNERS")
@@ -105,6 +108,7 @@ args+=("LIGHTS")
 args+=("SPECIES")
 args+=("FOODS")
 args+=("OTHER")
+args+=("SYSTEM")
 
 blurbs+=("Exp Name")
 blurbs+=("Scanner Count")
@@ -116,6 +120,7 @@ blurbs+=("* use lights")
 blurbs+=("test animals")
 blurbs+=("food sources")
 blurbs+=("note other setup")
+blurbs+=("Computer system name")
 
 #: menu blurbs
 mblurbs+=("LOAD from file")
@@ -133,12 +138,14 @@ subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
+subs+=("_sys")
 # subs+=("_menu")
 # subs+=("_menu")
 
 
 
 subblurbs+=("${Inv}_____Experiment Parameters_____${NC} [${Red} WARNING${NC} | ${LtBlue}LAST EXP${NC} | ${Green}new value${NC} ]")
+subblurbs+=("${On_IBlack}________ System Setup__________${NC}")
 subblurbs+=("${On_IBlack}___________Dish Setup__________${NC}")
 
 ##. flow booleans
@@ -399,7 +406,7 @@ update (){
 	#: delete all args related to old scanner count
 	then
 		local ix j ins ini inj
-		local ins=10 #: insert point in arrays (index padding)
+		local ins=11 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*dish_cnt+remember_scanners))
 		
 		#: hunt down dish entries and remove them
@@ -484,7 +491,7 @@ update (){
 				unset opts[$ix]
 				unset types[$ix]
 				unset trueopts[$ix]
-				unset subblurbs[2]
+				unset subblurbs[3]
 			fi
 		done
 		if [[ ${!args[6]} = "on" ]]
@@ -498,7 +505,7 @@ update (){
 			insert cols $(( ink )) "$LtBlue"
 			insert subvals $(( ink )) "C/constant-blue"
 			insert trueopts $(( ink )) "C/b"
-			insert subblurbs 2 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
+			insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 		fi
 		# i=999
 	fi
