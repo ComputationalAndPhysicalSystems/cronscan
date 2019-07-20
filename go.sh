@@ -356,27 +356,29 @@ eatkeys (){ #: digest user key inputs
 } #. end eatkeys()
 
 program_lights (){
-	# echo lj $lj
 	# echo "(----------program_lights ()---------)" #-- TRACER
-	local dish=${!args[(($lj+$i+2))]} #: find the value of each dish arg
-	echo $dish
-	echo $i
-	# read -p hi
-# 	local program=
+	local dish=${!args[(($i))]} #: find the value of each dish arg
+	# echo dish = $dish
+	# echo lj $lj
+	# echo i $i
 	case $dish in
 	"neg-control")			#: CHOICE
 		val=off
 		;;
 	"pos-control")			#: TOGGLE
-		val=blue
+		val=bluectrl
 		;;
 	*)
 		val=blue
 		;;
 esac
-	# read -p hello
-	# val="x$lj"
-	eval ${largs[$lj]}=$val
+
+	# echo was: ${!largs[$lj]}
+	# echo $val
+	eval ${largs[$lj]}=$val #: sets the new value for the dish light
+	# echo is: ${!largs[$lj]}
+	# read
+	((lj++))
 }
 init_colors (){
 	##: use loop to setup initial colors
@@ -397,8 +399,10 @@ load_parms (){
 }
 
 update (){
-	# echo "(------update function-----)" #-- TRACER
-	# echo parm: $1 #-- TRACER
+	# local ix=1 ## try to fix a prob
+
+	echo "(------update function-----)" #-- TRACER
+	echo parm: $1 #-- TRACER
 
 	#: dish (scanner) related ----------------------------------------
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
@@ -426,10 +430,13 @@ update (){
 			unset largs[@]
 		done
 		remember_scanners=$SCANNERS #: reset scanner count memory
+		ix=1; #: reset this counter
 
 		#: insert args based on startup settings, or scanner count updates......................
 		for ((ix=1;ix<$(( SCANNERS+1 ));ix++)) #: add features related to scanner/multiple
 		do
+			echo ..............................ix: $ix
+			read
 			ini=$((ins+((ix-1))*2+((ix-1))*dish_cnt))
 			insert args $(( ini )) SCANNER${ix}_ID
 			insert blurbs $(( ini )) "Scanner${ix} ID"
@@ -453,6 +460,8 @@ update (){
 			#: dish specific
 			for ((j=1;j<$(( dish_cnt+1 ));j++))
 			do
+				echo test this........
+				echo ix = $ix
 				if [[ $j -eq 1 && $ix -eq 1 ]] #: first dish (numeric)
 				then
 					lj=0 #: light j(index) reset
@@ -474,10 +483,14 @@ update (){
 				program_lights
 			done
 		done
+		# ix=1 #: reset this counter
+		echo reset........................
+		lj=0
+		read
 	fi
 
 	#: insert args based on startup settings, or light feature toggle..................
-	if [[ $1 = ${keys[6]} ]]
+	if [[ $1 = ${keys[6]} ]] #: that's the 'l' key
 	then
 		#: hunt down light entries and remove them
 		for ((ix=((${#keys[@]}-1));ix>0;ix--)) #((ix=0;ix<lKeys;ix++))
@@ -677,6 +690,9 @@ while [ "$stay_TF" = "true" ]
 				# echo dindex $dindex; sleep 1
 				lp=${!largs[$dindex]} #:light program setting as stirng		
 				((dindex++))
+				# echo $lp
+				# echo $dindex
+				# read
 			else
 				lp=""
 			fi
