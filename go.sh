@@ -399,12 +399,8 @@ load_parms (){
 }
 
 update (){
-	# local ix=1 ## try to fix a prob
-
-	echo "(------update function-----)" #-- TRACER
-	echo parm: $1 #-- TRACER
-
-	#: dish (scanner) related ----------------------------------------
+	# echo "(------update function-----)" #-- TRACER
+	# echo parm: $1 #-- TRACER
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
 	
 	#: delete all args related to old scanner count
@@ -462,12 +458,13 @@ update (){
 			do
 				echo test this........
 				echo ix = $ix
+				echo lj = $lj
 				if [[ $j -eq 1 && $ix -eq 1 ]] #: first dish (numeric)
 				then
 					lj=0 #: light j(index) reset
 					lset="L0"
 				else
-					((lj++))
+					# ((lj++))
 					lset="L$lj"
 				fi
 				inj=$((ini+j))
@@ -483,10 +480,6 @@ update (){
 				program_lights
 			done
 		done
-		# ix=1 #: reset this counter
-		echo reset........................
-		lj=0
-		read
 	fi
 
 	#: insert args based on startup settings, or light feature toggle..................
@@ -520,9 +513,7 @@ update (){
 			insert trueopts $(( ink )) "C/b"
 			insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 		fi
-		# i=999
 	fi
-	# program_lights
 	return	# "^ ^ ^ ^ end update function ^ ^ ^ ^"
 }
 cronit (){
@@ -723,6 +714,7 @@ while [ "$stay_TF" = "true" ]
 		echo -e "${BCyan}~${NC}] >\c" 
 
 ##. USER INPUT
+		lj=0 #: reset this value
 		read -n 1 key
 		echo
 		if [[ $key = '~' ]] #: enter key runs cronit function, then exits
