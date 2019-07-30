@@ -431,8 +431,6 @@ update (){
 		#: insert args based on startup settings, or scanner count updates......................
 		for ((ix=1;ix<$(( SCANNERS+1 ));ix++)) #: add features related to scanner/multiple
 		do
-			echo ..............................ix: $ix
-			read
 			ini=$((ins+((ix-1))*2+((ix-1))*dish_cnt))
 			insert args $(( ini )) SCANNER${ix}_ID
 			insert blurbs $(( ini )) "Scanner${ix} ID"
@@ -456,9 +454,6 @@ update (){
 			#: dish specific
 			for ((j=1;j<$(( dish_cnt+1 ));j++))
 			do
-				echo test this........
-				echo ix = $ix
-				echo lj = $lj
 				if [[ $j -eq 1 && $ix -eq 1 ]] #: first dish (numeric)
 				then
 					lj=0 #: light j(index) reset
@@ -576,14 +571,16 @@ saveit (){
 	   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
 	done
 	echo
-	echo -e  ${BRed}${Inv} Make sure scanners are connected and powered. ${NC}
-	echo
 	echo -e "${BRed} install crontab and begin scanning (y/n)${NC}\c"
 	read -s -r -n 1 response
 	response=${response,,}    # tolower
 	if [[ "$response" =~ ^(yes|y)$ ]]
 	then
+		echo
+		echo -e  ${BRed}${Inv} Make sure scanners are connected and powered. ${NC}
 		cronit
+	else 
+		return
 	fi
 }
 
