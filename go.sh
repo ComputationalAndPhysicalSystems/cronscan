@@ -77,9 +77,16 @@ opts+=("*/...")
 opts+=("*/...")
 
 optslist+=("")
-optslist+=("")
+optslist+=("1.to.9")
 optslist+=("")
 optslist+=("100DPI/300DPI/600DPI")
+optslist+=("")
+optslist+=("")
+optslist+=("")
+optslist+=("")
+optslist+=("")
+optslist+=("")
+optslist+=("")
 
 subvals+=("")
 subvals+=("C/^")
@@ -358,27 +365,14 @@ eatkeys (){ #: digest user key inputs
 	size=$((${#opts[$i]}+2))
 	if [[ ${opts[$i]:0:1} = "C" ]] 
 	then
-		### working 
 		optsbuff=(${optslist[$i]//// })
-		# for str in "${optsbuff[@]}"
-		# do
-		# 	storelongest xmarg
-		# 	echo xmarg $xmarg
-		#    # echo $str
-		#    # do whatever on $i
-		# done
 		for str in "${optsbuff[@]}"
 		do
 			echo -n -e ${Red}
 			printf "%$((34))s" "$str <"
 			echo
-		   # echo $str
-		   # do whatever on $i
 		done
 		echo -n -e ${NC}
-		# printf '%s\n' "%$((34-$size))s" "${optsbuff[@]}"
-		# printf '%s\n' "%$((34-$size))s" "${optsbuff[@]}"
-		# echo ${optsreturn[*]}
 	fi
 	printf "%$((34-$size))s" "${blurbs[$i]} ["
 	echo -e "${Cyan}${Italic}${opts[$i]:2}${NC}] >\c"
