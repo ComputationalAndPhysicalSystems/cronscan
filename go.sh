@@ -66,7 +66,7 @@ mkeys=(F S Q)
 opts+=("*/...")
 opts+=("C/1..9")
 opts+=("I/minutes")
-opts+=("C/100/300/600")
+opts+=("C/1/3/6")
 opts+=("T")
 opts+=("T")
 opts+=("T")
@@ -397,8 +397,8 @@ lights_on (){
 		insert args $(( ink )) "PROGRAM"
 		insert keys $(( ink )) L
 		insert blurbs $(( ink )) "Light Program"
-		insert subs $(( ink )) "_light"
-		insert opts $(( ink )) "C/b"
+		insert subs $(( ink )) "_light" 
+		insert opts $(( ink )) "C/b" #C/-/=/1..9
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/constant-blue"
 		insert trueopts $(( ink )) "C/b"
@@ -690,14 +690,14 @@ while [ "$stay_TF" = "true" ]
 			arg=${!args[$i]}
 			arglen=${#arg}
 			push=$(($margin-arglen))
-			if [[ ${keys[$i]} = "d" ]]
+			if [[ ${keys[$i]} = "d" && $LIGHTS = "on" ]]
 			then
 				lp=${!largs[$dindex]} #:light program setting as string		
 				((dindex++))
 			else
 				lp=""
 			fi
-			printf "%1s %${push}s" "$arg" #"$lp"
+			printf "%1s %${push}s" "$arg" "$lp"
 			echo -e ${NC}
 			if [[ $LIGHTS = "on" ]] #: considering a column for light display
 			then
