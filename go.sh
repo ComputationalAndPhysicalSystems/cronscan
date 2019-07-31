@@ -56,6 +56,7 @@ declare -a cols
 declare -a subblurbs
 declare -a func
 declare -a opts
+declare -a optslist
 declare -a subvals #: the value to store in the associated EXP ARG, if different than user input
 declare -a trueopts
 # declare -a lprog
@@ -74,6 +75,11 @@ opts+=("*/...")
 opts+=("*/...")
 opts+=("*/...")
 opts+=("*/...")
+
+optslist+=("")
+optslist+=("")
+optslist+=("")
+optslist+=("C/100 DPI/300 DPI/600 DPI")
 
 subvals+=("")
 subvals+=("C/^")
@@ -173,11 +179,19 @@ spacer (){ #: helps with UI building
 
 }
 
+opt_list (){
+	IFS="/"
+	subz=1
+	set -- "${subvals[$i]}" 
+	local -a svals=($*) #: setting svals array for substituting in final args
+	unset IFS
+}
+
 eatinput (){
 	# echo eatinput function
 	local -a thisopt
 	thisopt=(${trueopts[$i]//// }) #: store options into array, incl type marker
-	local op=${opts[$i]:0:1} #: the type marker
+	local op=${opts[$i]:0:1} #: the type marker, kind of hotkey, choice, toggle, etc
 	local limit=1
 	local -a uinput
 	local secret=1
@@ -345,6 +359,7 @@ eatkeys (){ #: digest user key inputs
 		return
 	fi # end toggles
 	size=$((${#opts[$i]}+2))
+	echo test
 	printf "%$((34-$size))s" "${blurbs[$i]} ["
 	echo -e "${Cyan}${Italic}${opts[$i]:2}${NC}] >\c"
 	eatinput
@@ -652,8 +667,8 @@ findi (){
 main (){
 #: main looop --------------------------------------------
 # echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
-((firstrun++))
-if [[ $firstrun -eq 1 ]]
+((firstrun++)) 
+if [[ $firstrun -eq 1 ]] #:this catches the LIGHTS on variable for the first UI build
 then
 	lights_on
 fi
