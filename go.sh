@@ -390,6 +390,23 @@ init_colors (){
 	cols[0]=$Red
 }
 
+lights_on (){
+	if [[ ${!args[6]} = "on" ]]
+	then
+		ink=${#args[@]}
+		insert args $(( ink )) "PROGRAM"
+		insert keys $(( ink )) L
+		insert blurbs $(( ink )) "Light Program"
+		insert subs $(( ink )) "_light"
+		insert opts $(( ink )) "C/b"
+		insert cols $(( ink )) "$LtBlue"
+		insert subvals $(( ink )) "C/constant-blue"
+		insert trueopts $(( ink )) "C/b"
+		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
+		#update d #sending manual dish update
+	fi
+}
+
 load_parms (){
 	##: DISK OPS
 	#. load last experiment
@@ -400,8 +417,8 @@ load_parms (){
 }
 
 update (){
-	echo "(------update function-----)" #-- TRACER
-	echo parm: $1 #-- TRACER
+	# echo "(------update function-----)" #-- TRACER
+	# echo parm: $1 #-- TRACER
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
 	
 	#: delete all args related to old scanner count
@@ -496,29 +513,7 @@ update (){
 				unset subblurbs[3]
 			fi
 		done
-		if [[ ${!args[6]} = "on" ]]
-		then
-			ink=${#args[@]}
-			insert args $(( ink )) "PROGRAM"
-			insert keys $(( ink )) L
-			insert blurbs $(( ink )) "Light Program"
-			insert subs $(( ink )) "_light"
-			insert opts $(( ink )) "C/b"
-			insert cols $(( ink )) "$LtBlue"
-			insert subvals $(( ink )) "C/constant-blue"
-			insert trueopts $(( ink )) "C/b"
-			insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
-			echo test this
-			read
-			echo pause the update
-			#update d #sending manual dish update
-			read
-		else
-			### working here
-			echo lights are off
-			read
-			#unset largs
-		fi
+		lights_on #: run check if lights are on
 	fi
 	return	# "^ ^ ^ ^ end update function ^ ^ ^ ^"
 }
@@ -657,6 +652,11 @@ findi (){
 main (){
 #: main looop --------------------------------------------
 # echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
+((firstrun++))
+if [[ $firstrun -eq 1 ]]
+then
+	lights_on
+fi
 while [ "$stay_TF" = "true" ]
 	echo inside the while loop
 
@@ -684,7 +684,6 @@ while [ "$stay_TF" = "true" ]
 			fi
 			printf "%29s" "${blurbs[$i]} ["
 			echo -e "${Cyan}${keys[$i]}${NC}] \c"
-			# echo -e 
 			echo -e "${cols[$i]}\c"
 
 			#: determine offset spacing for light color marker
@@ -693,18 +692,14 @@ while [ "$stay_TF" = "true" ]
 			push=$(($margin-arglen))
 			if [[ ${keys[$i]} = "d" ]]
 			then
-				# echo dindex $dindex; sleep 1
 				lp=${!largs[$dindex]} #:light program setting as stirng		
 				((dindex++))
-				# echo $lp
-				# echo $dindex
-				# read
 			else
 				lp=""
 			fi
 			printf "%1s %${push}s" "$arg" "$lp"
 			echo -e ${NC}
-			if [[ $LIGHTS = "on" ]]
+			if [[ $LIGHTS = "on" ]] #: considering a column for light display
 			then
 				# column "on"
 				# printf "%10s" "on"
