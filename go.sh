@@ -1,4 +1,5 @@
 #!/bin/bash
+#: largs - light value array
 
 SP="/home/caps/scripts/caps_cronscan"
 dish_cnt=6
@@ -340,7 +341,7 @@ eatkeys (){ #: digest user key inputs
 		then
 			update ${keys[6]}
 		fi
-		storelongest
+		storelongest #: formating proc to space the display based on longest string
 		return
 	fi # end toggles
 	size=$((${#opts[$i]}+2))
@@ -399,8 +400,8 @@ load_parms (){
 }
 
 update (){
-	# echo "(------update function-----)" #-- TRACER
-	# echo parm: $1 #-- TRACER
+	echo "(------update function-----)" #-- TRACER
+	echo parm: $1 #-- TRACER
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
 	
 	#: delete all args related to old scanner count
@@ -507,6 +508,16 @@ update (){
 			insert subvals $(( ink )) "C/constant-blue"
 			insert trueopts $(( ink )) "C/b"
 			insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
+			echo test this
+			read
+			echo pause the update
+			#update d #sending manual dish update
+			read
+		else
+			### working here
+			echo lights are off
+			read
+			#unset largs
 		fi
 	fi
 	return	# "^ ^ ^ ^ end update function ^ ^ ^ ^"
@@ -566,10 +577,17 @@ saveit (){
 	do
 	   echo ${arg}="'${!arg}'" >> $EP/$EXP.exp
 	done
-	for larg in "${largs[@]}"
-	do
-	   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
-	done
+	if [[ $LIGHTS == "on" ]]
+	then
+		for larg in "${largs[@]}"
+		do
+		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
+		done
+	else
+		# unset largs
+		declare -a largs
+	fi
+
 	echo
 	echo -e "${BRed} install crontab and begin scanning (y/n)${NC}\c"
 	read -s -r -n 1 response
@@ -742,6 +760,6 @@ while [ "$stay_TF" = "true" ]
 init_colors
 load_parms
 update ${keys[1]} #: send scanner count hotkey to populate statrup dish args
-update ${keys[6]} #: now for lights, if on
+#update ${keys[6]} #: now for lights, if on
 storelongest
 main "$@"
