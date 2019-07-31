@@ -79,7 +79,7 @@ opts+=("*/...")
 optslist+=("")
 optslist+=("")
 optslist+=("")
-optslist+=("C/100 DPI/300 DPI/600 DPI")
+optslist+=("100DPI/300DPI/600DPI")
 
 subvals+=("")
 subvals+=("C/^")
@@ -179,12 +179,9 @@ spacer (){ #: helps with UI building
 
 }
 
-opt_list (){
-	IFS="/"
-	subz=1
-	set -- "${subvals[$i]}" 
-	local -a svals=($*) #: setting svals array for substituting in final args
-	unset IFS
+opts_list (){
+	local -a optsreturn=(${optslist[$i]//// })
+	echo ${optsreturn[*]}
 }
 
 eatinput (){
@@ -359,7 +356,30 @@ eatkeys (){ #: digest user key inputs
 		return
 	fi # end toggles
 	size=$((${#opts[$i]}+2))
-	echo test
+	if [[ ${opts[$i]:0:1} = "C" ]] 
+	then
+		### working 
+		optsbuff=(${optslist[$i]//// })
+		# for str in "${optsbuff[@]}"
+		# do
+		# 	storelongest xmarg
+		# 	echo xmarg $xmarg
+		#    # echo $str
+		#    # do whatever on $i
+		# done
+		for str in "${optsbuff[@]}"
+		do
+			echo -n -e ${Red}
+			printf "%$((34))s" "$str <"
+			echo
+		   # echo $str
+		   # do whatever on $i
+		done
+		echo -n -e ${NC}
+		# printf '%s\n' "%$((34-$size))s" "${optsbuff[@]}"
+		# printf '%s\n' "%$((34-$size))s" "${optsbuff[@]}"
+		# echo ${optsreturn[*]}
+	fi
 	printf "%$((34-$size))s" "${blurbs[$i]} ["
 	echo -e "${Cyan}${Italic}${opts[$i]:2}${NC}] >\c"
 	eatinput
@@ -625,6 +645,7 @@ storelongest (){
 			longest=$comp
 		fi
 	done
+	# echo $(($buff+$longest))
 	margin=$(($buff+$longest))
 }
 
