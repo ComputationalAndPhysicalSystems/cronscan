@@ -692,12 +692,12 @@ while [ "$stay_TF" = "true" ]
 			push=$(($margin-arglen))
 			if [[ ${keys[$i]} = "d" ]]
 			then
-				lp=${!largs[$dindex]} #:light program setting as stirng		
+				lp=${!largs[$dindex]} #:light program setting as string		
 				((dindex++))
 			else
 				lp=""
 			fi
-			printf "%1s %${push}s" "$arg" "$lp"
+			printf "%1s %${push}s" "$arg" #"$lp"
 			echo -e ${NC}
 			if [[ $LIGHTS = "on" ]] #: considering a column for light display
 			then
