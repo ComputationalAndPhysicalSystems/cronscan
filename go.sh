@@ -79,7 +79,7 @@ opts+=("*/...")
 optslist+=("")
 optslist+=("1.to.9")
 optslist+=("")
-optslist+=("100DPI/300DPI/600DPI")
+optslist+=("100.DPI/300.DPI/600.DPI")
 optslist+=("")
 optslist+=("")
 optslist+=("")
@@ -330,7 +330,6 @@ menukeys (){
 		;;
 	esac
 
-
 }
 
 eatkeys (){ #: digest user key inputs
@@ -387,29 +386,31 @@ eatkeys (){ #: digest user key inputs
 
 program_lights (){
 	# echo "(----------program_lights ()---------)" #-- TRACER
-	local dish=${!args[(($i))]} #: find the value of each dish arg
-	# echo dish = $dish
-	# echo lj $lj
-	# echo i $i
-	case $dish in
-	"neg-control")			#: CHOICE
-		val=off
-		;;
-	"pos-control")			#: TOGGLE
-		val=bluectrl
-		;;
-	*)
-		val=blue
-		;;
-esac
+	if [[ firstrun -ne 0 ]] #: escape prog
+	then
+		local dish=${!args[(($i))]} #: find the value of each dish arg
+		# echo dish = $dish
+		# echo lj $lj
+		# echo i $i
+		case $dish in
 
-	# echo was: ${!largs[$lj]}
-	# echo $val
-	eval ${largs[$lj]}=$val #: sets the new value for the dish light
-	# echo is: ${!largs[$lj]}
-	# read
-	((lj++))
+		"neg-ctrl")			#: CHOICE
+			val=off
+			;;
+		"pos-ctrl")			#: TOGGLE
+			val=bluectrl
+			;;
+		*)
+	### work
+			lpI=$((${#args[@]}-1))
+			val=${!args[$lpI]}
+			;;
+		esac
+		eval ${largs[$lj]}=$val #: sets the new value for the dish light
+		((lj++))
+	fi
 }
+
 init_colors (){
 	##: use loop to setup initial colors
 	for ((i=0;i<${#keys[@]};i++))
@@ -424,13 +425,21 @@ lights_on (){
 	then
 		ink=${#args[@]}
 		insert args $(( ink )) "PROGRAM"
+		# echo ${args[$ink]}
+		# echo ${!args[$ink]}
+		# progArgI = $(( $ink ))
+		# echo yo, $progArgI
+		# read
+		# echo $progArgI
+		# read
 		insert keys $(( ink )) L
 		insert blurbs $(( ink )) "Light Program"
 		insert subs $(( ink )) "_light" 
-		insert opts $(( ink )) "C/b" #C/-/=/1..9
+		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
+		insert optslist $(( ink )) "1..blue-steady/2..blue-random" #C/-/=/1..9		
 		insert cols $(( ink )) "$LtBlue"
-		insert subvals $(( ink )) "C/constant-blue"
-		insert trueopts $(( ink )) "C/b"
+		insert subvals $(( ink )) "C/b!steady/b!random"
+		insert trueopts $(( ink )) "C/1/2"
 		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 		#update d #sending manual dish update
 	fi
@@ -466,6 +475,7 @@ update (){
 				unset keys[$ix]
 				unset subs[$ix]	
 				unset opts[$ix]
+				unset optslist[$ix]
 				unset trueopts[$ix]
 				unset cols[$ix]
 				unset subvals[$ix]
@@ -484,6 +494,7 @@ update (){
 			insert keys $(( ini )) k
 			insert subs $(( ini )) "_dish"
 			insert opts $(( ini )) "*"
+			insert optslist $(( ini )) ""
 			insert cols $(( ini )) "$LtBlue"
 			insert trueopts $(( ini )) ""
 			insert subvals $(( ini )) ""
@@ -494,6 +505,7 @@ update (){
 			insert keys $(( ini )) t
 			insert subs $(( ini )) "_dish"
 			insert opts $(( ini )) "*"
+			insert optslist $(( ini )) ""
 			insert cols $(( ini )) "$LtBlue"
 			insert trueopts $(( ini )) ""
 			insert subvals $(( ini )) ""
@@ -506,7 +518,8 @@ update (){
 					lj=0 #: light j(index) reset
 					lset="L0"
 				else
-					# ((lj++))
+					### work
+					((lj++))
 					lset="L$lj"
 				fi
 				inj=$((ini+j))
@@ -516,8 +529,9 @@ update (){
 				insert blurbs $(( inj )) "S${ix} Dish${j}"
 				insert subs $(( inj )) "_dish"
 				insert opts $(( inj )) "C/-/=/1..9"
+				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"				
 				insert cols $(( inj )) "$LtBlue"
-				insert subvals $(( inj )) "C/neg-control/pos-control/exp-group^"
+				insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/exp-group^"
 				insert trueopts $(( inj )) "C/-/=/123456789"
 				program_lights
 			done
@@ -537,6 +551,7 @@ update (){
 				unset keys[$ix]
 				unset subs[$ix]	
 				unset opts[$ix]
+				unset optslist[$ix]				
 				unset types[$ix]
 				unset trueopts[$ix]
 				unset subblurbs[3]
@@ -546,6 +561,7 @@ update (){
 	fi
 	return	# "^ ^ ^ ^ end update function ^ ^ ^ ^"
 }
+
 cronit (){
 	cp $EP/$EXP.exp $EROOT/last.exp
 
@@ -587,6 +603,7 @@ cronit (){
 	crontab $EP/xtab
 	exit
 }
+
 saveit (){
 	EROOT=${SP}/exp/
 	EP=$EROOT${EXP}
@@ -679,16 +696,16 @@ findi (){
 	   fi
 	done
 }
+
 main (){
-#: main looop --------------------------------------------
-# echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
+ #: main looop --------------------------------------------
+ # echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
 ((firstrun++)) 
 if [[ $firstrun -eq 1 ]] #:this catches the LIGHTS on variable for the first UI build
 then
 	lights_on
 fi
 while [ "$stay_TF" = "true" ]
-	echo inside the while loop
 
 		#: BUILD UI MENU-----------------------------------------
 	do
@@ -782,6 +799,7 @@ while [ "$stay_TF" = "true" ]
 	done #: END WHILE stay_TF LOOP
 } #......................................... end main
 
+firstrun=0
 init_colors
 load_parms
 update ${keys[1]} #: send scanner count hotkey to populate statrup dish args
