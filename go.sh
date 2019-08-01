@@ -637,6 +637,7 @@ saveit (){
 		for larg in "${largs[@]}"
 		do
 		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
+		   echo ${larg}="'${!larg}'" >> $EP/$EXP.lights
 		done
 	else
 		# unset largs
