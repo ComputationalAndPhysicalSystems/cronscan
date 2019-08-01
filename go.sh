@@ -381,6 +381,19 @@ eatkeys (){ #: digest user key inputs
 	then
 		program_lights
 	fi
+	if [[ ${keys[$i]} = "L" ]]
+	then
+		i=0
+		lj=0
+		for argi in "${keys[@]}"
+		do
+			if [[ $argi = "d" ]]
+			then
+				program_lights
+			fi
+			((i++))
+		done
+	fi
 	update $key #: run update to check for changes to the arrays (eg scanner count change)
 } #. end eatkeys()
 
@@ -406,6 +419,7 @@ program_lights (){
 			val=${!args[$lpI]}
 			;;
 		esac
+		# read
 		eval ${largs[$lj]}=$val #: sets the new value for the dish light
 		((lj++))
 	fi
