@@ -402,9 +402,6 @@ program_lights (){
 	if [[ firstrun -ne 0 ]] #: escape prog
 	then
 		local dish=${!args[(($i))]} #: find the value of each dish arg
-		# echo dish = $dish
-		# echo lj $lj
-		# echo i $i
 		case $dish in
 
 		"neg-ctrl")			#: CHOICE
@@ -414,12 +411,10 @@ program_lights (){
 			val=b!ctrl
 			;;
 		*)
-	### work
 			lpI=$((${#args[@]}-1))
 			val=${!args[$lpI]}
 			;;
 		esac
-		# read
 		eval ${largs[$lj]}=$val #: sets the new value for the dish light
 		((lj++))
 	fi
@@ -439,13 +434,6 @@ lights_on (){
 	then
 		ink=${#args[@]}
 		insert args $(( ink )) "PROGRAM"
-		# echo ${args[$ink]}
-		# echo ${!args[$ink]}
-		# progArgI = $(( $ink ))
-		# echo yo, $progArgI
-		# read
-		# echo $progArgI
-		# read
 		insert keys $(( ink )) L
 		insert blurbs $(( ink )) "Light Program"
 		insert subs $(( ink )) "_light" 
@@ -498,7 +486,6 @@ update (){
 		done
 		remember_scanners=$SCANNERS #: reset scanner count memory
 		ix=1; #: reset this counter
-
 		#: insert args based on startup settings, or scanner count updates......................
 		for ((ix=1;ix<$(( SCANNERS+1 ));ix++)) #: add features related to scanner/multiple
 		do
@@ -532,8 +519,7 @@ update (){
 					lj=0 #: light j(index) reset
 					lset="L0"
 				else
-					### work
-					((lj++))
+					lj=${#largs[@]}
 					lset="L$lj"
 				fi
 				inj=$((ini+j))
@@ -578,8 +564,6 @@ update (){
 
 cronit (){
 	cp $EP/$EXP.exp $EROOT/last.exp
-
-
 	echo 
 	echo -n "# programatic crontab file generated for CAPS scanner control
 	# " > $EP/xtab
@@ -672,7 +656,6 @@ storelongest (){
 			longest=$comp
 		fi
 	done
-	# echo $(($buff+$longest))
 	margin=$(($buff+$longest))
 }
 
@@ -694,13 +677,6 @@ set_all (){
 			update ${keys[6]}
 		fi
 	done
-	# uniq=($(printf "%s\n" "${keys[@]}" | uniq))
-	# # echo $uniq[@]
-	# for key in ${uniq[@]}
-	# do
-	# 	echo $key
-	# 	eatkeys
-	# done
 }
 
 findi (){
@@ -764,6 +740,7 @@ while [ "$stay_TF" = "true" ]
 			echo -e ${NC}
 			if [[ $LIGHTS = "on" ]] #: considering a column for light display
 			then
+				### work
 				# column "on"
 				# printf "%10s" "on"
 				# echo
