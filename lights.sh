@@ -68,10 +68,6 @@ while IFS= read -r line; do
     report=$report$buff
     ((i++))
 done <$LP
-echo report: $report 
-for val in ${LED[@]}; do
-   echo from the array: $val
-done
 
 if [ ! -f "$LOG" ]
 then
@@ -81,49 +77,17 @@ then
 fi
 echo $report $(date) >> $LOG
 
-
-# source $2.lights #: in one commad, loads all variables
-# echo and... $L0
-# for i in $(cat $2.lights); do
-# 	echo $i
-# done
-
-
-
-
-#. fixed program
-
-# LED[0]="$OFF"
-# LED[1]="$R"
-# LED[2]="$R"
-# LED[3]="#F0F0FF"
-# LED[4]="#00FF00"
-# LED[5]="#00FF00"
-# LED[6]="#00FF00"
-# LED[7]="#00FF00"
-# LED[8]="#00FF00"
-# LED[9]="#00FF00"
-# LED[10]="#00FF00"
-# LED[11]="#00FF00"
-# #=======
-# LED[0]="$B"
-# LED[1]="$B"
-# LED[2]="$B"
-# LED[3]="$B"
-# LED[4]="$B"
-
-
 echo "turning lights $1"
 
 if [ "$OPTION" == "on" ]; then
 	for i in ${!LED[@]}; do
-		# echo "<+$i*${LED[$i]}>" > $DEVICE
-		echo "<+$i*${LED[$i]}>"
+		echo "<+$i*${LED[$i]}>" > $DEVICE
+		# echo "<+$i*${LED[$i]}>" 
 	done
 else
 	for i in ${!LED[@]}; do
-		# echo "<+$i*$OFF>" > $DEVICE
-		echo "<+$i*$OFF>"
+		echo "<+$i*$OFF>" > $DEVICE
+		# echo "<+$i*$OFF>"
 	done
 
 fi
