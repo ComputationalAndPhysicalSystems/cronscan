@@ -33,7 +33,6 @@ randblue[1]=$B
 
 i=0
 while IFS= read -r line; do
-	echo $line
     if [[ $line =~ random ]]
     then
     	# echo $((1 + RANDOM % 2))
@@ -75,7 +74,7 @@ then
 	echo "# log of light instructions" > $LOG
 	echo $mode light experiment >> $LOG
 fi
-echo $report $(date) >> $LOG
+echo $report $(date +%s) >> $LOG
 
 echo "turning lights $1"
 
