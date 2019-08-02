@@ -634,6 +634,7 @@ saveit (){
 	done
 	if [[ $LIGHTS == "on" ]]
 	then
+		rm $EP/$EXP.lights
 		for larg in "${largs[@]}"
 		do
 		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
