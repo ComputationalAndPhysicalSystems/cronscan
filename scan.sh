@@ -5,7 +5,7 @@ export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/T40G8FH6D/BJC3XSQBV/ot
 
 RESOLUTION=$1
 LOCAL_DIR=$2
-DELAY=6
+DELAY=4
 
 ENUM=$(($(cat $LOCAL_DIR/count)+1))
 EXPERIMENT_BASENAME=${LOCAL_DIR##*/}
@@ -46,8 +46,8 @@ for scanner in $SCANNER_LIST; do
     echo "Scanning $scanner to $FILENAME"
 
     scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $LOCAL_DIR/$FILENAME
-done
-echo "Delaying for $DELAY seconds"
-sleep $DELAY
+	echo "Delaying for $DELAY seconds"
+	sleep $DELAY
+done	
 
 echo $ENUM > $LOCAL_DIR/count
