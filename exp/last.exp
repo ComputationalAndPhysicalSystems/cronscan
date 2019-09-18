@@ -1,10 +1,10 @@
 #exp parameters
-EXP='boo'
+EXP='foo'
 SCANNERS='1'
 INT='100'
 RES='100'
 REF='off'
-XFER='off'
+XFER='on'
 LIGHTS='on'
 SPECIES='physarum'
 FOODS='oat flakes'
