@@ -565,9 +565,9 @@ update (){
 cronit (){
 	cp $EP/$EXP.exp $EROOT/last.exp
 	echo 
-	echo -n "# programatic crontab file generated for CAPS scanner control
-	# " > $EP/xtab
-	printf '.%.0s' {1..29} >> $EP/xtab
+	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
+	echo -n "#" >> $EP/xtab
+	printf '.%.0s' {1..34} >> $EP/xtab
 	echo >> $EP/xtab
 	for ((i=0;i<${#keys[@]};i++))
 	do
@@ -576,12 +576,11 @@ cronit (){
 		echo ${!args[$i]} >> $EP/xtab
 	done
 
-	echo "
-	sp=$SP" >> $EP/xtab
+	echo 
+	echo "sp=$SP" >> $EP/xtab
 	echo "ep=$EP" >> $EP/xtab
-
-	printf "
-	*/$INT * * * * " >> $EP/xtab
+	echo
+	printf "*/$INT * * * * " >> $EP/xtab
 
 	[[ $REF > 0 ]] && \
 
