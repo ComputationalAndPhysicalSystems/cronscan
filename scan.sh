@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Webhook so the script can complain to us in real time
-#! does not work for ARM architecture
+#! webhook established by Conrad; this might be the repo--I'm not sure
+#! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
 export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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
 
 RESOLUTION=$1
@@ -51,6 +52,7 @@ for scanner in $SCANNER_LIST; do
 	sleep $DELAY
 done	
 
+test -e count && echo "--- SCAN# $ENUM" || slack "[UPDATE] First scan for $EXPERIMENT_BASENAME"
 echo $ENUM > $LOCAL_DIR/count
 rsync -vha --progress $1/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
 rsync -vha --progress $1/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
