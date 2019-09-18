@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Webhook so the script can complain to us in real time
+#! does not work for ARM architecture
 export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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
 
 RESOLUTION=$1
@@ -14,7 +15,7 @@ export SANE_USB_WORKAROUND=1
 
 echo "==Beginning Scan=="
 date
-echo "Scanner count: $ENUM"
+echo "Scan count: $ENUM"
 echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $LOCAL_DIR"
 
 # Create experiment direcotry if it doesn't already exist
@@ -51,3 +52,7 @@ for scanner in $SCANNER_LIST; do
 done	
 
 echo $ENUM > $LOCAL_DIR/count
+rsync -vha --progress $1/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $1/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $1/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $1/$1.* caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
