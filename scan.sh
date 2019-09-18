@@ -3,7 +3,8 @@
 # Webhook so the script can complain to us in real time
 #! webhook established by Conrad; this might be the repo--I'm not sure
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
-export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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
+export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
+
 
 RESOLUTION=$1
 LOCAL_DIR=$2
@@ -37,6 +38,8 @@ echo "Found $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners:"
 echo "$SCANNER_LIST"
 
 if [ "$SCANNER_COUNT" -lt "$(cat $LOCAL_DIR/scanners)" ]; then
+	slack "[LAB ALERT]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Seek scanner reset--may require physical inspection."
+	export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
     slack "RIP Acquisition #$ENUM, ~$(date +%s)"
 fi
@@ -52,9 +55,12 @@ for scanner in $SCANNER_LIST; do
 	sleep $DELAY
 done	
 
-test -e count && echo "--- SCAN# $ENUM" || slack "[UPDATE] First scan for $EXPERIMENT_BASENAME"
+export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
+
+test -e count && slack "SCAN# $ENUM" || slack "[UPDATE] First scan for experiment $EXPERIMENT_BASENAME"
 echo $ENUM > $LOCAL_DIR/count
-rsync -vha --progress $1/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
-rsync -vha --progress $1/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
-rsync -vha --progress $1/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
-rsync -vha --progress $1/$1.* caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -vha --progress $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
