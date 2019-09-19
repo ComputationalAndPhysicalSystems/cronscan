@@ -38,7 +38,7 @@ echo "Found $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners:"
 echo "$SCANNER_LIST"
 
 if [ "$SCANNER_COUNT" -lt "$(cat $LOCAL_DIR/scanners)" ]; then
-	slack "[LAB ALERT]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Seek scanner reset--may require physical inspection."
+	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Scanners may require physical inspection."
 	export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
     slack "RIP Acquisition #$ENUM, ~$(date +%s)"
