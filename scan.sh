@@ -8,7 +8,7 @@ export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/T40G8FH6D/BJC3XSQBV/ot
 
 RESOLUTION=$1
 LOCAL_DIR=$2
-DELAY=4
+#DELAY=4
 
 ENUM=$(($(cat $LOCAL_DIR/count)+1))
 EXPERIMENT_BASENAME=${LOCAL_DIR##*/}
@@ -51,16 +51,16 @@ for scanner in $SCANNER_LIST; do
     echo "Scanning $scanner to $FILENAME"
 
     scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $LOCAL_DIR/$FILENAME
-	echo "Delaying for $DELAY seconds"
-	sleep $DELAY
+#	echo "Delaying for $DELAY seconds"
+#	sleep $DELAY
 done	
 
 export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
 
 test -e $2/count && slack "[UPDATE] SCAN# $ENUM" || slack "[UPDATE] First scan for experiment $EXPERIMENT_BASENAME"
 echo $ENUM > $LOCAL_DIR/count
-rsync -ha --progress $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
-rsync -ha --progress $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
-rsync -ha --progress $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
-rsync -ha --progress $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
-rsync -ha --progress $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+#rsync -ha --progress $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+#rsync -ha --progress $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+#rsync -ha --progress $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+#rsync -ha --progress $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+#rsync -ha --progress $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME

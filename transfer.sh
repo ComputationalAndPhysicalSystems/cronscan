@@ -27,4 +27,4 @@ EXPERIMENT_BASENAME=${LOCAL_DIR##*/}
 #rsync will create directories while creating files if necessary
 echo "Moving image files to Mnemosyne - folder $EXPERIMENT_BASENAME" 
 find $1/*.png -type f -printf "%f\n"
-rsync -vha --progress --remove-source-files $1/*.png caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME
+rsync -zha --progress --remove-source-files $1/*.png caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
