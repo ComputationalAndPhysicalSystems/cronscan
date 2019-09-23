@@ -438,10 +438,10 @@ lights_on (){
 		insert blurbs $(( ink )) "Light Program"
 		insert subs $(( ink )) "_light" 
 		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
-		insert optslist $(( ink )) "1..blue-steady/2..blue-random" #C/-/=/1..9		
+		insert optslist $(( ink )) "1..blue-steady/2..blue-random/3..blue-chaos" #C/-/=/1..9		
 		insert cols $(( ink )) "$LtBlue"
-		insert subvals $(( ink )) "C/b!steady/b!random"
-		insert trueopts $(( ink )) "C/1/2"
+		insert subvals $(( ink )) "C/b!steady/b!random/b!chaos"
+		insert trueopts $(( ink )) "C/1/2/3"
 		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 		#update d #sending manual dish update
 	fi

@@ -9,6 +9,9 @@
 
 #. hardcode path
 
+#. random program assigns a one time random to the entire series
+#. chaotic program assigns a random value to each light, every series
+
 P=/home/caps/scripts/caps_cronscan/exp/
 
 OPTION=$1
@@ -31,15 +34,26 @@ B="#0000FF"
 randblue[0]=$OFF
 randblue[1]=$B
 
+ri=-1 #: set $ri to -1 to trigger test for random
+
 i=0
 while IFS= read -r line; do
+    if [[ $line =~ chaotic ]]
+    then
+        ri=$(($RANDOM % 2))
+        val=${randblue[$ri]}
+        let buff=$ri
+        mode="chaotic"
+    fi     
     if [[ $line =~ random ]]
     then
-    	# echo $((1 + RANDOM % 2))
-    	ri=$(($RANDOM % 2))
-    	val=${randblue[$ri]}
-    	let buff=$ri
-    	mode="random"
+        if [[ $ri -eq -1 ]] #: testing if a random has already been assigned for this series
+        then
+            ri=$(($RANDOM % 2))
+            val=${randblue[$ri]}
+            let buff=$ri
+            mode="random"
+        fi
     fi 
     if [[ $line =~ steady ]]
     then
