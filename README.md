@@ -1,8 +1,14 @@
 # CAPS_CRONSCAN
 
-CAPS_Cronscan is a collection of LINUX based bash shell scripts for capturing labroratory petri dish experiments with one or more scanners.
+CAPS_Cronscan is a collection of LINUX based bash shell scripts for capturing labroratory petri dish experiments with one or more scanners. The software will program a LINUX cron-job to capture scanner data and send serial control data to accessories. 
+
+This version of the software requires the us of SANE software
 
 ## Installation
+
+Install SANE, and ensure user permissions for any attanched scanners
+
+If using Arduino light controls, ensure proper drivers and user device permissions are properly configured.
 
 Clone repository and alter constants found in go.sh script to reflect local configurations
 
