@@ -27,8 +27,10 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 Please make sure to update tests as appropriate.
 
 ## Authors and acknowledgment
-Chief architect and repository maintained by Zeth duBois || zdubois@uidaho.edu
-Principle Investigatory: Dr Kyle Harrington
+Chief software architect and repository maintained by Zeth duBois || zdubois@uidaho.edu
+
+Principle Investigator: Dr Kyle Harrington
+
 Contributions by: Conrad Mearns
 
 ## License
