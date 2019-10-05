@@ -53,11 +53,15 @@ for scanner in $SCANNER_LIST; do
     scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $LOCAL_DIR/$FILENAME
 #	echo "Delaying for $DELAY seconds"
 #	sleep $DELAY
-done	
+done
 
+#: sloppy code here; essentially reports to the slack channels, two channels of interest...
+
+export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
+test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
 export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
 
-test -e $2/count && slack "[UPDATE] SCAN# $ENUM" || slack "[UPDATE] First scan for experiment $EXPERIMENT_BASENAME"
+test -e $2/count && slack "[UPDATE] SCAN# $ENUM" || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
 echo $ENUM > $LOCAL_DIR/count
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
