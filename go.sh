@@ -472,6 +472,7 @@ lights_on (){
 load_parms (){
 	##: DISK OPS
 	#. load last experiment
+	source ./release
 	source ./exp/last.exp #: in one commad, loads all variables
 	EXP=$(echo $EXP|tr -d '\n') #? what do these lines do??
 	INT=$(echo $INT|tr -d '\n')
@@ -732,7 +733,7 @@ while [ "$stay_TF" = "true" ]
 	do
 		clear #!! temp disable for TRACER
 		echo -e "${BPurple}"
-		printf " CREATE NEW CRONTAB EXPERIMENT "
+		printf " CREATE NEW CRONTAB EXPERIMENT - v$release"
 		echo
 		isub=0
 		dindex=0
