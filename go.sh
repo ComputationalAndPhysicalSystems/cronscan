@@ -444,6 +444,28 @@ lights_on (){
 		insert trueopts $(( ink )) "C/1/2/3"
 		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 		#update d #sending manual dish update
+		((ink++))
+		probpos=ink
+		insert args $(( ink )) "PROB_ABS"
+		insert keys $(( ink )) P
+		insert blurbs $(( ink )) "Prob.of Toggle"
+		insert subs $(( ink )) "_light" 
+		insert opts $(( ink )) "C/0..9" #C/-/=/1..9
+		insert optslist $(( ink )) "0.to.9" #C/-/=/1..9		
+		insert cols $(( ink )) "$LtBlue"
+		insert subvals $(( ink )) "C/^"
+		insert trueopts $(( ink )) "C/0123456789"
+
+		((ink++))
+		insert args $(( ink )) "PROB_REL"
+		insert keys $(( ink )) P
+		insert blurbs $(( ink )) "Prob.of ON"
+		insert subs $(( ink )) "_light" 
+		insert opts $(( ink )) "C/0..9" #C/-/=/..9
+		insert optslist $(( ink )) "0.to.9" #C/-/=/1..9		
+		insert cols $(( ink )) "$LtBlue"
+		insert subvals $(( ink )) "C/^"
+		insert trueopts $(( ink )) "C/0123456789"
 	fi
 }
 
@@ -618,6 +640,14 @@ saveit (){
 	if [[ $LIGHTS == "on" ]]
 	then
 		rm $EP/$EXP.lights
+		### working
+		for ((i0=(($probpos-1)); i0 <= (($probpos)); i0++))
+		do
+			echo ${args[$i0]}="'${!args[$i0]}'" >> $EP/$EXP.lights
+		done
+
+		#echo ${args[(($probpos-1))]}="'${!larg}'" >> $EP/$EXP.lights
+		#echo "${args[$probpos]}=" >> $EP/$EXP.lights		
 		for larg in "${largs[@]}"
 		do
 		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
