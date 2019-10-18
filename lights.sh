@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#==	This is the script for controlling NEOPIXEL lights via Arduino controller
-#  	See Arduino repository for Arduino programming
+#== This is the script for controlling NEOPIXEL lights via Arduino controller
+#   See Arduino repository for Arduino programming
 
 
-#..	input parms:
-#.	$1 >  on/off  { lower case req }
+#.. input parms:
+#.  $1 >  on/off  { lower case req }
 
 #. hardcode path
 
@@ -19,6 +19,8 @@ EXP=$2
 EP="$P$2/$2" #: path prefix
 LOG=$EP.log
 LP=$EP.lights #: light program file
+
+source $LP #: read in ABS and REL variables
 
 #. hard coded
 
@@ -37,10 +39,11 @@ randblue[1]=$B
 ri=-1 #: set $ri to -1 to trigger test for random
 
 i=0
-while IFS= read -r line; do
+while IFS= read -r line
+do
     if [[ $line =~ chaotic ]]
     then
-        ri=$(($RANDOM % 2))
+        ri=$(($RANDOM % 10))
         val=${randblue[$ri]}
         let buff=$ri
         mode="chaotic"
@@ -49,22 +52,28 @@ while IFS= read -r line; do
     then
         if [[ $ri -eq -1 ]] #: testing if a random has already been assigned for this series
         then
-            ri=$(($RANDOM % 2))
+            prob=$((1 + RANDOM % 10))
+            if [[ $prob -ge $PROB_REL ]] #: probability light turns on
+            then
+                ri=1
+            else
+                ri=0                          
+            fi
             val=${randblue[$ri]}
-            let buff=$ri
+            let buff=$ri 
             mode="random"
         fi
     fi 
     if [[ $line =~ steady ]]
     then
-    	val=$B
-    	buff=1
-    	mode="steady"
+        val=$B
+        buff=1
+        mode="steady"
     fi
     if [[ $line =~ ctrl ]]
     then
-    	val=$B
-    	buff=1
+        val=$B
+        buff=1
     fi
     if [[ $line =~ off ]]
     then
@@ -74,8 +83,8 @@ while IFS= read -r line; do
     fi
     if [[ $1 = "off" ]]
     then
-    	val=$OFF
-    	buff=0
+        val=$OFF
+        buff=0
     fi
     eval LED[$i]=$val
     report=$report$buff
@@ -85,22 +94,21 @@ done <$LP
 if [ ! -f "$LOG" ]
 then
     echo "making a LOG file"
-	echo "# log of light instructions" > $LOG
-	echo $mode light experiment >> $LOG
+    echo "# log of light instructions" > $LOG
+    echo $mode light experiment >> $LOG
 fi
 echo $report $(date +%s) >> $LOG
-
 echo "turning lights $1"
 
 if [ "$OPTION" == "on" ]; then
-	for i in ${!LED[@]}; do
-		echo "<+$i*${LED[$i]}>" > $DEVICE
-		# echo "<+$i*${LED[$i]}>" 
-	done
+    for i in ${!LED[@]}; do
+        echo "<+$i*${LED[$i]}>" > $DEVICE
+        # echo "<+$i*${LED[$i]}>" 
+    done
 else
-	for i in ${!LED[@]}; do
-		echo "<+$i*$OFF>" > $DEVICE
-		# echo "<+$i*$OFF>"
-	done
+    for i in ${!LED[@]}; do
+        echo "<+$i*$OFF>" > $DEVICE
+        # echo "<+$i*$OFF>"
+    done
 
 fi
