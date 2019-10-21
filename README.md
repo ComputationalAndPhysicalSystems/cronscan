@@ -16,7 +16,7 @@ Clone repository and alter constants found in go.sh script to reflect local conf
 ## Usage
 
 ```terminal
-$ go.sh
+$ ./go.sh
 ```
 
 Configure experiment settings with the text-based UI. The UI displays variable fields that belong to an experiment record, to be recorded in the experiment subdirectory when the user S)aves and executes crontab installation.
