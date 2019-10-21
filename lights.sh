@@ -18,9 +18,11 @@ OPTION=$1
 EXP=$2
 EP="$P$2/$2" #: path prefix
 LOG=$EP.log
-LP=$EP.lights #: light program file
+LP=$EP.exp #: light program file
+L=$EP.lights
 
 source $LP #: read in ABS and REL variables
+
 
 #. hard coded
 
@@ -53,7 +55,8 @@ do
         if [[ $ri -eq -1 ]] #: testing if a random has already been assigned for this series
         then
             prob=$((1 + RANDOM % 10))
-            if [[ $prob -ge $PROB_REL ]] #: probability light turns on
+            # echo random prob = $prob >> $LOG #--testing only
+            if [[ $prob -le $PROB_ABS ]] #: probability light turns on
             then
                 ri=1
             else
@@ -89,13 +92,15 @@ do
     eval LED[$i]=$val
     report=$report$buff
     ((i++))
-done <$LP
+done <$L
 
 if [ ! -f "$LOG" ]
 then
     echo "making a LOG file"
     echo "# log of light instructions" > $LOG
     echo $mode light experiment >> $LOG
+    echo probability of an absolute switch = $PROB_ABS >> $LOG
+    echo probability of a relative switch = $PROB_REL >> $LOG
 fi
 echo $report $(date +%s) >> $LOG
 echo "turning lights $1"

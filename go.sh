@@ -641,14 +641,6 @@ saveit (){
 	if [[ $LIGHTS == "on" ]]
 	then
 		rm $EP/$EXP.lights
-		### working
-		for ((i0=$probpos; i0 <= (($probpos+1)); i0++))
-		do
-			echo ${args[$i0]}="'${!args[$i0]}'" >> $EP/$EXP.lights
-		done
-
-		#echo ${args[(($probpos-1))]}="'${!larg}'" >> $EP/$EXP.lights
-		#echo "${args[$probpos]}=" >> $EP/$EXP.lights		
 		for larg in "${largs[@]}"
 		do
 		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
