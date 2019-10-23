@@ -3,7 +3,7 @@
 # Webhook so the script can complain to us in real time
 #! webhook established by Conrad; this might be the repo--I'm not sure
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
-export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
+export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
 
 
 RESOLUTION=$1
@@ -57,9 +57,9 @@ done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 
-export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
+export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
 test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
-export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
+export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
 
 test -e $2/count && slack "[UPDATE] SCAN# $ENUM" || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
 echo $ENUM > $LOCAL_DIR/count
