@@ -3,7 +3,11 @@
 # Webhook so the script can complain to us in real time
 #! webhook established by Conrad; this might be the repo--I'm not sure
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
-export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
+
+source ./config.cfg
+SLIME_SLACK=https://hooks.slack.com/services/$HOOK1a$HOOK1b
+PHYS_SLACK=https://hooks.slack.com/services/$HOOK2a$HOOK2b
+export APP_SLACK_WEBHOOK=$PHYS_SLACK #physarum channel
 
 
 RESOLUTION=$1
@@ -39,7 +43,7 @@ echo "$SCANNER_LIST"
 
 if [ "$SCANNER_COUNT" -lt "$(cat $LOCAL_DIR/scanners)" ]; then
 	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Scanners may require physical inspection."
-	export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
+	export APP_SLACK_WEBHOOK=$SLIME_SLACK #slime-report channel
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
     slack "RIP Acquisition #$ENUM, ~$(date +%s)"
 fi
@@ -57,9 +61,9 @@ done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 
-export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #physarum channel
+export APP_SLACK_WEBHOOK=$PHYS_SLACK #physarum channel
 test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
-export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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 #slime-report channel
+export APP_SLACK_WEBHOOK=$SLIME_SLACK #slime-report channel
 
 test -e $2/count && slack "[UPDATE] SCAN# $ENUM" || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
 echo $ENUM > $LOCAL_DIR/count
