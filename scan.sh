@@ -5,8 +5,8 @@
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
 
 source ./config.cfg
-SLIME_SLACK=https://hooks.slack.com/services/$HOOK1a$HOOK1b
-PHYS_SLACK=https://hooks.slack.com/services/$HOOK2a$HOOK2b
+SLIME_SLACK="https://hooks.slack.com/services/$HOOK_1a$HOOK_1b"
+PHYS_SLACK="https://hooks.slack.com/services/$HOOK_2a$HOOK_2b"
 export APP_SLACK_WEBHOOK=$PHYS_SLACK #physarum channel
 
 
