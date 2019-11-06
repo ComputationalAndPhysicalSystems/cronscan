@@ -8,6 +8,8 @@
 
 #export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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
 source /home/caps/scripts/caps_settings/physarumhook
+source /home/caps/scripts/caps_settings/config
+
 
 RESOLUTION=$1
 LOCAL_DIR=$2
@@ -40,7 +42,8 @@ fi
 echo "Found $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners:"
 echo "$SCANNER_LIST"
 
-if [ "$SCANNER_COUNT" -lt "$(cat $LOCAL_DIR/scanners)" ]; then
+if [ "$SCANNER_COUNT" -lt "$(cat $LOCAL_DIR/scanners)" ]
+then
 	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Scanners may require physical inspection."
 	source /home/caps/scripts/caps_settings/slimehook
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
@@ -61,9 +64,14 @@ done
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 source /home/caps/scripts/caps_settings/physarumhook
 test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
+
 source /home/caps/scripts/caps_settings/slimehook
 
-test -e $2/count && slack "[UPDATE] SCAN# $ENUM" || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
+if [ $(( $ENUM % $SLACK_INTERVAL )) -eq 0 ]
+then
+    slack "[UPDATE] SCAN# $ENUM"
+fi
+
 echo $ENUM > $LOCAL_DIR/count
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
