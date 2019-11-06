@@ -5,8 +5,6 @@
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
 #! Set up webhooks here: https://capsidaho.slack.com/services/BNASXK525
 
-
-#export APP_SLACK_WEBHOOK=https://hooks.slack.com/services/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
 source /home/caps/scripts/caps_settings/physarumhook
 source /home/caps/scripts/caps_settings/config
 
