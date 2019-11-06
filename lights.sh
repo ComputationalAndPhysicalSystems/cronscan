@@ -23,6 +23,16 @@ L=$EP.lights
 
 source $LP #: read in ABS and REL variables
 
+#! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
+
+[[ ! -f ldap.server.xml ]] && echo 1 || echo 0
+if [[ $PROB_REL -le $PROB_ABS ]]
+then
+    TOG=0
+else
+    TOG=1
+fi
+
 
 #. hard coded
 
