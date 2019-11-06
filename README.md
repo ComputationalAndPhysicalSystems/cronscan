@@ -6,7 +6,9 @@ This version of the software requires the us of SANE software
 
 ## Installation
 
-Install SANE, and ensure user permissions for any attanched scanners
+Dependencies:
+* Requires the private caps_settings repository where some variables that cannot be publicly published are sourced.  
+* Install SANE, and ensure user permissions for any attanched scanners
 
 If using Arduino light controls, ensure proper drivers and user device permissions are properly configured.
 
