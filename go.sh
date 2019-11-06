@@ -645,6 +645,7 @@ saveit (){
 		do
 		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
 		   echo ${larg}="'${!larg}'" >> $EP/$EXP.lights
+		   echo last=0 > $EP/last #: set the last light record for calcs to zero
 		done
 	else
 		# unset largs

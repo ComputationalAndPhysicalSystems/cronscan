@@ -18,20 +18,18 @@ OPTION=$1
 EXP=$2
 EP="$P$2/$2" #: path prefix
 LOG=$EP.log
+LAST=$P/$2/last
 LP=$EP.exp #: light program file
 L=$EP.lights
 
 source $LP #: read in ABS and REL variables
+source $LAST
 
 #! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
 
-[[ ! -f ldap.server.xml ]] && echo 1 || echo 0
-if [[ $PROB_REL -le $PROB_ABS ]]
-then
-    TOG=0
-else
-    TOG=1
-fi
+
+[[ $PROB_REL -le $PROB_ABS ]] && TOG=0 || TOG=1
+[[ $PROB_REL -le $PROB_ABS ]] && PROB=$PROB_ABS || PROB=$PROB_REL
 
 
 #. hard coded
@@ -66,11 +64,17 @@ do
         then
             prob=$((1 + RANDOM % 10))
             # echo random prob = $prob >> $LOG #--testing only
-            if [[ $prob -le $PROB_ABS ]] #: probability light turns on
+
+            if [[ $prob -le $PROB ]] #: compare the random value to the parameter
             then
                 ri=1
             else
                 ri=0                          
+            fi
+            if [[ $TOG -eq 1 ]] #: change results of $ri if the type of random is toggle
+            then
+                [[ $ri -eq 1 ]] && effect=" toggle state" || effect=" no change"
+                ri=`echo $(( last - TOG * ri )) | sed 's/-//'`
             fi
             val=${randblue[$ri]}
             let buff=$ri 
@@ -94,7 +98,7 @@ do
         buff=0
         #echo "$line" >>$LOG
     fi
-    if [[ $1 = "off" ]]
+    if [[ $OPTION = "off" ]]
     then
         val=$OFF
         buff=0
@@ -104,6 +108,13 @@ do
     ((i++))
 done <$L
 
+[[ $ri -eq 1 ]] && result="on" || result="off"
+[[ $OPTION == "off" ]] && result="off" #: input paramter overrides result
+if [ $TOG -eq 0 ]
+then
+    [[ $ri -eq 1 ]] && effect=" switch on" || effect=" switch off"
+fi
+
 if [ ! -f "$LOG" ]
 then
     echo "making a LOG file"
@@ -112,10 +123,23 @@ then
     echo probability of an absolute switch = $PROB_ABS >> $LOG
     echo probability of a relative switch = $PROB_REL >> $LOG
 fi
-echo $report $(date +%s) >> $LOG
-echo "turning lights $1"
+echo last=$ri > $LAST
+if [ $OPTION == "on" ] 
+then
+    echo -n +$report $(date +%s) >> $LOG
+    echo -n "|| rolled a $prob" >> $LOG 
+    echo " = $effect" >> $LOG
+else #: record what the probability roll was
+    echo -n -$report $(date +%s) >> $LOG
+    echo "|| turn off for scan">> $LOG
+fi
 
-if [ "$OPTION" == "on" ]; then
+
+echo "turning lights $result"
+
+
+if [ "$OPTION" == "on" ]
+then
     for i in ${!LED[@]}; do
         echo "<+$i*${LED[$i]}>" > $DEVICE
         # echo "<+$i*${LED[$i]}>" 
