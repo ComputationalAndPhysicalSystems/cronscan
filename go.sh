@@ -2,7 +2,7 @@
 #: largs - light value array
 
 SP="/home/caps/scripts/caps_cronscan"
-dish_cnt=6
+dish_cnt=6 #. hard code 6 dishes per scanner
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -405,17 +405,22 @@ program_lights (){
 		case $dish in
 
 		"neg-ctrl")			#: CHOICE
-			val=off
+			val=0
 			;;
 		"pos-ctrl")			#: TOGGLE
-			val=b!ctrl
+			val=10
 			;;
 		*)
-			lpI=$((${#args[@]}-1))
-			val=${!args[$lpI]}
+			#! previous code edit
+			# lpI=$((${#args[@]}-1))
+			# val=${!args[$lpI]}
+			IFS='.' read -ra vals <<< $dish
+
+			val=${vals[1]}
 			;;
 		esac
 		eval ${largs[$lj]}=$val #: sets the new value for the dish light
+		echo hey: $val
 		((lj++))
 	fi
 }
@@ -434,35 +439,25 @@ lights_on (){
 	then
 		ink=${#args[@]}
 		probpos=$ink
-		insert args $(( ink )) "PROB_REL"
-		insert keys $(( ink )) P
-		insert blurbs $(( ink )) "Prob.of Toggle"
+		insert args $(( ink )) "SWITCH"
+		insert keys $(( ink )) W
+		insert blurbs $(( ink )) "Switch Type"
 		insert subs $(( ink )) "_light" 
-		insert opts $(( ink )) "C/0..9" #C/-/=/1..9
-		insert optslist $(( ink )) "0.to.9" #C/-/=/1..9		
+		insert opts $(( ink )) "C/a/t" #C/-/=/1..9
+		insert optslist $(( ink )) "absolute/toggle" #C/-/=/1..9		
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/^"
-		insert trueopts $(( ink )) "C/0123456789"
+		insert trueopts $(( ink )) "C/at"
 
-		((ink++))
-		insert args $(( ink )) "PROB_ABS"
-		insert keys $(( ink )) P
-		insert blurbs $(( ink )) "Prob.of ON"
-		insert subs $(( ink )) "_light" 
-		insert opts $(( ink )) "C/0..9" #C/-/=/..9
-		insert optslist $(( ink )) "0.to.9" #C/-/=/1..9		
-		insert cols $(( ink )) "$LtBlue"
-		insert subvals $(( ink )) "C/^"
-		insert trueopts $(( ink )) "C/0123456789"
 		((ink++))
 		insert args $(( ink )) "PROGRAM"
 		insert keys $(( ink )) L
 		insert blurbs $(( ink )) "Light Program"
 		insert subs $(( ink )) "_light" 
 		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
-		insert optslist $(( ink )) "1..blue-steady/2..blue-random/3..blue-chaos" #C/-/=/1..9		
+		insert optslist $(( ink )) "1..steady/2..random/3..chaos" #C/-/=/1..9		
 		insert cols $(( ink )) "$LtBlue"
-		insert subvals $(( ink )) "C/b!steady/b!random/b!chaos"
+		insert subvals $(( ink )) "C/steady/random/chaos"
 		insert trueopts $(( ink )) "C/1/2/3"
 		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 
@@ -554,7 +549,7 @@ update (){
 				insert opts $(( inj )) "C/-/=/1..9"
 				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"				
 				insert cols $(( inj )) "$LtBlue"
-				insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/exp-group^"
+				insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/group.^"
 				insert trueopts $(( inj )) "C/-/=/123456789"
 				program_lights
 			done
@@ -736,7 +731,8 @@ while [ "$stay_TF" = "true" ]
 			if [[ $buf != ${subs[$i]} ]] 
 			then
 				buf=${subs[$i]} #: store the subsection in buf
-				if ! [[ $buf = "_light" && $LIGHTS = "off" ]]
+				#: switchin lights on adds the light program spacer
+				if ! [[ $buf = "_light" && $LIGHTS = "off" ]] 
 				then
 					spacer isub
 					((isub++))
@@ -749,9 +745,12 @@ while [ "$stay_TF" = "true" ]
 			echo -e "${cols[$i]}\c"
 
 			#: determine offset spacing for light color marker
+
 			arg=${!args[$i]}
 			arglen=${#arg}
 			push=$(($margin-arglen))
+
+			#: display dish settings
 			if [[ ${keys[$i]} = "d" && $LIGHTS = "on" ]]
 			then
 				lp=${!largs[$dindex]} #:light program setting as string		
@@ -759,6 +758,8 @@ while [ "$stay_TF" = "true" ]
 			else
 				lp=""
 			fi
+			# echo -n $arg $lp 
+			#: eliminate the dish setup columns by stopping push below; consolidate to one value  
 			printf "%1s %${push}s" "$arg" "$lp"
 			echo -e ${NC}
 			if [[ $LIGHTS = "on" ]] #: considering a column for light display
