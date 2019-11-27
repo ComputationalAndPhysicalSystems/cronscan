@@ -28,8 +28,7 @@ source $LAST
 #! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
 
 
-[[ $PROB_REL -le $PROB_ABS ]] && TOG=0 || TOG=1
-[[ $PROB_REL -le $PROB_ABS ]] && PROB=$PROB_ABS || PROB=$PROB_REL
+[[ $SWITCH -eq "a" ]] && TOG=0 || TOG=1
 
 
 #. hard coded
@@ -49,64 +48,78 @@ randblue[1]=$B
 ri=-1 #: set $ri to -1 to trigger test for random
 
 i=0
-while IFS= read -r line
-do
-    if [[ $line =~ chaotic ]]
-    then
-        ri=$(($RANDOM % 10))
-        val=${randblue[$ri]}
-        let buff=$ri
-        mode="chaotic"
-    fi     
-    if [[ $line =~ random ]]
-    then
-        if [[ $ri -eq -1 ]] #: testing if a random has already been assigned for this series
-        then
-            prob=$((1 + RANDOM % 10))
-            # echo random prob = $prob >> $LOG #--testing only
 
-            if [[ $prob -le $PROB ]] #: compare the random value to the parameter
-            then
-                ri=1
-            else
-                ri=0                          
-            fi
-            if [[ $TOG -eq 1 ]] #: change results of $ri if the type of random is toggle
-            then
-                [[ $ri -eq 1 ]] && effect=" toggle state" || effect=" no change"
-                ri=`echo $(( last - TOG * ri )) | sed 's/-//'`
-            fi
-            val=${randblue[$ri]}
-            let buff=$ri 
-            mode="random"
-        fi
-    fi 
-    if [[ $line =~ steady ]]
-    then
-        val=$B
-        buff=1
-        mode="steady"
-    fi
-    if [[ $line =~ ctrl ]]
-    then
-        val=$B
-        buff=1
-    fi
-    if [[ $line =~ off ]]
-    then
-        val=$OFF
-        buff=0
-        #echo "$line" >>$LOG
-    fi
-    if [[ $OPTION = "off" ]]
-    then
-        val=$OFF
-        buff=0
-    fi
-    eval LED[$i]=$val
-    report=$report$buff
-    ((i++))
-done <$L
+# for i in {0..$(( DISH_CNT-1 ))}
+for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
+do
+    # echo $di
+    look=L$di
+    thisdish="${!look}"
+
+    case $thisdish in
+
+    0)            #: NEG CONTROL OFF
+        echo light off
+        ;;
+    10)             #: pos control ON
+        echo light on
+        ;;
+    *)
+        PROB=$di  
+            # if [[ $PROGRAM =~ random ]]
+            # then
+            #     if [[ $ri -eq -1 ]] #: testing if a random has already been assigned for this series
+            #     then
+            #         prob=$((1 + RANDOM % 10))
+            #         # echo random prob = $prob >> $LOG #--testing only
+            #         echo prob: $prob
+            #         echo PROB: $PROB
+            #         if [[ $prob -le $PROB ]] #: compare the random value to the parameter
+            #         then
+            #             ri=1
+            #         else
+            #             ri=0                          
+            #         fi
+            #         if [[ $TOG -eq 1 ]] #: change results of $ri if the type of random is toggle
+            #         then
+            #             [[ $ri -eq 1 ]] && effect=" toggle state" || effect=" no change"
+            #             ri=`echo $(( last - TOG * ri )) | sed 's/-//'`
+            #         fi
+            #         val=${randblue[$ri]}
+            #         let buff=$ri 
+            #         mode="random"
+            #     fi
+            # fi  
+        echo $PROB
+        ;;
+    esac
+
+    # if [[ $line =~ steady ]]
+    # then
+    #     val=$B
+    #     buff=1
+    #     mode="steady"
+    # fi
+    # if [[ $line =~ ctrl ]]
+    # then
+    #     val=$B
+    #     buff=1
+    # fi
+    # if [[ $line =~ off ]]
+    # then
+    #     val=$OFF
+    #     buff=0
+    #     #echo "$line" >>$LOG
+    # fi
+    # if [[ $OPTION = "off" ]]
+    # then
+    #     val=$OFF
+    #     buff=0
+    # fi
+    # eval LED[$i]=$val
+    # report=$report$buff
+    # ((i++))
+done
 
 [[ $ri -eq 1 ]] && result="on" || result="off"
 [[ $OPTION == "off" ]] && result="off" #: input paramter overrides result

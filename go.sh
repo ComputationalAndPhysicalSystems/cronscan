@@ -2,7 +2,8 @@
 #: largs - light value array
 
 SP="/home/caps/scripts/caps_cronscan"
-dish_cnt=6 #. hard code 6 dishes per scanner
+DISH_CNT=6 #. hard code 6 dishes per scanner 
+#!! WTF, need to redeclare DISH_CNT again during saveit()
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -455,9 +456,9 @@ lights_on (){
 		insert blurbs $(( ink )) "Light Program"
 		insert subs $(( ink )) "_light" 
 		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
-		insert optslist $(( ink )) "1..steady/2..random/3..chaos" #C/-/=/1..9		
+		insert optslist $(( ink )) "1..steady/2..ran-on/3..ran-tog" #C/-/=/1..9		
 		insert cols $(( ink )) "$LtBlue"
-		insert subvals $(( ink )) "C/steady/random/chaos"
+		insert subvals $(( ink )) "C/steady/r.on/r.tog"
 		insert trueopts $(( ink )) "C/1/2/3"
 		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 
@@ -483,7 +484,7 @@ update (){
 	then
 		local ix j ins ini inj
 		local ins=11 #: insert point in arrays (index padding)
-		local xindex=$((remember_scanners*dish_cnt+remember_scanners))
+		local xindex=$((remember_scanners*DISH_CNT+remember_scanners))
 		
 		#: hunt down dish entries and remove them
 		for ((ix=((${#keys[@]}-1));ix>0;ix--)) #((ix=0;ix<lKeys;ix++))
@@ -507,7 +508,7 @@ update (){
 		#: insert args based on startup settings, or scanner count updates......................
 		for ((ix=1;ix<$(( SCANNERS+1 ));ix++)) #: add features related to scanner/multiple
 		do
-			ini=$((ins+((ix-1))*2+((ix-1))*dish_cnt))
+			ini=$((ins+((ix-1))*2+((ix-1))*DISH_CNT))
 			insert args $(( ini )) SCANNER${ix}_ID
 			insert blurbs $(( ini )) "Scanner${ix} ID"
 			insert keys $(( ini )) k
@@ -530,7 +531,7 @@ update (){
 			insert subvals $(( ini )) ""
 
 			#: dish specific
-			for ((j=1;j<$(( dish_cnt+1 ));j++))
+			for ((j=1;j<$(( DISH_CNT+1 ));j++))
 			do
 				if [[ $j -eq 1 && $ix -eq 1 ]] #: first dish (numeric)
 				then
@@ -620,6 +621,7 @@ cronit (){
 }
 
 saveit (){
+	DISH_CNT=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	EROOT=${SP}/exp/
 	EP=$EROOT${EXP}
 	if [ ! -d "$EP" ]; then
@@ -629,6 +631,7 @@ saveit (){
 	echo "working with Directory $EP"
 	echo "writing $EXP.exp"
 	echo "#exp parameters" 2>&1 | tee $EP/$EXP.exp
+	echo DISH_CNT="'$DISH_CNT'" >> $EP/$EXP.exp
 	for arg in "${args[@]}"
 	do
 	   echo ${arg}="'${!arg}'" >> $EP/$EXP.exp
