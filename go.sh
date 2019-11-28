@@ -440,15 +440,6 @@ lights_on (){
 	then
 		ink=${#args[@]}
 		probpos=$ink
-		insert args $(( ink )) "SWITCH"
-		insert keys $(( ink )) W
-		insert blurbs $(( ink )) "Switch Type"
-		insert subs $(( ink )) "_light" 
-		insert opts $(( ink )) "C/a/t" #C/-/=/1..9
-		insert optslist $(( ink )) "absolute/toggle" #C/-/=/1..9		
-		insert cols $(( ink )) "$LtBlue"
-		insert subvals $(( ink )) "C/^"
-		insert trueopts $(( ink )) "C/at"
 
 		((ink++))
 		insert args $(( ink )) "PROGRAM"
@@ -458,7 +449,7 @@ lights_on (){
 		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
 		insert optslist $(( ink )) "1..steady/2..ran-on/3..ran-tog" #C/-/=/1..9		
 		insert cols $(( ink )) "$LtBlue"
-		insert subvals $(( ink )) "C/steady/r.on/r.tog"
+		insert subvals $(( ink )) "C/steady/random.on/random.toggle"
 		insert trueopts $(( ink )) "C/1/2/3"
 		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 
