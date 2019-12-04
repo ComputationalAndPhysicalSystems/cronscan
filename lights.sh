@@ -3,16 +3,22 @@
 #== This is the script for controlling NEOPIXEL lights via Arduino controller
 #   See Arduino repository for Arduino programming
 
-
 #.. input parms:
 #.  $1 >  on/off  { lower case req }
+#.  $2 >  exp name
+
+#. random program assigns a random result to all samples with a given probability setting
+
+##### HARD CODED
+#. red green and blue
+R="#FF0000"
+G="#00FF00"
+B="#0000FF"
+OFF="#000000"
+
+DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
 #. hardcode path
-
-#. random program assigns a one time random to the entire series
-#. chaotic program assigns a random value to each light, every series
-
-
 P=/home/caps/scripts/caps_cronscan/exp/
 
 OPTION=$1
@@ -24,39 +30,20 @@ LP=$EP.exp #: light program file
 L=$EP.lights
 
 source $LP #: read in program and light variables
-source $LAST
+if [ -f $LAST ]
+then 
+    source $LAST
+fi
 
 dishes=$((DISH_CNT*SCANNERS))
 
-
-#. hard coded
-
-DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
-OFF="#000000"
-
-#. red green and blue
-
-R="#FF0000"
-G="#00FF00"
-B="#0000FF"
-
-randblue[0]=$OFF
-randblue[1]=$B
-
+#. read and set if abs or relative [on/toggle]
+IFS='.' read -r -a buffer <<< "$PROGRAM"
+switch="${buffer[1]}"
+[[ $switch == "on" ]] && TOG=0 || TOG=1
 
 rollrandom (){
     #! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
-    if [[ $OPTION == "off" ]]
-    then 
-        result=0
-        resultarray+=$OFF
-        reportarray+=0
-        return
-    fi
-    IFS='.' read -r -a buffer <<< "$PROGRAM"
-    switch="${buffer[1]}"
-
-    [[ $switch == "on" ]] && TOG=0 || TOG=1
     prob=$((1 + RANDOM % 10))
     # echo random prob = $prob >> $LOG #--testing only
     if [[ $prob -le $1 ]] #: compare the random value to the parameter
@@ -66,7 +53,6 @@ rollrandom (){
         result=F                       
     fi
     echo "rolled $prob for $10% = $result"
-    # mode="random"
 }
 
 
@@ -78,7 +64,7 @@ finish (){
     #     [[ $result -eq 1 ]] && effect=" toggle state" || effect=" no change"
     #     result=`echo $(( last - TOG * result )) | sed 's/-//'`
     # fi
-    # val=${randblue[$result]}
+    # val=${light[$result]}
     # let buff=$result
 
 
@@ -94,10 +80,20 @@ finish (){
         echo "making a LOG file"
         echo "# log of light instructions" > $LOG
         echo $PROGRAM light experiment >> $LOG
+        echo -n "probabilities:" >> $LOG
+        for (( di=0; di<=$(( dishes-1 )); di++ ))
+        do
+            found=-1
+            look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
+            thisdish="${!look}" #: assign $thisdish with the probability score for that dish
+            echo -n " D$((di+1)):$thisdish"0%>> $LOG
+        done
+        echo >> $LOG
+        echo "==============" >> $LOG
         # echo probability of an absolute switch = $PROB_ABS >> $LOG
         # echo probability of a relative switch = $PROB_REL >> $LOG
     fi
-    echo last=$ri > $LAST
+    [[ $TOG -eq 1 ]] && echo last=$ri > $LAST
     if [ $OPTION == "on" ] 
     then
         echo -n +${reportarray[@]}  $(date +%s) >> $LOG
@@ -107,10 +103,6 @@ finish (){
         echo -n -${reportarray[@]} $(date +%s) >> $LOG
         echo "|| turn off for scan">> $LOG
     fi
-
-
-    echo "turning lights $result"
-
 
     if [ "$OPTION" == "on" ]
     then
@@ -139,62 +131,62 @@ reportarray=()
 #: go through list of dishes and make triggerarray results
 for (( di=0; di<=$(( dishes-1 )); di++ ))
 do
-    found=-1
-    look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
-    thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-
-    #: make grouparray based on unique group number assignments
-    #. rollrandom and store result per group in the grouparray
-    if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
+    if [[ $OPTION == "off" ]]
     then
-        rollrandom $thisdish
-        grouparray+=(${thisdish}:${result})
+        triggerarray+=(0)
     else
-        if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
+        found=-1
+        look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
+        thisdish="${!look}" #: assign $thisdish with the probability score for that dish
+
+        #: make grouparray based on unique group number assignments
+        #. rollrandom and store result per group in the grouparray
+        if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
         then
-            for xi in "${!grouparray[@]}"
-            do
-                if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
-                then
-                    # echo found $thisdish at "${xi}"
-                    found=${x1}
-                    IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
-                    result="${buffer[1]}"
-                fi
-            done
-        else
             rollrandom $thisdish
             grouparray+=(${thisdish}:${result})
-        fi  
+        else
+            if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
+            then
+                for xi in "${!grouparray[@]}"
+                do
+                    if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
+                    then
+                        # echo found $thisdish at "${xi}"
+                        found=${x1}
+                        IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
+                        result="${buffer[1]}"
+                    fi
+                done
+            else
+                rollrandom $thisdish
+                grouparray+=(${thisdish}:${result})
+            fi  
+        fi
+        triggerarray+=(${result})
     fi
-    triggerarray+=(${result})
 done
 }
 
-
 resolve()
 {
-
     echo grouparray: ${grouparray[@]}
     echo triggerarray: ${triggerarray[@]}
     echo TOG $TOG
     for t in ${triggerarray[@]}
     do
-        echo t: $t
+        # echo t: $t
+        # echo --reportarray: ${reportarray[@]}           
         if [[ $TOG -eq 1 ]]
         then    #: TOGGLE program (relative)
             echo DO TOGGLE............
         else
-            [[ $t == "T" ]] && reportarray+=1 || reportarray+=0
-            [[ $t == "T" ]] && resultarray+=$B || resultarray+=$OFF            
-
-        fi
-        
+            [[ $t == "T" ]] && reportarray+=(1) || reportarray+=(0)
+            [[ $t == "T" ]] && resultarray+=($B) || resultarray+=($OFF)
+        fi     
     done
     echo resultarray: ${resultarray[@]}
-    echo reportarray: ${reportarray[@]}
-
-   
+    echo reportarray: ${reportarray[@]}   
 }
 
 mainloop
