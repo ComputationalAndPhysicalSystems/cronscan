@@ -613,6 +613,7 @@ cronit (){
 
 saveit (){
 	DISH_CNT=6 #! I don't know why, but this needs to be declared again. makes no sense to me
+	DISHES=$((DISH_CNT*SCANNERS))
 	EROOT=${SP}/exp/
 	EP=$EROOT${EXP}
 	if [ ! -d "$EP" ]; then
@@ -629,13 +630,20 @@ saveit (){
 	done
 	if [[ $LIGHTS == "on" ]]
 	then
-		rm $EP/$EXP.lights
+		# rm $EP/$EXP.lights
 		for larg in "${largs[@]}"
 		do
 		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
-		   echo ${larg}="'${!larg}'" >> $EP/$EXP.lights
-		   echo last=0 > $EP/last #: set the last light record for calcs to zero
+		   # echo ${larg}="'${!larg}'" >> $EP/$EXP.lights
 		done
+		if [[ $PROGRAM == "random.toggle" ]]
+		then
+		echo T0=0 > $EP/tog #: set the last light record for calcs to zero
+			for (( i=1; i<=$((DISHES-1)); i++ ))
+			do
+				echo T$i=0 >> $EP/tog
+			done
+		fi
 	else
 		# unset largs
 		declare -a largs

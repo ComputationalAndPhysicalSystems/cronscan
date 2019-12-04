@@ -19,7 +19,7 @@ OPTION=$1
 EXP=$2
 EP="$P$2/$2" #: path prefix
 LOG=$EP.log
-LAST=$P/$2/last
+LAST=$P/$2/tog
 LP=$EP.exp #: light program file
 L=$EP.lights
 
@@ -27,13 +27,6 @@ source $LP #: read in program and light variables
 source $LAST
 
 dishes=$((DISH_CNT*SCANNERS))
-
-#! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
-IFS='.' read -r -a buffer <<< "$PROGRAM"
-switch="${buffer[1]}"
-
-[[ $switch == "on" ]] && TOG=0 || TOG=1
-
 
 
 #. hard coded
@@ -52,7 +45,18 @@ randblue[1]=$B
 
 
 rollrandom (){
-    echo "rolling... "
+    #! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
+    if [[ $OPTION == "off" ]]
+    then 
+        result=0
+        resultarray+=$OFF
+        reportarray+=0
+        return
+    fi
+    IFS='.' read -r -a buffer <<< "$PROGRAM"
+    switch="${buffer[1]}"
+
+    [[ $switch == "on" ]] && TOG=0 || TOG=1
     prob=$((1 + RANDOM % 10))
     # echo random prob = $prob >> $LOG #--testing only
     if [[ $prob -le $1 ]] #: compare the random value to the parameter
@@ -61,8 +65,7 @@ rollrandom (){
     else
         result=F                       
     fi
-
-    # return $result
+    echo "rolled $prob for $10% = $result"
     # mode="random"
 }
 
@@ -81,27 +84,27 @@ finish (){
 
     [[ $ri -eq 1 ]] && result="on" || result="off"
     [[ $OPTION == "off" ]] && result="off" #: input paramter overrides result
-    if [ $TOG -eq 0 ]
-    then
-        [[ $ri -eq 1 ]] && effect=" switch on" || effect=" switch off"
-    fi
+    # if [ $TOG -eq 0 ]
+    # then
+    #     [[ $ri -eq 1 ]] && effect=" switch on" || effect=" switch off"
+    # fi
 
     if [ ! -f "$LOG" ]
     then
         echo "making a LOG file"
         echo "# log of light instructions" > $LOG
-        echo $mode light experiment >> $LOG
+        echo $PROGRAM light experiment >> $LOG
         # echo probability of an absolute switch = $PROB_ABS >> $LOG
         # echo probability of a relative switch = $PROB_REL >> $LOG
     fi
     echo last=$ri > $LAST
     if [ $OPTION == "on" ] 
     then
-        echo -n +$report $(date +%s) >> $LOG
-        echo -n "|| rolled a $prob" >> $LOG 
-        echo " = $effect" >> $LOG
+        echo -n +${reportarray[@]}  $(date +%s) >> $LOG
+        echo "|| ${grouparray[@]} " >> $LOG 
+        # echo " = $effect" >> $LOG
     else #: record what the probability roll was
-        echo -n -$report $(date +%s) >> $LOG
+        echo -n -${reportarray[@]} $(date +%s) >> $LOG
         echo "|| turn off for scan">> $LOG
     fi
 
@@ -111,7 +114,8 @@ finish (){
 
     if [ "$OPTION" == "on" ]
     then
-        for i in ${!LED[@]}; do
+        for i in ${!LED[@]}
+        do
             echo "<+$i*${LED[$i]}>" > $DEVICE
             # echo "<+$i*${LED[$i]}>" 
         done
@@ -126,11 +130,11 @@ finish (){
 
 
 mainloop (){
-ri=-1 #: set $ri to -1 to trigger test for random
-
 i=0
 grouparray=()
 triggerarray=()
+resultarray=()
+reportarray=()
 
 #: go through list of dishes and make triggerarray results
 for (( di=0; di<=$(( dishes-1 )); di++ ))
@@ -152,11 +156,10 @@ do
             do
                 if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
                 then
-                    echo found $thisdish at "${xi}"
+                    # echo found $thisdish at "${xi}"
                     found=${x1}
                     IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
                     result="${buffer[1]}"
-
                 fi
             done
         else
@@ -166,23 +169,34 @@ do
     fi
     triggerarray+=(${result})
 done
-echo grouparray: ${grouparray[@]}
-echo triggerarray: ${triggerarray[@]}
+}
 
-    # case $thisdish in
 
-    # 0)          #: NEG CONTROL = OFF
-    #     echo light off
-    #     ;;
-    # 10)         #: POS CONTRL = ON
-    #     echo light on
-    #     ;;
-    # *)
-    #     echo thisdish: $thisdish
-    #     rollrandom
-    #     ;;
-    # esac
+resolve()
+{
 
+    echo grouparray: ${grouparray[@]}
+    echo triggerarray: ${triggerarray[@]}
+    echo TOG $TOG
+    for t in ${triggerarray[@]}
+    do
+        echo t: $t
+        if [[ $TOG -eq 1 ]]
+        then    #: TOGGLE program (relative)
+            echo DO TOGGLE............
+        else
+            [[ $t == "T" ]] && reportarray+=1 || reportarray+=0
+            [[ $t == "T" ]] && resultarray+=$B || resultarray+=$OFF            
+
+        fi
+        
+    done
+    echo resultarray: ${resultarray[@]}
+    echo reportarray: ${reportarray[@]}
+
+   
 }
 
 mainloop
+resolve
+finish
