@@ -25,15 +25,11 @@ OPTION=$1
 EXP=$2
 EP="$P$2/$2" #: path prefix
 LOG=$EP.log
-LAST=$P/$2/tog
+LAST=$P$2/tog
 LP=$EP.exp #: light program file
 L=$EP.lights
 
 source $LP #: read in program and light variables
-if [ -f $LAST ]
-then 
-    source $LAST
-fi
 
 dishes=$((DISH_CNT*SCANNERS))
 
@@ -55,78 +51,12 @@ rollrandom (){
     echo "rolled $prob for $10% = $result"
 }
 
-
-finish (){
-
-    #! cut from elsewhere
-    # if [[ $TOG -eq 1 ]] #: change results of $ri if the type of random is toggle
-    # then
-    #     [[ $result -eq 1 ]] && effect=" toggle state" || effect=" no change"
-    #     result=`echo $(( last - TOG * result )) | sed 's/-//'`
-    # fi
-    # val=${light[$result]}
-    # let buff=$result
-
-
-    [[ $ri -eq 1 ]] && result="on" || result="off"
-    [[ $OPTION == "off" ]] && result="off" #: input paramter overrides result
-    # if [ $TOG -eq 0 ]
-    # then
-    #     [[ $ri -eq 1 ]] && effect=" switch on" || effect=" switch off"
-    # fi
-
-    if [ ! -f "$LOG" ]
-    then
-        echo "making a LOG file"
-        echo "# log of light instructions" > $LOG
-        echo $PROGRAM light experiment >> $LOG
-        echo -n "probabilities:" >> $LOG
-        for (( di=0; di<=$(( dishes-1 )); di++ ))
-        do
-            found=-1
-            look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
-            thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-            echo -n " D$((di+1)):$thisdish"0%>> $LOG
-        done
-        echo >> $LOG
-        echo "==============" >> $LOG
-        # echo probability of an absolute switch = $PROB_ABS >> $LOG
-        # echo probability of a relative switch = $PROB_REL >> $LOG
-    fi
-    [[ $TOG -eq 1 ]] && echo last=$ri > $LAST
-    if [ $OPTION == "on" ] 
-    then
-        echo -n +${reportarray[@]}  $(date +%s) >> $LOG
-        echo "|| ${grouparray[@]} " >> $LOG 
-        # echo " = $effect" >> $LOG
-    else #: record what the probability roll was
-        echo -n -${reportarray[@]} $(date +%s) >> $LOG
-        echo "|| turn off for scan">> $LOG
-    fi
-
-    if [ "$OPTION" == "on" ]
-    then
-        for i in ${!LED[@]}
-        do
-            echo "<+$i*${LED[$i]}>" > $DEVICE
-            # echo "<+$i*${LED[$i]}>" 
-        done
-    else
-        for i in ${!LED[@]}; do
-            echo "<+$i*$OFF>" > $DEVICE
-            # echo "<+$i*$OFF>"
-        done
-
-    fi
-}
-
-
 mainloop (){
 i=0
 grouparray=()
 triggerarray=()
 resultarray=()
-reportarray=()
+report=()
 
 #: go through list of dishes and make triggerarray results
 for (( di=0; di<=$(( dishes-1 )); di++ ))
@@ -173,20 +103,95 @@ resolve()
     echo grouparray: ${grouparray[@]}
     echo triggerarray: ${triggerarray[@]}
     echo TOG $TOG
+
+    [[ $TOG -eq 1 ]] && togcalc #: use togcalc procedure to calcualte results
+
     for t in ${triggerarray[@]}
     do
         # echo t: $t
-        # echo --reportarray: ${reportarray[@]}           
-        if [[ $TOG -eq 1 ]]
-        then    #: TOGGLE program (relative)
-            echo DO TOGGLE............
-        else
-            [[ $t == "T" ]] && reportarray+=(1) || reportarray+=(0)
-            [[ $t == "T" ]] && resultarray+=($B) || resultarray+=($OFF)
-        fi     
+        # echo --report: ${report[@]}           
+
+        [[ $t == "T" ]] && report+=1 || report+=0 #: summarize into one string for report purposes
+        [[ $t == "T" ]] && resultarray+=($B) || resultarray+=($OFF)
     done
     echo resultarray: ${resultarray[@]}
-    echo reportarray: ${reportarray[@]}   
+    echo report: ${report}   
+}
+
+togcalc(){
+    #. we must compare previous results to trigger results to determine new state
+    echo heellllllo
+    j=0
+    while IFS= read -r line
+    do
+        if [ $line -eq 0 ]
+        then
+            echo j:$j
+            echo ${triggerarray[$j]}
+        fi
+        ((j++))
+    done <$LAST
+
+    # for i in ${!resultarray[@]}
+
+    # do
+    # done
+
+    #     [[ $result -eq 1 ]] && effect=" toggle state" || effect=" no change"
+    #     result=`echo $(( last - TOG * result )) | sed 's/-//'`
+    # fi
+    # val=${light[$result]}
+    # let buff=$result
+
+
+    # # [[ $ri -eq 1 ]] && result="on" || result="off" #>! editing, dunno
+    # # [[ $OPTION == "off" ]] && result="off" #: input paramter overrides result #>! editing, dunno
+    # # if [ $TOG -eq 0 ]
+    # # then
+    # #     [[ $ri -eq 1 ]] && effect=" switch on" || effect=" switch off"
+    # # fi    
+
+    # #. Store results to TOG log file for toggle switch calculations
+    # [[ $TOG -eq 1 ]] && echo last=$ri > $LAST
+}
+
+finish (){
+    #. Make a log file if none exists
+    if [ ! -f "$LOG" ]
+    then
+        echo "making a LOG file"
+        echo "# log of light instructions" > $LOG
+        echo $PROGRAM light experiment >> $LOG
+        echo -n "probabilities:" >> $LOG
+        for (( di=0; di<=$(( dishes-1 )); di++ ))
+        do
+            look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
+            thisdish="${!look}0%" #: assign $thisdish with the probability score for that dish
+            echo -n " D$((di+1)):$thisdish">> $LOG
+        done
+        echo >> $LOG
+        echo "==============" >> $LOG
+    fi
+
+
+    #. write results to light log file
+    [[ $OPTION == "on" ]] && echo -n "+" >> $LOG || echo -n "-" >> $LOG #: '+' for ON, '-' for OFF
+    
+    echo -n ${report} $(date +%s) >> $LOG
+    if [ $OPTION == "on" ]
+    then
+        echo "|| ${grouparray[@]} " >> $LOG 
+        # echo " = $effect" >> $LOG
+    else
+        echo "|| turn off for scan">> $LOG
+    fi
+
+    #. Send message to Device
+    for i in ${!resultarray[@]}
+    do
+        echo "<+$i*${resultarray[$i]}>" > $DEVICE
+        echo "<+$i*${resultarray[$i]}>"
+    done
 }
 
 mainloop
