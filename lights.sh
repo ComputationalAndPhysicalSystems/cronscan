@@ -48,7 +48,7 @@ rollrandom (){
     else
         result=F                       
     fi
-    echo "rolled $prob for $10% = $result"
+    # echo "rolled $prob for $10% = $result"
 }
 
 mainloop (){
@@ -68,7 +68,11 @@ do
         found=-1
         look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
         thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-
+        echo di = $di
+        echo thisdish........... $thisdish
+        [[ $thisdish == "ON" ]] && triggerarray+=(+)
+        [[ $thisdish == "OFF" ]] && triggerarray+=(-)        
+        [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
         #: make grouparray based on unique group number assignments
         #. rollrandom and store result per group in the grouparray
         if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
@@ -104,55 +108,56 @@ resolve()
     echo triggerarray: ${triggerarray[@]}
     echo TOG $TOG
 
-    [[ $TOG -eq 1 ]] && togcalc #: use togcalc procedure to calcualte results
+    if [ $TOG -eq 1 ]
+    then
+        [[ $OPTION == "on" ]] && togcalc #: use togcalc procedure to calcualte results
+    else
+        for t in ${triggerarray[@]}
+        do
+            echo t equals : $t
+            [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
+            [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
+        done
+    fi
 
-    for t in ${triggerarray[@]}
-    do
-        # echo t: $t
-        # echo --report: ${report[@]}           
-
-        [[ $t == "T" ]] && report+=1 || report+=0 #: summarize into one string for report purposes
-        [[ $t == "T" ]] && resultarray+=($B) || resultarray+=($OFF)
-    done
     echo resultarray: ${resultarray[@]}
     echo report: ${report}   
 }
 
 togcalc(){
-    #. we must compare previous results to trigger results to determine new state
-    echo heellllllo
+    #. compare previous results from TOG file to current trigger results to determine new state
     j=0
-    while IFS= read -r line
+    rarray=() #. rountine temp array for writting to $LAST (toggle result file)
+    while IFS= read -r last
     do
-        if [ $line -eq 0 ]
-        then
-            echo j:$j
-            echo ${triggerarray[$j]}
-        fi
+        case $last in
+          -)
+            report+=0
+            rarray+=(0)
+            resultarray+=($OFF)
+            ;;
+          +)
+            report+=1
+            rarray+=(1)
+            resultarray+=($B)
+            ;;
+          *)
+            [[ ${triggerarray[$j]} == "T" ]] && trigger=1 || trigger=0
+            tresult=`echo $(( last - TOG * trigger )) | sed 's/-//'`
+            [[ $tresult -eq 1 ]] && resultarray+=($B) || resultarray+=($OFF)
+            [[ $tresult -eq 1 ]] && report+=1 || report+=0
+            [[ $tresult -eq 1 ]] && rarray+=(1) || rarray+=(0) #. temp buffer for tog result file
+            ;;
+        esac
+
         ((j++))
     done <$LAST
-
-    # for i in ${!resultarray[@]}
-
-    # do
-    # done
-
-    #     [[ $result -eq 1 ]] && effect=" toggle state" || effect=" no change"
-    #     result=`echo $(( last - TOG * result )) | sed 's/-//'`
-    # fi
-    # val=${light[$result]}
-    # let buff=$result
-
-
-    # # [[ $ri -eq 1 ]] && result="on" || result="off" #>! editing, dunno
-    # # [[ $OPTION == "off" ]] && result="off" #: input paramter overrides result #>! editing, dunno
-    # # if [ $TOG -eq 0 ]
-    # # then
-    # #     [[ $ri -eq 1 ]] && effect=" switch on" || effect=" switch off"
-    # # fi    
-
-    # #. Store results to TOG log file for toggle switch calculations
-    # [[ $TOG -eq 1 ]] && echo last=$ri > $LAST
+    first='T'
+    for i in ${rarray[@]}
+    do
+        [[ $first == "T" ]] && echo $i > $LAST || echo $i >> $LAST #: first iteration overwright TOG file
+        first='F'
+    done
 }
 
 finish (){
@@ -173,7 +178,6 @@ finish (){
         echo "==============" >> $LOG
     fi
 
-
     #. write results to light log file
     [[ $OPTION == "on" ]] && echo -n "+" >> $LOG || echo -n "-" >> $LOG #: '+' for ON, '-' for OFF
     
@@ -181,7 +185,6 @@ finish (){
     if [ $OPTION == "on" ]
     then
         echo "|| ${grouparray[@]} " >> $LOG 
-        # echo " = $effect" >> $LOG
     else
         echo "|| turn off for scan">> $LOG
     fi

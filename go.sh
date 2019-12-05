@@ -406,10 +406,10 @@ program_lights (){
 		case $dish in
 
 		"neg-ctrl")			#: CHOICE
-			val=0
+			val=OFF
 			;;
 		"pos-ctrl")			#: TOGGLE
-			val=10
+			val=ON
 			;;
 		*)
 			#! previous code edit
@@ -421,7 +421,6 @@ program_lights (){
 			;;
 		esac
 		eval ${largs[$lj]}=$val #: sets the new value for the dish light
-		echo hey: $val
 		((lj++))
 	fi
 }
@@ -630,20 +629,28 @@ saveit (){
 	done
 	if [[ $LIGHTS == "on" ]]
 	then
-		# rm $EP/$EXP.lights
 		for larg in "${largs[@]}"
+		#. write out the L's; 10 = on, 0 = OFF
 		do
-		   echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
-		   # echo ${larg}="'${!larg}'" >> $EP/$EXP.lights
+			iq=${larg:1} #: eg, 'L0' = '0'
+			test="${!largs[$iq]}" #: get the value at index iq
+			case $test in
+			  "OFF")
+			    echo ${larg}="'OFF'" >> $EP/$EXP.exp
+			    [[ $PROGRAM == "random.toggle" ]] && echo - >> $EP/tog
+			    ;;
+
+			  "ON")
+		   		echo ${larg}="'ON'" >> $EP/$EXP.exp
+		   		[[ $PROGRAM == "random.toggle" ]] && echo + >> $EP/tog
+			    ;;
+
+			  *)
+		   		echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
+		   		[[ $PROGRAM == "random.toggle" ]] && echo 0 >> $EP/tog
+			    ;;
+			esac
 		done
-		if [[ $PROGRAM == "random.toggle" ]]
-		then
-		echo T0=0 > $EP/tog #: set the last light record for calcs to zero
-			for (( i=1; i<=$((DISHES-1)); i++ ))
-			do
-				echo T$i=0 >> $EP/tog
-			done
-		fi
 	else
 		# unset largs
 		declare -a largs
