@@ -68,8 +68,6 @@ do
         found=-1
         look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
         thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-        echo di = $di
-        echo thisdish........... $thisdish
         [[ $thisdish == "ON" ]] && triggerarray+=(+)
         [[ $thisdish == "OFF" ]] && triggerarray+=(-)        
         [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
@@ -104,24 +102,16 @@ done
 
 resolve()
 {
-    echo grouparray: ${grouparray[@]}
-    echo triggerarray: ${triggerarray[@]}
-    echo TOG $TOG
-
     if [ $TOG -eq 1 ]
     then
         [[ $OPTION == "on" ]] && togcalc #: use togcalc procedure to calcualte results
     else
         for t in ${triggerarray[@]}
         do
-            echo t equals : $t
             [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
             [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
         done
-    fi
-
-    echo resultarray: ${resultarray[@]}
-    echo report: ${report}   
+    fi  
 }
 
 togcalc(){
@@ -133,12 +123,12 @@ togcalc(){
         case $last in
           -)
             report+=0
-            rarray+=(0)
+            rarray+=(-)
             resultarray+=($OFF)
             ;;
           +)
             report+=1
-            rarray+=(1)
+            rarray+=(+)
             resultarray+=($B)
             ;;
           *)
@@ -171,7 +161,8 @@ finish (){
         for (( di=0; di<=$(( dishes-1 )); di++ ))
         do
             look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
-            thisdish="${!look}0%" #: assign $thisdish with the probability score for that dish
+            thisdish="${!look}" #: assign $thisdish with the probability score for that dish
+            [ $thisdish != "ON" -a $thisdish != "OFF" ] && thisdish+="0%"
             echo -n " D$((di+1)):$thisdish">> $LOG
         done
         echo >> $LOG
