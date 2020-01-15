@@ -728,7 +728,7 @@ while [ "$stay_TF" = "true" ]
 
 		#: BUILD UI MENU-----------------------------------------
 	do
-		clear #!! temp disable for TRACER
+		clear -x #!! temp disable for TRACER
 		echo -e "${BPurple}"
 		printf " CREATE NEW CRONTAB EXPERIMENT - v$release"
 		echo
