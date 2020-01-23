@@ -229,10 +229,10 @@ eatinput (){
 
 	while [ ${#uinput[@]} -lt $limit ]
 	do
-		# echo while limit loop #-- TRACER
+		#echo while limit loop #-- TRACER
 		if [[ $secret -eq 1 ]] #: single key trigger with readout substitution; suppress user key printout
 		then
-			# echo secret loop, read single key #-- TRACER
+			#echo secret loop, read single key #-- TRACER
 			read -s -n 1 k 
 			if [[ $k = "" ]]
 			then
@@ -240,7 +240,6 @@ eatinput (){
 				xcolor=${cols[$i]}
 				return
 			fi
-
 			#: VALID KEY SECTION ----------------------
 			for q in "${!thisopt[@]}"
 			do
@@ -334,8 +333,8 @@ menukeys (){
 }
 
 eatkeys (){ #: digest user key inputs
-	# echo "(------eatkeys function-----)"; #-- TRACER
-	# echo key: $key #-- TRACER
+	#echo "(------eatkeys function-----)"; #-- TRACER
+	#echo key: $key #-- TRACER
 	dindex=0
 	if [[ $key = "" ]] #enter
 	then
@@ -344,7 +343,7 @@ eatkeys (){ #: digest user key inputs
 		return
 	fi
 	#: routine for toggles
-	if [[ ${blurbs[$i]:0:1} = "*" ]] #: if first character is *
+	if [[ ${blurbs[$i]:0:1} = "*" ]] #: if first character is *, this is a toggle
 	# if [[ ${opts[$i]} = "[off/on]" ]] 
 	# if [[ ${types[$i]} = "tog" ]] 
 	then				
@@ -382,7 +381,7 @@ eatkeys (){ #: digest user key inputs
 	then
 		program_lights
 	fi
-	if [[ ${keys[$i]} = "L" ]]
+	if [[ ${keys[$i]} = "P" ]]
 	then
 		i=0
 		lj=0
@@ -439,19 +438,30 @@ lights_on (){
 	then
 		ink=${#args[@]}
 		probpos=$ink
+		((ink++))
+		((ink++)) #- iterate once for each arg entered in thi lights sub group
+
+		insert args $(( ink )) "CONTROLLER"
+		insert keys $(( ink )) C
+		insert blurbs $(( ink )) "Light Controller"
+		insert subs $(( ink )) "_light" 
+		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
+		insert optslist $(( ink )) "1..GPIO/2..Arduino" #C/-/=/1..9		
+		insert cols $(( ink )) "$LtBlue"
+		insert subvals $(( ink )) "C/gpio/arduino"
+		insert trueopts $(( ink )) "C/1/2"
+		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
 
 		((ink++))
 		insert args $(( ink )) "PROGRAM"
-		insert keys $(( ink )) L
+		insert keys $(( ink )) P
 		insert blurbs $(( ink )) "Light Program"
 		insert subs $(( ink )) "_light" 
-		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
+		insert opts $(( ink )) "C/1..3" #C/-/=/1..9
 		insert optslist $(( ink )) "1..steady/2..ran-on/3..ran-tog" #C/-/=/1..9		
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/steady/random.on/random.toggle"
 		insert trueopts $(( ink )) "C/1/2/3"
-		insert subblurbs 3 "${BCyan}${Inv}____Neopixel Light Program_____${NC}"
-
 	fi
 }
 
@@ -466,12 +476,13 @@ load_parms (){
 }
 
 update (){
-	# echo "(------update function-----)" #-- TRACER
-	# echo parm: $1 #-- TRACER
+	#echo "(------update function-----)" #-- TRACER
+	#echo parm: $1 #-- TRACER
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
 	
 	#: delete all args related to old scanner count
 	then
+
 		local ix j ins ini inj
 		local ins=11 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*DISH_CNT+remember_scanners))
@@ -564,7 +575,7 @@ update (){
 				unset types[$ix]
 				unset trueopts[$ix]
 				unset subblurbs[3]
-			fi
+			fi			
 		done
 		lights_on #: run check if lights are on
 	fi
@@ -687,8 +698,6 @@ storelongest (){
 }
 
 set_all (){
-	#!!! NEED to get the $i index value for 
-
 	for ((i=0;i<${#keys[@]};i++))
 	do
 		if [[ ${blurbs[$i]:0:1} != "*" ]]
@@ -768,7 +777,8 @@ while [ "$stay_TF" = "true" ]
 				lp=""
 			fi
 			# echo -n $arg $lp 
-			#: eliminate the dish setup columns by stopping push below; consolidate to one value  
+			#: eliminate the dish setup columns by stopping push below; consolidate to one value 
+
 			printf "%1s %${push}s" "$arg" "$lp"
 			echo -e ${NC}
 			if [[ $LIGHTS = "on" ]] #: considering a column for light display
@@ -814,8 +824,8 @@ while [ "$stay_TF" = "true" ]
 		done
 		for ((i=0;i<${#keys[@]};i++)) #: find all instances of the hotkey
 		do
-			# echo i=$i, for lKeys loop #-- TRACER
-			if [[ ${keys[$i]} = $key || ${keys[$i]} = "${key^}" ]]
+			#echo i=$i, for lKeys loop #-- TRACER
+			if [[ ${keys[$i]} = $key ]] #- || ${keys[$i]} = "${key^}" ]]
 			then
 				eatkeys #: send the index of the key from allowable options to process
 			fi
