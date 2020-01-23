@@ -617,7 +617,7 @@ cronit (){
 	echo "installing crontab..."
 	echo
 	echo "--scanning enabled"
-	crontab $EP/xtab
+	sudo crontab $EP/xtab
 	exit
 }
 
