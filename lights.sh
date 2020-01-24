@@ -15,8 +15,8 @@ R="#FF0000"
 G="#00FF00"
 B="#0000FF"
 OFF="#000000"
-PY_B="Color(0,0,255)"
-PY_OFF="Color(0,0,0)"
+PY_B="1" #"Color(0,0,255)"
+PY_OFF="0" #"Color(0,0,0)"
 
 DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
@@ -33,8 +33,6 @@ L=$EP.lights
 PYLOG=$EP.pylog
 
 source $LP #: read in program and light variables
-
-dishes=$((DISH_CNT*SCANNERS))
 
 #. read and set if abs or relative [on/toggle]
 IFS='.' read -r -a buffer <<< "$PROGRAM"
@@ -63,7 +61,7 @@ pythonarray=()
 report=()
 
 #: go through list of dishes and make triggerarray results
-for (( di=0; di<=$(( dishes-1 )); di++ ))
+for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
 do
     if [[ $OPTION == "off" ]]
     then
@@ -115,6 +113,7 @@ resolve()
             [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
             [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
             [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
+            echo resolve pythonarray
 
         done
     fi  
@@ -126,6 +125,7 @@ togcalc(){
     rarray=() #. rountine temp array for writting to $LAST (toggle result file)
     while IFS= read -r last
     do
+        echo togcalc pythonarray
         case $last in
           -)
             report+=0
@@ -167,7 +167,7 @@ finish (){
         echo "# log of light instructions" > $LOG
         echo $PROGRAM light experiment >> $LOG
         echo -n "probabilities:" >> $LOG
-        for (( di=0; di<=$(( dishes-1 )); di++ ))
+        for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
         do
             look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
             thisdish="${!look}" #: assign $thisdish with the probability score for that dish
@@ -190,11 +190,14 @@ finish (){
     fi
 
     #. Send message to Device
+    echo dish cnt $DISH_CNT
     if [ $CONTROLLER == 'gpio' ] #strip.setPixelColor(0, Color(0,0,255))
     then
         for i in ${!pythonarray[@]}
         do
-            echo "strip.setPixelColor($i, ${pythonarray[$i]})" >> $PYLOG
+            echo i: $i
+            
+            #[[ $i -eq $DISH_CNT ]] && echo -n "${pythonarray[$i]})" >> $PYLOG || echo "${pythonarray[$i]})" >> $PYLOG 
         done
     else
         for i in ${!resultarray[@]}

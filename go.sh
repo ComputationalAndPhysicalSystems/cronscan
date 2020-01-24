@@ -2,8 +2,8 @@
 #: largs - light value array
 
 SP="/home/caps/scripts/caps_cronscan"
-DISH_CNT=6 #. hard code 6 dishes per scanner 
-#!! WTF, need to redeclare DISH_CNT again during saveit()
+CAPACITY=6 #. hard code 6 DISH_CNT per scanner 
+#!! WTF, need to redeclare CAPACITY again during saveit()
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -485,7 +485,7 @@ update (){
 
 		local ix j ins ini inj
 		local ins=11 #: insert point in arrays (index padding)
-		local xindex=$((remember_scanners*DISH_CNT+remember_scanners))
+		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
 		
 		#: hunt down dish entries and remove them
 		for ((ix=((${#keys[@]}-1));ix>0;ix--)) #((ix=0;ix<lKeys;ix++))
@@ -509,7 +509,7 @@ update (){
 		#: insert args based on startup settings, or scanner count updates......................
 		for ((ix=1;ix<$(( SCANNERS+1 ));ix++)) #: add features related to scanner/multiple
 		do
-			ini=$((ins+((ix-1))*2+((ix-1))*DISH_CNT))
+			ini=$((ins+((ix-1))*2+((ix-1))*CAPACITY))
 			insert args $(( ini )) SCANNER${ix}_ID
 			insert blurbs $(( ini )) "Scanner${ix} ID"
 			insert keys $(( ini )) k
@@ -532,7 +532,7 @@ update (){
 			insert subvals $(( ini )) ""
 
 			#: dish specific
-			for ((j=1;j<$(( DISH_CNT+1 ));j++))
+			for ((j=1;j<$(( CAPACITY+1 ));j++))
 			do
 				if [[ $j -eq 1 && $ix -eq 1 ]] #: first dish (numeric)
 				then
@@ -622,8 +622,8 @@ cronit (){
 }
 
 saveit (){
-	DISH_CNT=6 #! I don't know why, but this needs to be declared again. makes no sense to me
-	DISHES=$((DISH_CNT*SCANNERS))
+	CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
+	DISH_CNT=$((CAPACITY*SCANNERS))
 	EROOT=${SP}/exp/
 	EP=$EROOT${EXP}
 	if [ ! -d "$EP" ]; then
@@ -633,6 +633,7 @@ saveit (){
 	echo "working with Directory $EP"
 	echo "writing $EXP.exp"
 	echo "#exp parameters" 2>&1 | tee $EP/$EXP.exp
+	echo CAPACITY="'$CAPACITY'" >> $EP/$EXP.exp
 	echo DISH_CNT="'$DISH_CNT'" >> $EP/$EXP.exp
 	for arg in "${args[@]}"
 	do
