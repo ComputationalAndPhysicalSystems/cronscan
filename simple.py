@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
-import machine
+import board
 import neopixel
 
-np = neopixel.NeoPixel(machine.Pin(21), 6)
+pixel_pin = board.D21
+
+np = neopixel.NeoPixel(pixel_pin, 6)
 
 np[0] = (255, 0, 0)
 np[1] = (0, 255, 0)
