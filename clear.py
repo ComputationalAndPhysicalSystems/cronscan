@@ -11,13 +11,12 @@ BRIGHTNESS = 255
 def colorWipe(strip, color, wait_ms=50):
     """Wipe color across display a pixel at a time."""
     for i in range(strip.numPixels()):
-        strip.setPixelColor(i, color)
+        strip.setPixelColor(i, Color(0,0,0))
         strip.show()
-        time.sleep(wait_ms/1000.0)
 
 
-strip = Adafruit_NeoPixel(LEDCOUNT, GPIOPIN, FREQ, DMA, INVERT, BRIGHTNESS)
+
+#strip = Adafruit_NeoPixel(LEDCOUNT, GPIOPIN, FREQ, DMA, INVERT, BRIGHTNESS)
 # Intialize the library (must be called once before other functions).
-strip.begin()
+#strip.begin()
 
-colorWipe(strip, Color(0,0,0), 10)

@@ -5,7 +5,7 @@ LEDCOUNT = 6 # Number of LEDs
 GPIOPIN = 21
 FREQ = 800000
 DMA = 5
-INVERT = True # Invert required when using inverting buffer
+INVERT = False # Invert required when using inverting buffer
 BRIGHTNESS = 255
 
 def colorWipe(strip, color, wait_ms=50):
