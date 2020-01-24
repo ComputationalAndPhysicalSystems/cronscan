@@ -15,6 +15,8 @@ R="#FF0000"
 G="#00FF00"
 B="#0000FF"
 OFF="#000000"
+PY_B="Color(0,0,255)"
+PY_OFF="Color(0,0,0)"
 
 DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
@@ -28,6 +30,7 @@ LOG=$EP.log
 LAST=$P$2/tog
 LP=$EP.exp #: light program file
 L=$EP.lights
+PYLOG=$EP.pylog
 
 source $LP #: read in program and light variables
 
@@ -56,6 +59,7 @@ i=0
 grouparray=()
 triggerarray=()
 resultarray=()
+pythonarray=()
 report=()
 
 #: go through list of dishes and make triggerarray results
@@ -110,6 +114,8 @@ resolve()
         do
             [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
             [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
+            [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
+
         done
     fi  
 }
@@ -125,16 +131,19 @@ togcalc(){
             report+=0
             rarray+=(-)
             resultarray+=($OFF)
+            pythonarray+=($PY_OFF)            
             ;;
           +)
             report+=1
             rarray+=(+)
             resultarray+=($B)
+            pythonarray+=($PY_B)
             ;;
           *)
             [[ ${triggerarray[$j]} == "T" ]] && trigger=1 || trigger=0
             tresult=`echo $(( last - TOG * trigger )) | sed 's/-//'`
             [[ $tresult -eq 1 ]] && resultarray+=($B) || resultarray+=($OFF)
+            [[ $tresult -eq 1 ]] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)            
             [[ $tresult -eq 1 ]] && report+=1 || report+=0
             [[ $tresult -eq 1 ]] && rarray+=(1) || rarray+=(0) #. temp buffer for tog result file
             ;;
@@ -181,11 +190,19 @@ finish (){
     fi
 
     #. Send message to Device
-    for i in ${!resultarray[@]}
-    do
-        echo "<+$i*${resultarray[$i]}>" > $DEVICE
-        echo "<+$i*${resultarray[$i]}>"
-    done
+    if [ $CONTROLLER == 'gpio' ] #strip.setPixelColor(0, Color(0,0,255))
+    then
+        for i in ${!pythonarray[@]}
+        do
+            echo "strip.setPixelColor($i, ${pythonarray[$i]})" >> $PYLOG
+        done
+    else
+        for i in ${!resultarray[@]}
+        do
+            echo "<+$i*${resultarray[$i]}>" > $DEVICE
+            echo "<+$i*${resultarray[$i]}>"
+        done
+    fi
 }
 
 mainloop
