@@ -23,29 +23,13 @@ strip.begin()
 try:
 	while True:
 		 # First LED white
-		strip.setPixelColor(0, Color(255,255,255))
-		strip.setPixelColor(1, Color(0,0,0))
-		strip.show()
-		time.sleep(0.5)
-		# Second LED white
-		strip.setPixelColor(0, Color(0,0,0))
-		strip.setPixelColor(1, Color(255,255,255))
-		strip.show()
-		time.sleep(1)
-		# LEDs Red
-		strip.setPixelColor(0, Color(255,0,0))
-		strip.setPixelColor(1, Color(255,0,0))
-		strip.show()
-		time.sleep(0.5)
-		# LEDs Green
-		strip.setPixelColor(0, Color(0,255,0))
-		strip.setPixelColor(1, Color(0,255,0))
-		strip.show()
-		time.sleep(0.5)
-		# LEDs Blue
 		strip.setPixelColor(0, Color(0,0,255))
 		strip.setPixelColor(1, Color(0,0,255))
+		strip.setPixelColor(2, Color(0,0,255))
+		strip.setPixelColor(3, Color(0,0,255))
+		strip.setPixelColor(4, Color(0,0,255))
+		strip.setPixelColor(5, Color(0,0,255))								
 		strip.show()
-		time.sleep(1)
+
 except KeyboardInterrupt:
-	colorwipe(strip, Color(0,0,0), 10)
+	colorWipe(strip, Color(0,0,0), 10)
