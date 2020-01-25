@@ -117,7 +117,6 @@ resolve()
             [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
             [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
             [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
-            echo resolve pythonarray
 
         done
     fi  
