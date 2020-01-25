@@ -34,6 +34,10 @@ PYLOG=$EP.pylog
 
 source $LP #: read in program and light variables
 
+DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
+
+
+
 #. read and set if abs or relative [on/toggle]
 IFS='.' read -r -a buffer <<< "$PROGRAM"
 switch="${buffer[1]}"
@@ -125,7 +129,6 @@ togcalc(){
     rarray=() #. rountine temp array for writting to $LAST (toggle result file)
     while IFS= read -r last
     do
-        echo togcalc pythonarray
         case $last in
           -)
             report+=0
@@ -189,17 +192,15 @@ finish (){
         echo "|| turn off for scan">> $LOG
     fi
 
-    #. Send message to Device
-    echo dish cnt $DISH_CNT
-    if [ $CONTROLLER == 'gpio' ] #strip.setPixelColor(0, Color(0,0,255))
-    then
-        for i in ${!pythonarray[@]}
-        do
-            echo i: $i
-            
-            #[[ $i -eq $DISH_CNT ]] && echo -n "${pythonarray[$i]})" >> $PYLOG || echo "${pythonarray[$i]})" >> $PYLOG 
-        done
-    else
+    #: write out python data file
+    for i in ${!pythonarray[@]} 
+    do  
+        [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $PYLOG || echo -n "${pythonarray[$i]}" >> $PYLOG 
+    done
+
+    #. If using Arduino, send message to Device
+    if [ $CONTROLLER != 'gpio' ]
+    then 
         for i in ${!resultarray[@]}
         do
             echo "<+$i*${resultarray[$i]}>" > $DEVICE

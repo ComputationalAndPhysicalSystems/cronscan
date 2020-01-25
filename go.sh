@@ -584,6 +584,8 @@ update (){
 
 cronit (){
 	cp $EP/$EXP.exp $EROOT/last.exp
+	echo $EXP $DISH_CNT > $EROOT/current.env
+
 	echo 
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $EP/xtab
