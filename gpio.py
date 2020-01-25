@@ -13,6 +13,7 @@ DMA = 5
 INVERT = False # Invert required when using inverting buffer
 BRIGHTNESS = 255
 
+
 strip = Adafruit_NeoPixel(LEDCOUNT, GPIOPIN, FREQ, DMA, INVERT, BRIGHTNESS)
 
 # Intialize the library (must be called once before other functions).
@@ -28,10 +29,17 @@ def split(line):
 	return [char for char in line]
 
 LED = (split(Last_line))
-print(LED)
+#print(LED)
 
 for num, led in enumerate(LED):
-	if (led == '1'):
-	 	led = '255'
-	print("strip.setPixelColor("+str(num)+", Color(0,0,"+led+"))")
+#	print(led)
+	val = int(led)
+#	print("hi")
+#	print(val)
+#	dude="yes"
+	if (val == 1):
+		print("turning on LED"+str(num+1))
+	 	val = 255
+	strip.setPixelColor(num, Color(0,0,val))
+
 
