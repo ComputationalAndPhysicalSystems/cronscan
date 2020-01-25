@@ -32,14 +32,12 @@ LED = (split(Last_line))
 #print(LED)
 
 for num, led in enumerate(LED):
-#	print(led)
 	val = int(led)
-#	print("hi")
-#	print(val)
-#	dude="yes"
 	if (val == 1):
 		print("turning on LED"+str(num+1))
-	 	val = 255
+		val = 255
 	strip.setPixelColor(num, Color(0,0,val))
+
+strip.show()
 
 
