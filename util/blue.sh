@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python /home/caps/scripts/caps_cronscan/blue.py
+python /home/caps/scripts/caps_cronscan/util/blue.py

@@ -4,9 +4,9 @@ import time
 
 with open("/home/caps/scripts/caps_cronscan/exp/current.env") as infile:
     Exp, Cnt = map(str, infile.read().split())
-Msg = "/home/caps/scripts/caps_cronscan/exp/" + Exp +"/py.pylog"
+Msg = "/home/caps/scripts/caps_cronscan/exp/" + Exp +"/"+ Exp +".pylog"
 
-LEDCOUNT = Cnt # Number of LEDs
+LEDCOUNT = 6 # int(Cnt) # Number of LEDs
 GPIOPIN = 21
 FREQ = 800000
 DMA = 5
