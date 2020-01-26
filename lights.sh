@@ -198,8 +198,10 @@ finish (){
     done
 
     #. If using Arduino, send message to Device
-    if [ $CONTROLLER != 'gpio' ]
-    then 
+    if [ $CONTROLLER == 'gpio' ]
+    then
+        python gpio.py
+    else
         for i in ${!resultarray[@]}
         do
             echo "<+$i*${resultarray[$i]}>" > $DEVICE
