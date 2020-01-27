@@ -2,8 +2,10 @@
 #: largs - light value array
 
 SP="/home/caps/scripts/caps_cronscan"
-CAPACITY=6 #. hard code 6 DISH_CNT per scanner 
+CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
+
+SFILE="./exp/last.exp"
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -166,6 +168,15 @@ subblurbs+=("${On_IBlack}___________Dish Setup__________${NC}")
 ##. flow booleans
 stay_TF=true
 
+
+#. "Fucking Fast File-Manager" from https://github.com/dylanaraps/fff
+#== Run 'fff' with 'f' or whatever you decide to name the function.
+
+f() {
+    fff "$@"
+    cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
+}
+
 insert(){
     local i
     [[ $1 = -h ]] && { echo "$h" >/dev/stderr; return 1; }
@@ -302,6 +313,9 @@ eatinput (){
 
 menukeys (){
 	case $key in
+	"F")			#: SAVE
+		f
+	;;
 	"S")			#: SAVE
 		for arg in ${args[@]}
 		do
@@ -465,11 +479,13 @@ lights_on (){
 	fi
 }
 
+
+
 load_parms (){
 	##: DISK OPS
 	#. load last experiment
 	source ./release
-	source ./exp/last.exp #: in one commad, loads all variables
+	source $SFILE #: in one commad, loads all variables
 	EXP=$(echo $EXP|tr -d '\n') #? what do these lines do??
 	INT=$(echo $INT|tr -d '\n')
 	remember_scanners=0
@@ -606,12 +622,12 @@ cronit (){
 
 	[[ $REF > 0 ]] && \
 
-	printf "\$sp/lights.sh off $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
-	printf "\$sp/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/lights.sh off $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	[[ $LIGHTS == "on" ]] && \
-	printf "\$sp/lights.sh on $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/lights.sh on $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	[[ $XFER == "on" ]] && \
-	printf "\$sp/transfer.sh \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/transfer.sh \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	echo >> $EP/xtab ###- blank line needed before EOF
 	echo
 	echo "xtab exported"

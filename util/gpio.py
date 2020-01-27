@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-from neopixel import *
-import time
+#from neopixel import *
+#import time
 
 with open("/home/caps/scripts/caps_cronscan/exp/current.env") as infile:
     Exp, Cnt = map(str, infile.read().split())
@@ -14,10 +14,10 @@ INVERT = False # Invert required when using inverting buffer
 BRIGHTNESS = 255
 
 
-strip = Adafruit_NeoPixel(LEDCOUNT, GPIOPIN, FREQ, DMA, INVERT, BRIGHTNESS)
+#strip = Adafruit_NeoPixel(LEDCOUNT, GPIOPIN, FREQ, DMA, INVERT, BRIGHTNESS)
 
 # Intialize the library (must be called once before other functions).
-strip.begin()
+#strip.begin()
 
 # get the last values to set the neopixels
 f1 = open(Msg, "r")
