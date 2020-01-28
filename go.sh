@@ -336,7 +336,7 @@ testlights(){
 		echo -e "${Yellow}"		
 		printf "%30s" "Test all / single"
 		echo -e "${NC}"
-		printf "%32s"  "Chose [X/0/1..9] >"
+		printf "%32s"  "Chose [X/0/1..9/+] >"
 		read -n 1 zkey
 		case $zkey in
 
@@ -344,13 +344,10 @@ testlights(){
 			return
 		;;
 
-		"0")			#: zero out crontabs
-			zero
+		[0-9])			#: load from file
+			sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
 		;;
-		"F")			#: load from file
-			sfile
-		;;
-		"S")			#: SAVE
+		"+")			#: SAVE
 			for arg in ${args[@]}
 			do
 				arg=${!arg}
@@ -363,24 +360,13 @@ testlights(){
 			done
 			saveit
 			;;
-		"Q")			#: QUIT
-			echo -e ${Red}
-			printf "%32s" "q again to quit >"
-			read -n 1 key
-			if [[ $key = "q" ]]
-			then
-				exit
-			else
-				return
-			fi
-			;;
 		*)
 			;;
-		esac		
-
-		echo `sudo python /util/gpio-test.py -c $DISH_CNT -i $zkey`
+		esac
+		echo take a look
+		read	
 	else
-		echo boo
+		echo need to write code for this
 		read
 	fi
 }
