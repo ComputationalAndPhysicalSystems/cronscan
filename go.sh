@@ -386,15 +386,18 @@ zero (){
 	if [[ $zkey = "1" ]]
 	then
 		echo `crontab -r`
+		echo `sudo python util/clear.sh`
 	fi
 	if [[ $zkey = "2" ]]
 	then
 		echo `sudo crontab -r`
+		echo `sudo python util/clear.sh`
 	fi
 	if [[ $zkey = "3" ]]
 	then
 		echo `crontab -r`
 		echo `sudo crontab -r`
+		echo `sudo python util/clear.sh`		
 	fi
 
 }
