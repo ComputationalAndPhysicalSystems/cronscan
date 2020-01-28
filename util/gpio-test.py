@@ -27,8 +27,8 @@ strip.begin()
 
 # get the last values to set the neopixels
 
-print("turning on LED"+str($1))
-strip.setPixelColor(num, Color(0,0,val))
+print("turning on LED"+str(args.i))
+strip.setPixelColor(num, Color(0,0,255))
 strip.show()
 time.sleep(2)
 strip.setPixelColor(num, Color(0,0,0))
