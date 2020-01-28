@@ -333,7 +333,7 @@ eatinput (){
 testlights(){
 	if [[ $CONTROLLER == "gpio" ]]
 	then
-		echo -e "${Yellow}"
+		echo -e "${BYellow}"
 		printf "%30s" "Test all / single"
 		echo -e "${NC}"
 		printf "%32s"  "Chose [X/0/1..9/+] >"
@@ -345,6 +345,9 @@ testlights(){
 		;;
 
 		[0-9])			#: load from file
+			echo
+			echo -e "${Red}   Watch the lights!${NC}"
+			echo
 			sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
 		;;
 		"+")			#: SAVE
@@ -363,7 +366,7 @@ testlights(){
 		*)
 			;;
 		esac
-		echo take a look
+		
 		read
 	else
 		echo need to write code for this
