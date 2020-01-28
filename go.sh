@@ -366,8 +366,6 @@ testlights(){
 		*)
 			;;
 		esac
-		
-		read
 	else
 		echo need to write code for this
 		read
