@@ -202,7 +202,7 @@ finish (){
     if [ $CONTROLLER == 'gpio' ]
     then
     echo "launch python"
-        sudo python $SP/gpio.py
+        sudo python $SP/util/gpio.py
     else
         for i in ${!resultarray[@]}
         do
