@@ -181,12 +181,12 @@ do
 		return
 	elif (( REPLY <= ${#options[@]}))
 	then
-		SFILE = $opt
+		SFILE=$opt
 		#display=$(basename $opt)
 		echo $SFILE
 		#echo "File selected $display"
 		load_parms
-		retrun
+		return
 	else
 		echo "Not valid"
 	fi
@@ -246,7 +246,7 @@ eatinput (){
 			;;
 		"I")			#: TOGGLE
 			secret=0
-			;;			
+			;;
 		"*")
 			limit=30 #: arbitray high limit for string entry
 			secret=0
@@ -261,7 +261,7 @@ eatinput (){
 		if [[ $secret -eq 1 ]] #: single key trigger with readout substitution; suppress user key printout
 		then
 			#echo secret loop, read single key #-- TRACER
-			read -s -n 1 k 
+			read -s -n 1 k
 			if [[ $k = "" ]]
 			then
 				echo -e ${Yellow}${Italic}no change${NC}
@@ -291,7 +291,7 @@ eatinput (){
 			read ${args[$i]}
 			limit=-1
 			#user sent empty string, replace with former
-			if [[ ${!args[$i]} = "" && ${args[$i]} != $former ]] 
+			if [[ ${!args[$i]} = "" && ${args[$i]} != $former ]]
 			then
 				eval ${args[$i]}=$former
 				printf "%34s" " "
@@ -375,9 +375,9 @@ eatkeys (){ #: digest user key inputs
 	fi
 	#: routine for toggles
 	if [[ ${blurbs[$i]:0:1} = "*" ]] #: if first character is *, this is a toggle
-	# if [[ ${opts[$i]} = "[off/on]" ]] 
-	# if [[ ${types[$i]} = "tog" ]] 
-	then				
+	# if [[ ${opts[$i]} = "[off/on]" ]]
+	# if [[ ${types[$i]} = "tog" ]]
+	then
 		if [[ ${!args[$i]} = "on" ]]
 		then
 			eval ${args[$i]}="off"
@@ -393,7 +393,7 @@ eatkeys (){ #: digest user key inputs
 		return
 	fi # end toggles
 	size=$((${#opts[$i]}+2))
-	if [[ ${opts[$i]:0:1} = "C" ]] 
+	if [[ ${opts[$i]:0:1} = "C" ]]
 	then
 		optsbuff=(${optslist[$i]//// })
 		for str in "${optsbuff[@]}"
@@ -475,9 +475,9 @@ lights_on (){
 		insert args $(( ink )) "CONTROLLER"
 		insert keys $(( ink )) C
 		insert blurbs $(( ink )) "Light Controller"
-		insert subs $(( ink )) "_light" 
+		insert subs $(( ink )) "_light"
 		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
-		insert optslist $(( ink )) "1..GPIO/2..Arduino" #C/-/=/1..9		
+		insert optslist $(( ink )) "1..GPIO/2..Arduino" #C/-/=/1..9
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/gpio/arduino"
 		insert trueopts $(( ink )) "C/1/2"
@@ -487,9 +487,9 @@ lights_on (){
 		insert args $(( ink )) "PROGRAM"
 		insert keys $(( ink )) P
 		insert blurbs $(( ink )) "Light Program"
-		insert subs $(( ink )) "_light" 
+		insert subs $(( ink )) "_light"
 		insert opts $(( ink )) "C/1..3" #C/-/=/1..9
-		insert optslist $(( ink )) "1..steady/2..ran-on/3..ran-tog" #C/-/=/1..9		
+		insert optslist $(( ink )) "1..steady/2..ran-on/3..ran-tog" #C/-/=/1..9
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/steady/random.on/random.toggle"
 		insert trueopts $(( ink )) "C/1/2/3"
@@ -512,14 +512,14 @@ update (){
 	#echo "(------update function-----)" #-- TRACER
 	#echo parm: $1 #-- TRACER
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
-	
+
 	#: delete all args related to old scanner count
 	then
 
 		local ix j ins ini inj
 		local ins=11 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
-		
+
 		#: hunt down dish entries and remove them
 		for ((ix=((${#keys[@]}-1));ix>0;ix--)) #((ix=0;ix<lKeys;ix++))
 		do
@@ -528,7 +528,7 @@ update (){
 				unset args[$ix]
 				unset blurbs[$ix]
 				unset keys[$ix]
-				unset subs[$ix]	
+				unset subs[$ix]
 				unset opts[$ix]
 				unset optslist[$ix]
 				unset trueopts[$ix]
@@ -582,7 +582,7 @@ update (){
 				insert blurbs $(( inj )) "S${ix} Dish${j}"
 				insert subs $(( inj )) "_dish"
 				insert opts $(( inj )) "C/-/=/1..9"
-				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"				
+				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"
 				insert cols $(( inj )) "$LtBlue"
 				insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/group.^"
 				insert trueopts $(( inj )) "C/-/=/123456789"
@@ -602,13 +602,13 @@ update (){
 				unset args[$ix]
 				unset blurbs[$ix]
 				unset keys[$ix]
-				unset subs[$ix]	
+				unset subs[$ix]
 				unset opts[$ix]
-				unset optslist[$ix]				
+				unset optslist[$ix]
 				unset types[$ix]
 				unset trueopts[$ix]
 				unset subblurbs[3]
-			fi			
+			fi
 		done
 		lights_on #: run check if lights are on
 	fi
@@ -619,7 +619,7 @@ cronit (){
 	cp $EP/$EXP.exp $EROOT/last.exp
 	echo $EXP $DISH_CNT > $EROOT/current.env
 
-	echo 
+	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $EP/xtab
 	printf '.%.0s' {1..34} >> $EP/xtab
@@ -631,7 +631,7 @@ cronit (){
 		echo ${!args[$i]} >> $EP/xtab
 	done
 
-	echo 
+	echo
 	echo "sp=$SP" >> $EP/xtab
 	echo "ep=$EP" >> $EP/xtab
 	echo
@@ -712,7 +712,7 @@ saveit (){
 		echo
 		echo -e  ${BRed}${Inv} Make sure scanners are connected and powered. ${NC}
 		cronit
-	else 
+	else
 		return
 	fi
 }
@@ -777,18 +777,18 @@ while [ "$stay_TF" = "true" ]
 		echo -e "${BPurple}"
 		printf " CREATE NEW CRONTAB EXPERIMENT - v$release"
 		echo
-		echo -e "${Green} >> Settings loaded from $SFILE${NC}"
+		echo -e "${Green} >> Settings loaded from ${BGreen}$(basename $SFILE)${NC}"
 		echo
 		isub=0
 		dindex=0
 		for ((i=0;i<${#keys[@]};i++))
 		do
 			#: if this is a new subsection, then echo section heading from array
-			if [[ $buf != ${subs[$i]} ]] 
+			if [[ $buf != ${subs[$i]} ]]
 			then
 				buf=${subs[$i]} #: store the subsection in buf
 				#: switchin lights on adds the light program spacer
-				if ! [[ $buf = "_light" && $LIGHTS = "off" ]] 
+				if ! [[ $buf = "_light" && $LIGHTS = "off" ]]
 				then
 					spacer isub
 					((isub++))
