@@ -201,8 +201,8 @@ finish (){
     #. If using Arduino, send message to Device
     if [ $CONTROLLER == 'gpio' ]
     then
-	echo "launch python"
-        sudo python $SP/gpio.py
+        echo "launch python"
+        sudo python $SP/util/gpio.py
     else
         for i in ${!resultarray[@]}
         do

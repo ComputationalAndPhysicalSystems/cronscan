@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 from neopixel import *
 import time
 LEDCOUNT = 6 # Number of LEDs

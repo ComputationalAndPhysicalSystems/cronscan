@@ -2,8 +2,10 @@
 #: largs - light value array
 
 SP="/home/caps/scripts/caps_cronscan"
-CAPACITY=6 #. hard code 6 DISH_CNT per scanner 
+CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
+
+SFILE="./exp/last.exp"
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -63,7 +65,7 @@ declare -a trueopts
 # declare -a lprog
 
 keys=(e s i r z x l a f o c)
-mkeys=(F S Q)
+mkeys=(T Z F S Q)
 
 opts+=("*/...")
 opts+=("C/1..9")
@@ -138,6 +140,8 @@ blurbs+=("note other setup")
 blurbs+=("Computer system name")
 
 #: menu blurbs
+mblurbs+=("Test NeoPixels")
+mblurbs+=("STOP experiment")
 mblurbs+=("LOAD from file")
 mblurbs+=("SAVE program")
 mblurbs+=("QUIT")
@@ -157,14 +161,40 @@ subs+=("_sys")
 # subs+=("_menu")
 # subs+=("_menu")
 
-
-
 subblurbs+=("${Inv}_____Experiment Parameters_____${NC} [${Red} WARNING${NC} | ${LtBlue}LAST EXP${NC} | ${Green}new value${NC} ]")
 subblurbs+=("${On_IBlack}________ System Setup__________${NC}")
 subblurbs+=("${On_IBlack}___________Dish Setup__________${NC}")
 
 ##. flow booleans
 stay_TF=true
+
+
+#=> tips from https://www.youtube.com/watch?v=jeq161yD8tk
+
+sfile(){
+
+options=($(find exp/ -maxdepth 2 -iname '*.exp' -print0|xargs -0 )) 
+echo
+echo "Load prior EXP"
+select opt in "${options[@]}" "CANCEL";
+do
+	if ((REPLY == 1 + ${#options[@]}))
+	then
+		return
+	elif (( REPLY <= ${#options[@]}))
+	then
+		SFILE=$opt
+		#display=$(basename $opt)
+		echo $SFILE
+		#echo "File selected $display"
+		load_parms
+		return
+	else
+		echo "Not valid"
+	fi
+done
+}
+
 
 insert(){
     local i
@@ -218,7 +248,7 @@ eatinput (){
 			;;
 		"I")			#: TOGGLE
 			secret=0
-			;;			
+			;;
 		"*")
 			limit=30 #: arbitray high limit for string entry
 			secret=0
@@ -233,7 +263,7 @@ eatinput (){
 		if [[ $secret -eq 1 ]] #: single key trigger with readout substitution; suppress user key printout
 		then
 			#echo secret loop, read single key #-- TRACER
-			read -s -n 1 k 
+			read -s -n 1 k
 			if [[ $k = "" ]]
 			then
 				echo -e ${Yellow}${Italic}no change${NC}
@@ -263,7 +293,7 @@ eatinput (){
 			read ${args[$i]}
 			limit=-1
 			#user sent empty string, replace with former
-			if [[ ${!args[$i]} = "" && ${args[$i]} != $former ]] 
+			if [[ ${!args[$i]} = "" && ${args[$i]} != $former ]]
 			then
 				eval ${args[$i]}=$former
 				printf "%34s" " "
@@ -300,8 +330,92 @@ eatinput (){
 	# echo "limit reached" #-- TRACER
 }
 
-menukeys (){
+testlights(){
+	if [[ $CONTROLLER == "gpio" ]]
+	then
+		echo -e "${BYellow}"
+		printf "%30s" "Test all / single"
+		echo -e "${NC}"
+		printf "%32s"  "Chose [X/0/1..9/+] >"
+		read -n 1 zkey
+		case $zkey in
+
+		"X")			#: zero out crontabs
+			return
+		;;
+
+		[0-9])			#: load from file
+			echo
+			echo -e "${Red}   Watch the lights!${NC}"
+			echo
+			sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
+		;;
+		"+")			#: SAVE
+			for arg in ${args[@]}
+			do
+				arg=${!arg}
+				if [[ ${#arg} -lt 1 ]]
+				then
+					echo -e ${Red}
+					read -n 1 -p " Cannot save file with any blanks fields..."
+					main
+				fi
+			done
+			saveit
+			;;
+		*)
+			;;
+		esac
+	else
+		echo need to write code for this
+		read
+	fi
+}
+
+zero(){
+	echo -e "${Yellow}"
+	printf "%32s" "zero out crontabs"
+	echo -e "${Red}"
+	printf "%32s" "[1]..CAPS cron <"
+	echo -e
+	printf "%32s"  "[2]..ROOT cron <"
+	echo -e
+	printf "%32s"  "[3]..BOTH <"
+	echo -e "${NC}"
+	printf "%32s"  "Chose [1/2/3] >"
+	read -n 1 zkey
+	if [[ $zkey = "1" ]]
+	then
+		echo `crontab -r`
+		echo `sudo python util/clear.py`
+	fi
+	if [[ $zkey = "2" ]]
+	then
+		echo `sudo crontab -r`
+		echo `sudo python util/clear.py`
+	fi
+	if [[ $zkey = "3" ]]
+	then
+		echo `crontab -r`
+		echo `sudo crontab -r`
+		echo `sudo python util/clear.py`
+	fi
+
+}
+
+menukeys(){
 	case $key in
+
+	"T")			#: zero out crontabs
+		testlights
+	;;
+
+	"Z")			#: zero out crontabs
+		zero
+	;;
+	"F")			#: load from file
+		sfile
+	;;
 	"S")			#: SAVE
 		for arg in ${args[@]}
 		do
@@ -332,7 +446,7 @@ menukeys (){
 
 }
 
-eatkeys (){ #: digest user key inputs
+eatkeys(){ #: digest user key inputs
 	#echo "(------eatkeys function-----)"; #-- TRACER
 	#echo key: $key #-- TRACER
 	dindex=0
@@ -344,9 +458,9 @@ eatkeys (){ #: digest user key inputs
 	fi
 	#: routine for toggles
 	if [[ ${blurbs[$i]:0:1} = "*" ]] #: if first character is *, this is a toggle
-	# if [[ ${opts[$i]} = "[off/on]" ]] 
-	# if [[ ${types[$i]} = "tog" ]] 
-	then				
+	# if [[ ${opts[$i]} = "[off/on]" ]]
+	# if [[ ${types[$i]} = "tog" ]]
+	then
 		if [[ ${!args[$i]} = "on" ]]
 		then
 			eval ${args[$i]}="off"
@@ -362,7 +476,7 @@ eatkeys (){ #: digest user key inputs
 		return
 	fi # end toggles
 	size=$((${#opts[$i]}+2))
-	if [[ ${opts[$i]:0:1} = "C" ]] 
+	if [[ ${opts[$i]:0:1} = "C" ]]
 	then
 		optsbuff=(${optslist[$i]//// })
 		for str in "${optsbuff[@]}"
@@ -397,7 +511,7 @@ eatkeys (){ #: digest user key inputs
 	update $key #: run update to check for changes to the arrays (eg scanner count change)
 } #. end eatkeys()
 
-program_lights (){
+program_lights(){
 	# echo "(----------program_lights ()---------)" #-- TRACER
 	if [[ firstrun -ne 0 ]] #: escape prog
 	then
@@ -424,7 +538,7 @@ program_lights (){
 	fi
 }
 
-init_colors (){
+init_colors(){
 	##: use loop to setup initial colors
 	for ((i=0;i<${#keys[@]};i++))
 	do
@@ -433,7 +547,7 @@ init_colors (){
 	cols[0]=$Red
 }
 
-lights_on (){
+lights_on(){
 	if [[ ${!args[6]} = "on" ]]
 	then
 		ink=${#args[@]}
@@ -444,9 +558,9 @@ lights_on (){
 		insert args $(( ink )) "CONTROLLER"
 		insert keys $(( ink )) C
 		insert blurbs $(( ink )) "Light Controller"
-		insert subs $(( ink )) "_light" 
+		insert subs $(( ink )) "_light"
 		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
-		insert optslist $(( ink )) "1..GPIO/2..Arduino" #C/-/=/1..9		
+		insert optslist $(( ink )) "1..GPIO/2..Arduino" #C/-/=/1..9
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/gpio/arduino"
 		insert trueopts $(( ink )) "C/1/2"
@@ -456,37 +570,39 @@ lights_on (){
 		insert args $(( ink )) "PROGRAM"
 		insert keys $(( ink )) P
 		insert blurbs $(( ink )) "Light Program"
-		insert subs $(( ink )) "_light" 
+		insert subs $(( ink )) "_light"
 		insert opts $(( ink )) "C/1..3" #C/-/=/1..9
-		insert optslist $(( ink )) "1..steady/2..ran-on/3..ran-tog" #C/-/=/1..9		
+		insert optslist $(( ink )) "1..steady/2..ran-on/3..ran-tog" #C/-/=/1..9
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/steady/random.on/random.toggle"
 		insert trueopts $(( ink )) "C/1/2/3"
 	fi
 }
 
-load_parms (){
+
+
+load_parms(){
 	##: DISK OPS
 	#. load last experiment
 	source ./release
-	source ./exp/last.exp #: in one commad, loads all variables
+	source $SFILE #: in one commad, loads all variables
 	EXP=$(echo $EXP|tr -d '\n') #? what do these lines do??
 	INT=$(echo $INT|tr -d '\n')
 	remember_scanners=0
 }
 
-update (){
+update(){
 	#echo "(------update function-----)" #-- TRACER
 	#echo parm: $1 #-- TRACER
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
-	
+
 	#: delete all args related to old scanner count
 	then
 
 		local ix j ins ini inj
 		local ins=11 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
-		
+
 		#: hunt down dish entries and remove them
 		for ((ix=((${#keys[@]}-1));ix>0;ix--)) #((ix=0;ix<lKeys;ix++))
 		do
@@ -495,7 +611,7 @@ update (){
 				unset args[$ix]
 				unset blurbs[$ix]
 				unset keys[$ix]
-				unset subs[$ix]	
+				unset subs[$ix]
 				unset opts[$ix]
 				unset optslist[$ix]
 				unset trueopts[$ix]
@@ -549,7 +665,7 @@ update (){
 				insert blurbs $(( inj )) "S${ix} Dish${j}"
 				insert subs $(( inj )) "_dish"
 				insert opts $(( inj )) "C/-/=/1..9"
-				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"				
+				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"
 				insert cols $(( inj )) "$LtBlue"
 				insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/group.^"
 				insert trueopts $(( inj )) "C/-/=/123456789"
@@ -569,24 +685,24 @@ update (){
 				unset args[$ix]
 				unset blurbs[$ix]
 				unset keys[$ix]
-				unset subs[$ix]	
+				unset subs[$ix]
 				unset opts[$ix]
-				unset optslist[$ix]				
+				unset optslist[$ix]
 				unset types[$ix]
 				unset trueopts[$ix]
 				unset subblurbs[3]
-			fi			
+			fi
 		done
 		lights_on #: run check if lights are on
 	fi
 	return	# "^ ^ ^ ^ end update function ^ ^ ^ ^"
 }
 
-cronit (){
+cronit(){
 	cp $EP/$EXP.exp $EROOT/last.exp
 	echo $EXP $DISH_CNT > $EROOT/current.env
 
-	echo 
+	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $EP/xtab
 	printf '.%.0s' {1..34} >> $EP/xtab
@@ -598,7 +714,7 @@ cronit (){
 		echo ${!args[$i]} >> $EP/xtab
 	done
 
-	echo 
+	echo
 	echo "sp=$SP" >> $EP/xtab
 	echo "ep=$EP" >> $EP/xtab
 	echo
@@ -606,12 +722,12 @@ cronit (){
 
 	[[ $REF > 0 ]] && \
 
-	printf "\$sp/lights.sh off $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
-	printf "\$sp/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/lights.sh off $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	[[ $LIGHTS == "on" ]] && \
-	printf "\$sp/lights.sh on $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/lights.sh on $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	[[ $XFER == "on" ]] && \
-	printf "\$sp/transfer.sh \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
+	printf "\$sp/util/transfer.sh \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	echo >> $EP/xtab ###- blank line needed before EOF
 	echo
 	echo "xtab exported"
@@ -623,7 +739,7 @@ cronit (){
 	exit
 }
 
-saveit (){
+saveit(){
 	CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	DISH_CNT=$((CAPACITY*SCANNERS))
 	EROOT=${SP}/exp/
@@ -679,12 +795,12 @@ saveit (){
 		echo
 		echo -e  ${BRed}${Inv} Make sure scanners are connected and powered. ${NC}
 		cronit
-	else 
+	else
 		return
 	fi
 }
 
-storelongest (){
+storelongest(){
 	local ix
 	local buff=5
 	longest=0
@@ -700,7 +816,7 @@ storelongest (){
 	margin=$(($buff+$longest))
 }
 
-set_all (){
+set_all(){
 	for ((i=0;i<${#keys[@]};i++))
 	do
 		if [[ ${blurbs[$i]:0:1} != "*" ]]
@@ -718,7 +834,7 @@ set_all (){
 	done
 }
 
-findi (){
+findi(){
 	for q in "${!my_array[@]}"
 	do
 	   if [[ "${my_array[$q]}" = "${1}" ]]
@@ -728,7 +844,7 @@ findi (){
 	done
 }
 
-main (){
+main(){
  #: main looop --------------------------------------------
  # echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
 ((firstrun++)) 
@@ -744,16 +860,18 @@ while [ "$stay_TF" = "true" ]
 		echo -e "${BPurple}"
 		printf " CREATE NEW CRONTAB EXPERIMENT - v$release"
 		echo
+		echo -e "${Green} >> Settings loaded from ${BGreen}$(basename $SFILE)${NC}"
+		echo
 		isub=0
 		dindex=0
 		for ((i=0;i<${#keys[@]};i++))
 		do
 			#: if this is a new subsection, then echo section heading from array
-			if [[ $buf != ${subs[$i]} ]] 
+			if [[ $buf != ${subs[$i]} ]]
 			then
 				buf=${subs[$i]} #: store the subsection in buf
 				#: switchin lights on adds the light program spacer
-				if ! [[ $buf = "_light" && $LIGHTS = "off" ]] 
+				if ! [[ $buf = "_light" && $LIGHTS = "off" ]]
 				then
 					spacer isub
 					((isub++))

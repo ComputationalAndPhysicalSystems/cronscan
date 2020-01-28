@@ -41,3 +41,4 @@ for num, led in enumerate(LED):
 strip.show()
 
 
+
