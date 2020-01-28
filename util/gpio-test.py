@@ -17,7 +17,7 @@ DMA = 5
 INVERT = False # Invert required when using inverting buffer
 BRIGHTNESS = 255
 
-num = args.i
+num = args.i-1
 
 
 strip = Adafruit_NeoPixel(LEDCOUNT, GPIOPIN, FREQ, DMA, INVERT, BRIGHTNESS)
@@ -27,13 +27,11 @@ strip.begin()
 
 # get the last values to set the neopixels
 
-print("turning on LED"+str(args.i))
-strip.setPixelColor(num, Color(0,0,255))
-strip.show()
-time.sleep(2)
-strip.setPixelColor(num, Color(0,0,0))
-strip.show()
-
-
-
-
+print("flashing LED"+str(args.i))
+for _ in range(5):
+	strip.setPixelColor(num, Color(0,0,255))
+	strip.show()
+	time.sleep(1)
+	strip.setPixelColor(num, Color(0,0,0))
+	strip.show()
+	time.sleep(.2)
