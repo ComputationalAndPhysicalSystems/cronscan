@@ -333,7 +333,7 @@ eatinput (){
 testlights(){
 	if [[ $CONTROLLER == "gpio" ]]
 	then
-		echo -e "${Yellow}"		
+		echo -e "${Yellow}"
 		printf "%30s" "Test all / single"
 		echo -e "${NC}"
 		printf "%32s"  "Chose [X/0/1..9/+] >"
@@ -364,14 +364,14 @@ testlights(){
 			;;
 		esac
 		echo take a look
-		read	
+		read
 	else
 		echo need to write code for this
 		read
 	fi
 }
 
-zero (){
+zero(){
 	echo -e "${Yellow}"
 	printf "%32s" "zero out crontabs"
 	echo -e "${Red}"
@@ -386,23 +386,23 @@ zero (){
 	if [[ $zkey = "1" ]]
 	then
 		echo `crontab -r`
-		echo `sudo python util/clear.sh`
+		echo `sudo python util/clear.py`
 	fi
 	if [[ $zkey = "2" ]]
 	then
 		echo `sudo crontab -r`
-		echo `sudo python util/clear.sh`
+		echo `sudo python util/clear.py`
 	fi
 	if [[ $zkey = "3" ]]
 	then
 		echo `crontab -r`
 		echo `sudo crontab -r`
-		echo `sudo python util/clear.sh`		
+		echo `sudo python util/clear.py`
 	fi
 
 }
 
-menukeys (){
+menukeys(){
 	case $key in
 
 	"T")			#: zero out crontabs
@@ -445,7 +445,7 @@ menukeys (){
 
 }
 
-eatkeys (){ #: digest user key inputs
+eatkeys(){ #: digest user key inputs
 	#echo "(------eatkeys function-----)"; #-- TRACER
 	#echo key: $key #-- TRACER
 	dindex=0
@@ -510,7 +510,7 @@ eatkeys (){ #: digest user key inputs
 	update $key #: run update to check for changes to the arrays (eg scanner count change)
 } #. end eatkeys()
 
-program_lights (){
+program_lights(){
 	# echo "(----------program_lights ()---------)" #-- TRACER
 	if [[ firstrun -ne 0 ]] #: escape prog
 	then
@@ -537,7 +537,7 @@ program_lights (){
 	fi
 }
 
-init_colors (){
+init_colors(){
 	##: use loop to setup initial colors
 	for ((i=0;i<${#keys[@]};i++))
 	do
@@ -546,7 +546,7 @@ init_colors (){
 	cols[0]=$Red
 }
 
-lights_on (){
+lights_on(){
 	if [[ ${!args[6]} = "on" ]]
 	then
 		ink=${#args[@]}
@@ -580,7 +580,7 @@ lights_on (){
 
 
 
-load_parms (){
+load_parms(){
 	##: DISK OPS
 	#. load last experiment
 	source ./release
@@ -590,7 +590,7 @@ load_parms (){
 	remember_scanners=0
 }
 
-update (){
+update(){
 	#echo "(------update function-----)" #-- TRACER
 	#echo parm: $1 #-- TRACER
 	if [[ remember_scanners -ne SCANNERS && $1 = ${keys[1]} ]] #: number of scanners has changed
@@ -697,7 +697,7 @@ update (){
 	return	# "^ ^ ^ ^ end update function ^ ^ ^ ^"
 }
 
-cronit (){
+cronit(){
 	cp $EP/$EXP.exp $EROOT/last.exp
 	echo $EXP $DISH_CNT > $EROOT/current.env
 
@@ -738,7 +738,7 @@ cronit (){
 	exit
 }
 
-saveit (){
+saveit(){
 	CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	DISH_CNT=$((CAPACITY*SCANNERS))
 	EROOT=${SP}/exp/
@@ -799,7 +799,7 @@ saveit (){
 	fi
 }
 
-storelongest (){
+storelongest(){
 	local ix
 	local buff=5
 	longest=0
@@ -815,7 +815,7 @@ storelongest (){
 	margin=$(($buff+$longest))
 }
 
-set_all (){
+set_all(){
 	for ((i=0;i<${#keys[@]};i++))
 	do
 		if [[ ${blurbs[$i]:0:1} != "*" ]]
@@ -833,7 +833,7 @@ set_all (){
 	done
 }
 
-findi (){
+findi(){
 	for q in "${!my_array[@]}"
 	do
 	   if [[ "${my_array[$q]}" = "${1}" ]]
@@ -843,7 +843,7 @@ findi (){
 	done
 }
 
-main (){
+main(){
  #: main looop --------------------------------------------
  # echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
 ((firstrun++)) 
