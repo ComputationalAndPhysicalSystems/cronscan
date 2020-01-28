@@ -21,6 +21,7 @@ PY_OFF="0" #"Color(0,0,0)"
 DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
 #. hardcode path
+SP=/home/caps/scripts/caps_cronscan
 P=/home/caps/scripts/caps_cronscan/exp/
 
 OPTION=$1
@@ -51,7 +52,7 @@ rollrandom (){
     then
         result=T
     else
-        result=F                       
+        result=F
     fi
     # echo "rolled $prob for $10% = $result"
 }
@@ -75,7 +76,7 @@ do
         look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
         thisdish="${!look}" #: assign $thisdish with the probability score for that dish
         [[ $thisdish == "ON" ]] && triggerarray+=(+)
-        [[ $thisdish == "OFF" ]] && triggerarray+=(-)        
+        [[ $thisdish == "OFF" ]] && triggerarray+=(-)
         [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
         #: make grouparray based on unique group number assignments
         #. rollrandom and store result per group in the grouparray
@@ -99,7 +100,7 @@ do
             else
                 rollrandom $thisdish
                 grouparray+=(${thisdish}:${result})
-            fi  
+            fi
         fi
         triggerarray+=(${result})
     fi
@@ -119,7 +120,7 @@ resolve()
             [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
 
         done
-    fi  
+    fi
 }
 
 togcalc(){
@@ -133,7 +134,7 @@ togcalc(){
             report+=0
             rarray+=(-)
             resultarray+=($OFF)
-            pythonarray+=($PY_OFF)            
+            pythonarray+=($PY_OFF)
             ;;
           +)
             report+=1
@@ -145,7 +146,7 @@ togcalc(){
             [[ ${triggerarray[$j]} == "T" ]] && trigger=1 || trigger=0
             tresult=`echo $(( last - TOG * trigger )) | sed 's/-//'`
             [[ $tresult -eq 1 ]] && resultarray+=($B) || resultarray+=($OFF)
-            [[ $tresult -eq 1 ]] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)            
+            [[ $tresult -eq 1 ]] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
             [[ $tresult -eq 1 ]] && report+=1 || report+=0
             [[ $tresult -eq 1 ]] && rarray+=(1) || rarray+=(0) #. temp buffer for tog result file
             ;;
@@ -182,24 +183,27 @@ finish (){
 
     #. write results to light log file
     [[ $OPTION == "on" ]] && echo -n "+" >> $LOG || echo -n "-" >> $LOG #: '+' for ON, '-' for OFF
-    
+
     echo -n ${report} $(date +%s) >> $LOG
     if [ $OPTION == "on" ]
     then
-        echo "|| ${grouparray[@]} " >> $LOG 
+        echo "|| ${grouparray[@]} " >> $LOG
     else
         echo "|| turn off for scan">> $LOG
     fi
 
     #: write out python data file
-    for i in ${!pythonarray[@]} 
-    do  
+    for i in ${!pythonarray[@]}
+    do
         [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $PYLOG || echo -n "${pythonarray[$i]}" >> $PYLOG 
     done
 
     #. If using Arduino, send message to Device
-    if [ $CONTROLLER != 'gpio' ]
-    then 
+    if [ $CONTROLLER == 'gpio' ]
+    then
+    echo "launch python"
+        sudo python $SP/gpio.py
+    else
         for i in ${!resultarray[@]}
         do
             echo "<+$i*${resultarray[$i]}>" > $DEVICE

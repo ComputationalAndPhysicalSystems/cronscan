@@ -65,7 +65,7 @@ declare -a trueopts
 # declare -a lprog
 
 keys=(e s i r z x l a f o c)
-mkeys=(F S Q)
+mkeys=(T Z F S Q)
 
 opts+=("*/...")
 opts+=("C/1..9")
@@ -140,6 +140,8 @@ blurbs+=("note other setup")
 blurbs+=("Computer system name")
 
 #: menu blurbs
+mblurbs+=("Test NeoPixels")
+mblurbs+=("STOP experiment")
 mblurbs+=("LOAD from file")
 mblurbs+=("SAVE program")
 mblurbs+=("QUIT")
@@ -328,9 +330,100 @@ eatinput (){
 	# echo "limit reached" #-- TRACER
 }
 
+testlights(){
+	if [[ $CONTROLLER == "gpio" ]]
+	then
+		echo -e "${Yellow}"		
+		printf "%30s" "Test all / single"
+		echo -e "${NC}"
+		printf "%32s"  "Chose [X/0/1..9] >"
+		read -n 1 zkey
+		case $zkey in
+
+		"X")			#: zero out crontabs
+			return
+		;;
+
+		"0")			#: zero out crontabs
+			zero
+		;;
+		"F")			#: load from file
+			sfile
+		;;
+		"S")			#: SAVE
+			for arg in ${args[@]}
+			do
+				arg=${!arg}
+				if [[ ${#arg} -lt 1 ]]
+				then
+					echo -e ${Red}
+					read -n 1 -p " Cannot save file with any blanks fields..."
+					main
+				fi
+			done
+			saveit
+			;;
+		"Q")			#: QUIT
+			echo -e ${Red}
+			printf "%32s" "q again to quit >"
+			read -n 1 key
+			if [[ $key = "q" ]]
+			then
+				exit
+			else
+				return
+			fi
+			;;
+		*)
+			;;
+		esac		
+
+		echo `sudo python /util/gpio-test.py -c $DISH_CNT -i $zkey`
+	else
+		echo boo
+		read
+	fi
+}
+
+zero (){
+	echo -e "${Yellow}"
+	printf "%32s" "zero out crontabs"
+	echo -e "${Red}"
+	printf "%32s" "[1]..CAPS cron <"
+	echo -e
+	printf "%32s"  "[2]..ROOT cron <"
+	echo -e
+	printf "%32s"  "[3]..BOTH <"
+	echo -e "${NC}"
+	printf "%32s"  "Chose [1/2/3] >"
+	read -n 1 zkey
+	if [[ $zkey = "1" ]]
+	then
+		echo `crontab -r`
+	fi
+	if [[ $zkey = "2" ]]
+	then
+		echo `sudo crontab -r`
+	fi
+	if [[ $zkey = "3" ]]
+	then
+		echo `crontab -r`
+		echo `sudo crontab -r`
+	fi
+
+}
+
 menukeys (){
 	case $key in
-	"F")			#: SAVE
+
+	"T")			#: zero out crontabs
+		testlights
+	;;
+
+	"Z")			#: zero out crontabs
+		zero
+	;;
+	"F")			#: load from file
 		sfile
 	;;
 	"S")			#: SAVE
