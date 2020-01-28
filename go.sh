@@ -159,8 +159,6 @@ subs+=("_sys")
 # subs+=("_menu")
 # subs+=("_menu")
 
-
-
 subblurbs+=("${Inv}_____Experiment Parameters_____${NC} [${Red} WARNING${NC} | ${LtBlue}LAST EXP${NC} | ${Green}new value${NC} ]")
 subblurbs+=("${On_IBlack}________ System Setup__________${NC}")
 subblurbs+=("${On_IBlack}___________Dish Setup__________${NC}")
@@ -169,13 +167,32 @@ subblurbs+=("${On_IBlack}___________Dish Setup__________${NC}")
 stay_TF=true
 
 
-#. "Fucking Fast File-Manager" from https://github.com/dylanaraps/fff
-#== Run 'fff' with 'f' or whatever you decide to name the function.
+#=> tips from https://www.youtube.com/watch?v=jeq161yD8tk
 
-f() {
-    fff "$@"
-    cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
+sfile(){
+
+options=($(find exp/ -maxdepth 2 -iname '*.exp' -print0|xargs -0 )) 
+echo
+echo "Load prior EXP"
+select opt in "${options[@]}" "CANCEL";
+do
+	if ((REPLY == 1 + ${#options[@]}))
+	then
+		return
+	elif (( REPLY <= ${#options[@]}))
+	then
+		SFILE = $opt
+		#display=$(basename $opt)
+		echo $SFILE
+		#echo "File selected $display"
+		load_parms
+		retrun
+	else
+		echo "Not valid"
+	fi
+done
 }
+
 
 insert(){
     local i
@@ -314,7 +331,7 @@ eatinput (){
 menukeys (){
 	case $key in
 	"F")			#: SAVE
-		f
+		sfile
 	;;
 	"S")			#: SAVE
 		for arg in ${args[@]}
@@ -759,6 +776,8 @@ while [ "$stay_TF" = "true" ]
 		clear -x #!! temp disable for TRACER
 		echo -e "${BPurple}"
 		printf " CREATE NEW CRONTAB EXPERIMENT - v$release"
+		echo
+		echo -e "${Green} >> Settings loaded from $SFILE${NC}"
 		echo
 		isub=0
 		dindex=0
