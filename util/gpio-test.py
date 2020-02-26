@@ -18,7 +18,7 @@ else:
 
 
 LEDCOUNT = args.c # int(Cnt) # Number of LEDs
-GPIOPIN = 21
+GPIOPIN = 10
 FREQ = 800000
 DMA = 5
 INVERT = False # Invert required when using inverting buffer

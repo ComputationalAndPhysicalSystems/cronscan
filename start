@@ -349,6 +349,7 @@ testlights(){
 			echo -e "${Red}   Watch the lights!${NC}"
 			echo
 			sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
+			read
 		;;
 		"+")			#: SAVE
 			for arg in ${args[@]}
