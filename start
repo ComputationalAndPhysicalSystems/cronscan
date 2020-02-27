@@ -1,6 +1,7 @@
 #!/bin/bash
 #: largs - light value array
-source /usr/local/bin/caps_settings/config
+#source /usr/local/bin/caps_settings/config
+#export LABPATH
 
 CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
@@ -349,7 +350,7 @@ testlights(){
 			echo -e "${Red}   Watch the lights!${NC}"
 			echo
 			#sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
-			echo `sudo $SP/util/gpio-test.sh $DISH_CNT $zkey`
+			echo `sudo $LABPATH/util/gpio-test.sh $DISH_CNT $zkey`
 			echo "paused for error readout. <enter> to clear lights"
 			read
 			clearpix
@@ -377,7 +378,7 @@ testlights(){
 }
 
 clearpix(){
-	echo `sudo $SP/util/clear.sh $DISH_CNT`
+	echo `sudo $LABPATH/util/clear.sh $DISH_CNT`
 }
 
 zero(){
@@ -594,7 +595,7 @@ lights_on(){
 load_parms(){
 	##: DISK OPS
 	#. load last experiment
-	source $SP/release
+	source $LABPATH/release
 	source $SFILE #: in one commad, loads all variables
 	EXP=$(echo $EXP|tr -d '\n') #? what do these lines do??
 	INT=$(echo $INT|tr -d '\n')
@@ -710,7 +711,9 @@ update(){
 
 cronit(){
 	cp $EP/$EXP.exp $EROOT/last.exp
-	echo $EXP $DISH_CNT > $EROOT/current.env
+	echo EXP=$EXP > $EROOT/current.env
+	echo DISH_CNT=$DISH_CNT >> $EROOT/current.env
+	
 
 	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
@@ -725,7 +728,7 @@ cronit(){
 	done
 
 	echo
-	echo "sp=$SP" >> $EP/xtab
+	echo "sp=$LABPATH" >> $EP/xtab
 	echo "ep=$EP" >> $EP/xtab
 	echo
 	printf "*/$INT * * * * " >> $EP/xtab

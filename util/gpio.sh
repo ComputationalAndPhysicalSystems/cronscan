@@ -1,4 +1,5 @@
 #!/bin/bash
 
-python /home/caps/scripts/caps_cronscan/util/gpio.py
+source $LABPATH/exp/current.env
+python $LABPATH/util/gpio.py -e $EXP -c $DISH_CNT
 
