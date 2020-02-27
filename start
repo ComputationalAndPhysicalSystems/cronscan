@@ -377,29 +377,29 @@ zero(){
 	echo -e "${Yellow}"
 	printf "%32s" "zero out crontabs"
 	echo -e "${Red}"
-	printf "%32s" "[1]..CAPS cron <"
+	printf "%32s" "[n]..CANCEL <"
 	echo -e
-	printf "%32s"  "[2]..ROOT cron <"
+	printf "%32s"  "[y]..Stop Exp <"
 	echo -e
-	printf "%32s"  "[3]..BOTH <"
+	printf "%32s"  "[Y]..Stop and Report <"
 	echo -e "${NC}"
-	printf "%32s"  "Chose [1/2/3] >"
+	printf "%32s"  "Chose [n/y/Y] >"
 	read -n 1 zkey
-	if [[ $zkey = "1" ]]
+	if [[ $zkey = "n" ]]
 	then
-		echo `crontab -r`
-		echo `sudo python util/clear.py`
+		return
 	fi
-	if [[ $zkey = "2" ]]
+	if [[ $zkey = "y" ]]
 	then
 		echo `sudo crontab -r`
 		echo `sudo python util/clear.py`
 	fi
-	if [[ $zkey = "3" ]]
+	if [[ $zkey = "Y" ]]
 	then
-		echo `crontab -r`
 		echo `sudo crontab -r`
-		echo `sudo python util/clear.py`
+		echo `sudo python util/clear.py`		
+		echo make report
+		read
 	fi
 
 }
