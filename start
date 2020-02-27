@@ -6,7 +6,7 @@
 CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
 
-SFILE="$SP/exp/last.exp"
+SFILE="$LABPATH/exp/last.exp"
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
