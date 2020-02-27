@@ -351,8 +351,8 @@ testlights(){
 			#sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
 			echo `sudo $SP/util/gpio-test.sh $DISH_CNT $zkey`
 			echo "paused for error readout. <enter> to clear lights"
-			clearpix
 			read
+			clearpix
 		;;
 		"+")			#: SAVE
 			for arg in ${args[@]}
