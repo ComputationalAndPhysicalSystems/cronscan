@@ -6,6 +6,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-p', type=int)
 parser.add_argument('-c', type=int)
+args = parser.parse_args()
 
 LEDCOUNT = args.c # int(Cnt) # Number of LEDs
 GPIOPIN = args.p  # GPIO pin to use for output. Read from config file
