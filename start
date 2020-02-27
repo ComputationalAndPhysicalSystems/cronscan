@@ -348,7 +348,8 @@ testlights(){
 			echo
 			echo -e "${Red}   Watch the lights!${NC}"
 			echo
-			sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
+			#sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
+			sudo $SP/util/gpio-test.sh $DISH_CNT $zkey $GPIOPIN
 			read
 		;;
 		"+")			#: SAVE

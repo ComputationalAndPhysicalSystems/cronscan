@@ -4,9 +4,9 @@
 #! webhook established by Conrad; this might be the repo--I'm not sure
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
 #! Set up webhooks here: https://capsidaho.slack.com/services/BNASXK525
+source /usr/local/bin/caps_settings/config
+source /usr/local/bin/caps_settings/physarumhook
 
-source /home/caps/scripts/caps_settings/physarumhook
-source /home/caps/scripts/caps_settings/config
 
 
 RESOLUTION=$1
@@ -43,7 +43,7 @@ echo "$SCANNER_LIST"
 if [ "$SCANNER_COUNT" -lt "$(cat $LOCAL_DIR/scanners)" ]
 then
 	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Scanners may require physical inspection."
-	source /home/caps/scripts/caps_settings/slimehook
+	source /usr/local/bin/caps_settings/slimehook
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
     slack "RIP Acquisition #$ENUM, ~$(date +%s)"
 fi
@@ -60,10 +60,10 @@ for scanner in $SCANNER_LIST; do
 done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
-source /home/caps/scripts/caps_settings/physarumhook
+source /usr/local/bin/caps_settings/physarumhook
 test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
 
-source /home/caps/scripts/caps_settings/slimehook
+source /usr/local/bin/caps_settings/slimehook
 
 if [ $(( $ENUM % $SLACK_INTERVAL )) -eq 0 ]
 then

@@ -11,7 +11,7 @@
 
 ##### Source Configs
 
-source /home/caps/scripts/caps_settings/config
+source /usr/local/bin/caps_settings/config
 
 ##### HARD CODED
 #. red green and blue
