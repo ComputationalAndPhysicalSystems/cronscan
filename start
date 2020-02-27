@@ -1,17 +1,11 @@
 #!/bin/bash
 #: largs - light value array
 source /usr/local/bin/caps_settings/config
-echo loaded
-echo $SP
-echo $SLACK_INTERVAL
 
 CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
 
 SFILE="$SP/exp/last.exp"
-echo $SFILE
-cat $SFILE
-read
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -439,9 +433,11 @@ menukeys(){
 	"Q")			#: QUIT
 		echo -e ${Red}
 		printf "%32s" "q again to quit >"
+		echo -e "${NC}"
 		read -n 1 key
 		if [[ $key = "q" ]]
 		then
+			echo "Adios"
 			exit
 		else
 			return
