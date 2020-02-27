@@ -1,8 +1,17 @@
 #!/usr/bin/python3
 from neopixel import *
 import time
+import argparse
+import RPi.GPIO as GPIO
+
+if GPIO.RPI_REVISION == 2:
+	GPIOPIN = 10
+
+if GPIO.RPI_REVISION == 3:
+	GPIOPIN = 21
+
+exec(open('/usr/local/bin/caps_settings/config').read())
 LEDCOUNT = 6 # Number of LEDs
-GPIOPIN = 21
 FREQ = 800000
 DMA = 5
 INVERT = False # Invert required when using inverting buffer

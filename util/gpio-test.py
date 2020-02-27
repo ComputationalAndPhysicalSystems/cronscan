@@ -6,7 +6,6 @@ import numpy as np
 import RPi.GPIO as GPIO
 
 parser = argparse.ArgumentParser()
-#parser.add_argument('-p', type=int)
 parser.add_argument('-c', type=int)
 parser.add_argument('-i', type=int)
 args = parser.parse_args()
@@ -27,7 +26,6 @@ if GPIO.RPI_REVISION == 3:
 
 
 LEDCOUNT = args.c # int(Cnt) # Number of LEDs
-#GPIOPIN = args.p  # GPIO pin to use for output. Read from config file
 FREQ = 800000
 DMA = 5
 INVERT = False # Invert required when using inverting buffer
@@ -53,3 +51,9 @@ for _ in range(6):
 		strip.setPixelColor(x, Color(0,0,0))
 	strip.show()
 	time.sleep(.05)
+
+#. leave the lights on
+for x in np.nditer(LED):
+	x=x+0  #! for some reason i have to add zero to this to get it to work
+	strip.setPixelColor(x, Color(0,0,255))
+strip.show()

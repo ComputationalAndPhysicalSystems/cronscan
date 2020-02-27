@@ -2,14 +2,19 @@
 from neopixel import *
 import time
 import argparse
+import RPi.GPIO as GPIO
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-p', type=int)
 parser.add_argument('-c', type=int)
 args = parser.parse_args()
 
+if GPIO.RPI_REVISION == 2:
+	GPIOPIN = 10
+
+if GPIO.RPI_REVISION == 3:
+	GPIOPIN = 21
+
 LEDCOUNT = args.c # int(Cnt) # Number of LEDs
-GPIOPIN = args.p  # GPIO pin to use for output. Read from config file
 FREQ = 800000
 DMA = 5
 INVERT = False # Invert required when using inverting buffer
