@@ -4,7 +4,6 @@ source /usr/local/bin/caps_settings/config
 echo loaded
 echo $SP
 echo $SLACK_INTERVAL
-raed
 
 CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
@@ -592,7 +591,7 @@ lights_on(){
 load_parms(){
 	##: DISK OPS
 	#. load last experiment
-	source ./release
+	source $SP/release
 	source $SFILE #: in one commad, loads all variables
 	EXP=$(echo $EXP|tr -d '\n') #? what do these lines do??
 	INT=$(echo $INT|tr -d '\n')
