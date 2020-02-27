@@ -9,6 +9,10 @@
 
 #. random program assigns a random result to all samples with a given probability setting
 
+##### Source Configs
+
+source /home/caps/scripts/caps_settings/config
+
 ##### HARD CODED
 #. red green and blue
 R="#FF0000"
@@ -20,9 +24,8 @@ PY_OFF="0" #"Color(0,0,0)"
 
 DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
-#. hardcode path
-SP=/home/caps/scripts/caps_cronscan
-P=/home/caps/scripts/caps_cronscan/exp/
+#. hardcode exp path
+P=$SP/exp/
 
 OPTION=$1
 EXP=$2

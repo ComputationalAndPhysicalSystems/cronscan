@@ -1,11 +1,18 @@
 #!/bin/bash
 #: largs - light value array
+source /usr/local/bin/caps_settings/config
+echo loaded
+echo $SP
+echo $SLACK_INTERVAL
+raed
 
-SP="/home/caps/scripts/caps_cronscan"
 CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
 
 SFILE="$SP/exp/last.exp"
+echo $SFILE
+cat $SFILE
+read
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
