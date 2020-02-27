@@ -433,8 +433,8 @@ menukeys(){
 	"Q")			#: QUIT
 		echo -e ${Red}
 		printf "%32s" "q again to quit >"
-		echo -e "${NC}"
 		read -n 1 key
+		echo -e "${NC}"
 		if [[ $key = "q" ]]
 		then
 			echo "Adios"
