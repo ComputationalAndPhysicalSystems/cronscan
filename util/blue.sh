@@ -1,3 +1,4 @@
 #!/bin/bash
+#-c $DISH_CNT 
 
-python /home/caps/scripts/caps_cronscan/util/blue.py
+python $LABPATH/util/blue.py -c $1
