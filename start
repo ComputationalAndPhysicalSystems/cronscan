@@ -350,7 +350,7 @@ testlights(){
 			echo -e "${Red}   Watch the lights!${NC}"
 			echo
 			#sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
-			echo `sudo $LABPATH/util/gpio-test.sh $DISH_CNT $zkey`
+			echo `sudo -E $LABPATH/util/gpio-test.sh $DISH_CNT $zkey`
 			echo "paused for error readout. <enter> to clear lights"
 			read
 			clearpix
@@ -713,7 +713,6 @@ cronit(){
 	cp $EP/$EXP.exp $EROOT/last.exp
 	echo EXP=$EXP > $EROOT/current.env
 	echo DISH_CNT=$DISH_CNT >> $EROOT/current.env
-	
 
 	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
