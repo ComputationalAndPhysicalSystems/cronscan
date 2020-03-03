@@ -754,7 +754,7 @@ cronit(){
 saveit(){
 	CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	DISH_CNT=$((CAPACITY*SCANNERS))
-	EROOT=${SP}/exp/
+	EROOT=${LABPATH}/exp/
 	EP=$EROOT${EXP}
 	if [ ! -d "$EP" ]; then
 	    mkdir -p $EP
