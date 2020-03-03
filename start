@@ -177,7 +177,7 @@ sfile(){
 options=($(find $LABPATH/exp/ -maxdepth 2 -iname '*.exp' -print0|xargs -0 ))
 echo
 echo "Load prior EXP"
-select opt in "${options[@]}" "CANCEL";
+select opt in `basename "${options[@]}"` "CANCEL";
 do
 	if ((REPLY == 1 + ${#options[@]}))
 	then
