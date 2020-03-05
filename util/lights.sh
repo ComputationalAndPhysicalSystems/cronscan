@@ -25,7 +25,7 @@ PY_OFF="0" #"Color(0,0,0)"
 DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
 #. hardcode exp path
-P=$SP/exp/
+P=$LABPATH/exp/
 
 OPTION=$1
 EXP=$2
@@ -198,14 +198,14 @@ finish (){
     #: write out python data file
     for i in ${!pythonarray[@]}
     do
-        [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $PYLOG || echo -n "${pythonarray[$i]}" >> $PYLOG 
+        [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $PYLOG || echo -n "${pythonarray[$i]}" >> $PYLOG
     done
 
     #. If using Arduino, send message to Device
     if [ $CONTROLLER == 'gpio' ]
     then
         echo "launch python"
-        sudo python $SP/util/gpio.py
+        sudo python $LABPATH/util/gpio.py
     else
         for i in ${!resultarray[@]}
         do
