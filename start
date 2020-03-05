@@ -711,8 +711,8 @@ update(){
 
 cronit(){
 	cp $EP/$EXP.exp $EROOT/last.exp
-	echo EXP=$EXP > $EROOT/current.env
-	echo DISH_CNT=$DISH_CNT >> $EROOT/current.env
+	echo $EXP > $EROOT/current.env
+	echo $DISH_CNT >> $EROOT/current.env
 
 	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
@@ -859,7 +859,7 @@ findi(){
 main(){
  #: main looop --------------------------------------------
  # echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
-((firstrun++)) 
+((firstrun++))
 if [[ $firstrun -eq 1 ]] #:this catches the LIGHTS on variable for the first UI build
 then
 	lights_on
@@ -935,9 +935,9 @@ while [ "$stay_TF" = "true" ]
 
 		echo -e "\n"
 		printf "%27s" "set new parameters with ["
-		echo -e "${BCyan}${Italic}key${NC}]" 
+		echo -e "${BCyan}${Italic}key${NC}]"
 		printf "%29s" "set ALL with ["
-		echo -e "${BCyan}~${NC}] >\c" 
+		echo -e "${BCyan}~${NC}] >\c"
 
 ##. USER INPUT
 		lj=0 #: reset this value
