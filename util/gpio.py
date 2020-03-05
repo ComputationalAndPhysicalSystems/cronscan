@@ -2,9 +2,9 @@
 from neopixel import *
 import time
 
-with open("/home/caps/scripts/caps_cronscan/exp/current.env") as infile:
+with open("/usr/local/bin/cronscan/exp/current.env") as infile:
     Exp, Cnt = map(str, infile.read().split())
-Msg = "/home/caps/scripts/caps_cronscan/exp/" + Exp +"/"+ Exp +".pylog"
+Msg = "/usr/local/bin/cronscan/exp/" + Exp +"/"+ Exp +".pylog"
 
 LEDCOUNT = 6 # int(Cnt) # Number of LEDs
 GPIOPIN = 21
@@ -39,6 +39,3 @@ for num, led in enumerate(LED):
 	strip.setPixelColor(num, Color(0,0,val))
 
 strip.show()
-
-
-
