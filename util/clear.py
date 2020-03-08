@@ -9,7 +9,7 @@ parser.add_argument('-c', type=int)
 args = parser.parse_args()
 
 if GPIO.RPI_REVISION == 2:
-	GPIOPIN = 10
+	GPIOPIN = 18
 
 if GPIO.RPI_REVISION == 3:
 	GPIOPIN = 21
