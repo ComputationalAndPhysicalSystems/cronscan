@@ -1,13 +1,25 @@
 #!/usr/bin/python3
 from neopixel import *
 import time
+import argparse
+import numpy as np
+import RPi.GPIO as GPIO
 
-with open("/usr/local/bin/cronscan/exp/current.env") as infile:
-    Exp, Cnt = map(str, infile.read().split())
+parser = argparse.ArgumentParser()
+parser.add_argument('-e', type=string)
+parser.add_argument('-c', type=int)
+args = parser.parse_args()
+
+if GPIO.RPI_REVISION == 2:
+	GPIOPIN = 18
+
+if GPIO.RPI_REVISION == 3:
+	GPIOPIN = 21
+
+
 Msg = "/usr/local/bin/cronscan/exp/" + Exp +"/"+ Exp +".pylog"
 
-LEDCOUNT = 6 # int(Cnt) # Number of LEDs
-GPIOPIN = 21
+LEDCOUNT = args.e # int(Cnt) # Number of LEDs
 FREQ = 800000
 DMA = 5
 INVERT = False # Invert required when using inverting buffer

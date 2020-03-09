@@ -8,6 +8,8 @@ CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 
 SFILE="$LABPATH/exp/last.exp"
 
+SYSTEM=$HOSTNAME
+
 ### DECLARE VARIABLES
 ##. Color codes for UI
 #. Reset
@@ -571,7 +573,7 @@ lights_on(){
 		insert blurbs $(( ink )) "Light Controller"
 		insert subs $(( ink )) "_light"
 		insert opts $(( ink )) "C/1/2" #C/-/=/1..9
-		insert optslist $(( ink )) "1..GPIO/2..Arduino" #C/-/=/1..9
+		insert optslist $(( ink )) "1..GPIO/2..[broken]" #C/-/=/1..9
 		insert cols $(( ink )) "$LtBlue"
 		insert subvals $(( ink )) "C/gpio/arduino"
 		insert trueopts $(( ink )) "C/1/2"

@@ -6,8 +6,7 @@
 #! Set up webhooks here: https://capsidaho.slack.com/services/BNASXK525
 source /usr/local/bin/caps_settings/config
 source /usr/local/bin/caps_settings/physarumhook
-
-
+source /usr/local/bin/caps_settings/slimehook
 
 RESOLUTION=$1
 LOCAL_DIR=$2
@@ -47,14 +46,15 @@ then
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
     slack "RIP Acquisition #$ENUM, ~$(date +%s)"
 fi
-
+si=1
 for scanner in $SCANNER_LIST; do
     scanner_safename=${scanner//:/_}
-    FILENAME=$scanner_safename.$(date +%s).png
+    FILENAME="$ENUM.$EXPERIMENT_BASENAME.s$si.$(date +%s).png" #$scanner_safename.$(date +%s).png
 
     echo "Scanning $scanner to $FILENAME"
 
     scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $LOCAL_DIR/$FILENAME
+    ((si++))
 #	echo "Delaying for $DELAY seconds"
 #	sleep $DELAY
 done
