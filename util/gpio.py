@@ -6,7 +6,7 @@ import numpy as np
 import RPi.GPIO as GPIO
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-e', type=string)
+parser.add_argument('-e', type=str)
 parser.add_argument('-c', type=int)
 args = parser.parse_args()
 
@@ -17,9 +17,9 @@ if GPIO.RPI_REVISION == 3:
 	GPIOPIN = 21
 
 
-Msg = "/usr/local/bin/cronscan/exp/" + Exp +"/"+ Exp +".pylog"
+Msg = "/usr/local/bin/cronscan/exp/" + args.e +"/"+ args.e +".pylog"
 
-LEDCOUNT = args.e # int(Cnt) # Number of LEDs
+LEDCOUNT = args.c # int(Cnt) # Number of LEDs
 FREQ = 800000
 DMA = 5
 INVERT = False # Invert required when using inverting buffer
@@ -46,8 +46,10 @@ LED = (split(Last_line))
 for num, led in enumerate(LED):
 	val = int(led)
 	if (val == 1):
-		print("turning on LED"+str(num+1))
+		print("LED"+str(num+1)+" ON")
 		val = 255
+	else: 
+		print("LED"+str(num+1)+" OFF")
 	strip.setPixelColor(num, Color(0,0,val))
 
 strip.show()

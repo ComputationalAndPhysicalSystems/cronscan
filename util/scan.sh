@@ -17,8 +17,11 @@ EXPERIMENT_BASENAME=${LOCAL_DIR##*/}
 
 export SANE_USB_WORKAROUND=1
 
-echo "==Beginning Scan=="
-date
+now=$(date)
+nows=$(date +%s)
+echo "==Beginning Scan================================="
+echo $now
+echo $nows
 echo "Scan count: $ENUM"
 echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $LOCAL_DIR"
 
@@ -49,7 +52,7 @@ fi
 si=1
 for scanner in $SCANNER_LIST; do
     scanner_safename=${scanner//:/_}
-    FILENAME="$ENUM.$EXPERIMENT_BASENAME.s$si.$(date +%s).png" #$scanner_safename.$(date +%s).png
+    FILENAME="$ENUM.$EXPERIMENT_BASENAME.s$si.$nows.png"
 
     echo "Scanning $scanner to $FILENAME"
 
@@ -71,8 +74,10 @@ then
 fi
 
 echo $ENUM > $LOCAL_DIR/count
-rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+rsync $2/*.pylog caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+
