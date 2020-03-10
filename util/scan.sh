@@ -31,7 +31,7 @@ echo $now
 echo $nows
 echo "local directory: $EP"
 
-if [[ $LIGHTS == "on" ]]
+if [[ $USELIGHTS == "on" ]]
 then
   echo lights OFF for scan
   . $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
@@ -73,13 +73,13 @@ then
     slack "[UPDATE] SCAN# $COUNT"
 fi
 
-if [[ $LIGHTS == "on" ]]
+if [[ $USELIGHTS == "on" ]]
 then
   echo light program ON
   . $LABPATH/util/lights.sh on $EXP >> $EP/LOG #. turn on lights if exp is using
 fi
 
-#[[ $LIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
+#[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
 echo EXP=$EXP > $STATUS
 echo DISH_CNT=$DISH_CNT >> $STATUS

@@ -122,7 +122,7 @@ args+=("INT")
 args+=("RES")
 args+=("REF")
 args+=("XFER")
-args+=("LIGHTS")
+args+=("USELIGHTS")
 args+=("SPECIES")
 args+=("FOODS")
 args+=("OTHER")
@@ -717,6 +717,7 @@ cronit(){
 	echo DISH_CNT=$DISH_CNT >> $EROOT/status.env
 	echo SCANNERS=$SCANNERS >> $EROOT/status.env
 	echo SCANS=0 >> $EROOT/status.env
+	echo USELIGHTS=$USELIGHTS >> $EROOT/status.env
 	echo STATUS=started >> $EROOT/status.env
 	#. init pylog file
 	buff=$(printf "%-${DISH_CNT}s" "0")
@@ -760,7 +761,7 @@ cronit(){
 	echo
 	echo "--scanning enabled"
 	sudo crontab $EP/xtab
-	if [[ $LIGHTS == "on" ]]
+	if [[ $USELIGHTS == "on" ]]
 	then
 		echo
 		echo "--init light tracking"
@@ -788,7 +789,7 @@ saveit(){
 	do
 	   echo ${arg}="'${!arg}'" >> $EP/$EXP.exp
 	done
-	if [[ $LIGHTS == "on" ]]
+	if [[ $USELIGHTS == "on" ]]
 	then
 		for larg in "${largs[@]}"
 		#. write out the L's; 10 = on, 0 = OFF
@@ -902,7 +903,7 @@ while [ "$stay_TF" = "true" ]
 			then
 				buf=${subs[$i]} #: store the subsection in buf
 				#: switchin lights on adds the light program spacer
-				if ! [[ $buf = "_light" && $LIGHTS = "off" ]]
+				if ! [[ $buf = "_light" && $USELIGHTS = "off" ]]
 				then
 					spacer isub
 					((isub++))
@@ -921,7 +922,7 @@ while [ "$stay_TF" = "true" ]
 			push=$(($margin-arglen))
 
 			#: display dish settings
-			if [[ ${keys[$i]} = "d" && $LIGHTS = "on" ]]
+			if [[ ${keys[$i]} = "d" && $USELIGHTS = "on" ]]
 			then
 				lp=${!largs[$dindex]} #:light program setting as string
 				((dindex++))
@@ -933,7 +934,7 @@ while [ "$stay_TF" = "true" ]
 
 			printf "%1s %${push}s" "$arg" "$lp"
 			echo -e ${NC}
-			if [[ $LIGHTS = "on" ]] #: considering a column for light display
+			if [[ $USELIGHTS = "on" ]] #: considering a column for light display
 			then
 				### work
 				# column "on"
