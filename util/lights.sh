@@ -39,11 +39,6 @@ source $PROG #: read in program and light variables
 
 DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
 
-echo DISHCNT $DISH_CNT
-echo $EP
-echo $LAST
-echo $PYLOG
-read
 
 #. read and set if abs or relative [on/toggle]
 IFS='.' read -r -a buffer <<< "$PROGRAM"
