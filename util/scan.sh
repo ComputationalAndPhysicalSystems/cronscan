@@ -81,7 +81,7 @@ fi
 
 #[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
-echo COUNT > $EP/.track/count
+echo $COUNT > $EP/.track/count
 echo EXP=$EXP > $STATUSFILE
 echo DISH_CNT=$DISH_CNT >> $STATUSFILE
 echo SCANNERS=$SCANNERS >> $STATUSFILE

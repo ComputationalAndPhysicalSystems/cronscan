@@ -722,7 +722,7 @@ update(){
 
 cronit(){
 	mkdir $EP/.track
-	sudo chmod 775 $EP/.track -R
+	sudo chown $USER $EP/.track 
 	cp $EP/$EXP.exp $EROOT/last.exp
 	echo EXP=$EXP > $EROOT/status.env
 	echo DISH_CNT=$DISH_CNT >> $EROOT/status.env
