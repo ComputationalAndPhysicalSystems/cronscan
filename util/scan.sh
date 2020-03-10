@@ -10,8 +10,8 @@ source /usr/local/bin/caps_settings/slimehook
 RESOLUTION=$1
 EP=$2
 
-STATUS=$LABPATH/exp/status.env
-source $STATUS
+STATUSFILE=$LABPATH/exp/status.env
+source $STATUSFILE
 
 # Create experiment direcotry if it doesn't already exist
 if [ ! -d "$EP" ]; then
@@ -81,13 +81,13 @@ fi
 
 #[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
-echo EXP=$EXP > $STATUS
-echo DISH_CNT=$DISH_CNT >> $STATUS
-echo SCANNERS=$SCANNERS >> $STATUS
-echo SCANS=$COUNT >> $STATUS
-echo STATUS=running >> $STATUS
+echo EXP=$EXP > $STATUSFILE
+echo DISH_CNT=$DISH_CNT >> $STATUSFILE
+echo SCANNERS=$SCANNERS >> $STATUSFILE
+echo SCANS=$COUNT >> $STATUSFILE
+echo STATUS=running >> $STATUSFILE
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-rsync $STATUS caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 

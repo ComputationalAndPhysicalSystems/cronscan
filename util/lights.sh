@@ -10,7 +10,6 @@
 #. random program assigns a random result to all samples with a given probability setting
 
 ##### Source Configs
-
 source /usr/local/bin/caps_settings/config
 
 ##### HARD CODED
@@ -24,7 +23,6 @@ PY_OFF="0" #"Color(0,0,0)"
 
 DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
-echo LABPATH = $LABPATH
 #. attr reassignment
 OPTION=$1 			#. on/off
 EXP=$2 				#. exp name
