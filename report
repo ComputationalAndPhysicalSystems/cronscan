@@ -1,0 +1,17 @@
+#!/bin/bash
+
+tui_break() { #. text ui -- line break with character in first arg
+ str=$1
+ num=$2
+ v=$(printf "%-${num}s" "$str")
+ echo "${v// /$str}"
+}
+
+source $LABPATH/exp/status.env
+header="$HOSTNAME report"
+echo $header
+tui_break "=" ${#header}
+echo Experiment: $EXP
+echo scanners: $SCANNERS
+echo images scanned: $SCANS
+echo status: $STATUS
