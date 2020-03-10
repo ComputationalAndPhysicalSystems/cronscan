@@ -748,6 +748,12 @@ cronit(){
 	echo
 	echo "--scanning enabled"
 	sudo crontab $EP/xtab
+	if [[ $LIGHTS == "on" ]]
+	then
+		echo
+		echo "--lights on routine"
+		`$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG`
+	fi
 	exit
 }
 
