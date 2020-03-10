@@ -712,12 +712,16 @@ update(){
 }
 
 cronit(){
+	mkdir $EP/.track
 	cp $EP/$EXP.exp $EROOT/last.exp
 	echo EXP=$EXP > $EROOT/status.env
 	echo DISH_CNT=$DISH_CNT >> $EROOT/status.env
 	echo SCANNERS=$SCANNERS >> $EROOT/status.env
 	echo SCANS=0 >> $EROOT/status.env
 	echo STATUS=started >> $EROOT/status.env
+	buff=$(printf "%-${DISH_CNT}s" "0")
+	PYLOG=$EP/.track/pylog
+	echo -n "${buff// /0}" > $PYLOG
 
 	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
@@ -751,8 +755,9 @@ cronit(){
 	if [[ $LIGHTS == "on" ]]
 	then
 		echo
-		echo "--lights on routine"
-		`$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG`
+		echo "--init light tracking"
+		#. $LABPATH/hey.sh $EP hitme > LOG
+		. $LABPATH/util/lights.sh on $EXP > $EP/LOG
 	fi
 	exit
 }

@@ -24,23 +24,26 @@ PY_OFF="0" #"Color(0,0,0)"
 
 DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 
-#. hardcode exp path
-P=$LABPATH/exp/
+echo LABPATH = $LABPATH
+#. attr reassignment
+OPTION=$1 			#. on/off
+EXP=$2 				#. exp name
 
-OPTION=$1
-EXP=$2
-EP="$P$2/$2" #: path prefix
-LOG=$EP.log
-LAST=$P$2/tog
-LP=$EP.exp #: light program file
-L=$EP.lights
-PYLOG=$EP.pylog
+EP=$LABPATH/exp/$2 		#: experiment path
+LIGHTLOG=$EP/$EXP.lights	#. log the light results
+LAST=$EP/.track/tog		#. special toggle track file
+PROG=$EP/$EXP.exp 		#: complete exp program file
+PYLOG=$EP/.track/pylog
 
-source $LP #: read in program and light variables
+source $PROG #: read in program and light variables
 
 DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
 
-
+echo DISHCNT $DISH_CNT
+echo $EP
+echo $LAST
+echo $PYLOG
+read
 
 #. read and set if abs or relative [on/toggle]
 IFS='.' read -r -a buffer <<< "$PROGRAM"
@@ -165,34 +168,34 @@ togcalc(){
     done
 }
 
-finish (){
+finish(){
     #. Make a log file if none exists
-    if [ ! -f "$LOG" ]
+    if [ ! -f "$LIGHTLOG" ]
     then
         echo "making a LOG file"
-        echo "# log of light instructions" > $LOG
-        echo $PROGRAM light experiment >> $LOG
-        echo -n "probabilities:" >> $LOG
+        echo "# log of light instructions" > $LIGHTLOG
+        echo $PROGRAM light experiment >> $LIGHTLOG
+        echo -n "probabilities:" >> $LIGHTLOG
         for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
         do
             look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
             thisdish="${!look}" #: assign $thisdish with the probability score for that dish
             [ $thisdish != "ON" -a $thisdish != "OFF" ] && thisdish+="0%"
-            echo -n " D$((di+1)):$thisdish">> $LOG
+            echo -n " D$((di+1)):$thisdish">> $LIGHTLOG
         done
-        echo >> $LOG
-        echo "==============" >> $LOG
+        echo >> $LIGHTLOG
+        echo "==============" >> $LIGHTLOG
     fi
 
     #. write results to light log file
-    [[ $OPTION == "on" ]] && echo -n "+" >> $LOG || echo -n "-" >> $LOG #: '+' for ON, '-' for OFF
+    [[ $OPTION == "on" ]] && echo -n "+" >> $LIGHTLOG || echo -n "-" >> $LIGHTLOG #: '+' for ON, '-' for OFF
 
-    echo -n ${report} $(date +%s) >> $LOG
+    echo -n ${report} $(date +%s) >> $LIGHTLOG
     if [ $OPTION == "on" ]
     then
-        echo "|| ${grouparray[@]} " >> $LOG
+        echo "|| ${grouparray[@]} " >> $LIGHTLOG
     else
-        echo "|| turn off for scan">> $LOG
+        echo "|| turn off for scan">> $LIGHTLOG
     fi
 
     #: write out python data file
