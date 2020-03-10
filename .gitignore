@@ -2,4 +2,4 @@
 
 /exp/*/*
 *.log
-/exp/current.env
+/exp/status.env

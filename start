@@ -713,8 +713,11 @@ update(){
 
 cronit(){
 	cp $EP/$EXP.exp $EROOT/last.exp
-	echo $EXP > $EROOT/current.env
-	echo $DISH_CNT >> $EROOT/current.env
+	echo EXP=$EXP > $EROOT/status.env
+	echo DISH_CNT=$DISH_CNT >> $EROOT/status.env
+	echo SCANNERS=$SCANNERS >> $EROOT/status.env
+	echo SCANS=0 >> $EROOT/status.env
+	echo STATUS=started >> $EROOT/status.env
 
 	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
