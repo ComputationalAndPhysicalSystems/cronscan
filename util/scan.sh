@@ -13,7 +13,7 @@ RESOLUTION=$1
 EP=$2
 #DELAY=4
 
-ENUM=$(($(cat $EP/count)+1))
+COUNT=$(($(cat $EP/count)+1))
 EXP=${EP##*/}
 
 export SANE_USB_WORKAROUND=1
@@ -26,7 +26,7 @@ echo $nows
 
 [[ $LIGHTS == "on" ]] && . $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
 
-echo "Scan count: $ENUM"
+echo "Scan count: $COUNT"
 echo "Experiment \"$EXP\" will be stored in $EP"
 
 # Create experiment direcotry if it doesn't already exist
@@ -52,12 +52,11 @@ then
 	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners. Scanners may require physical inspection."
 	source /usr/local/bin/caps_settings/slimehook
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners."
-    slack "RIP Acquisition #$ENUM, ~$(date +%s)"
+    slack "RIP Acquisition #$COUNT, ~$(date +%s)"
 fi
 si=1
 for scanner in $SCANNER_LIST; do
-    scanner_safename=${scanner//:/_}
-    FILENAME="$ENUM.$EXP.s$si.$nows.png"
+    FILENAME="$COUNT.$EXP.s$si.$nows.png"
 
     echo "Scanning $scanner to $FILENAME"
 
@@ -73,16 +72,16 @@ test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXP"
 
 source /usr/local/bin/caps_settings/slimehook
 
-if [ $(( $ENUM % $SLACK_INTERVAL )) -eq 0 ]
+if [ $(( $COUNT % $SLACK_INTERVAL )) -eq 0 ]
 then
-    slack "[UPDATE] SCAN# $ENUM"
+    slack "[UPDATE] SCAN# $COUNT"
 fi
 
 [[ $LIGHTS == "on" ]] && . $LABPATH/util/lights.sh on $EXP >> $EP/LOG #. turn on lights if exp is using
 
 #[[ $LIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
-echo $ENUM > $EP/count
+echo $COUNT > $EP/count
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/

@@ -8,8 +8,6 @@ CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 
 SFILE="$LABPATH/exp/last.exp"
 
-SYSTEM=$HOSTNAME
-
 ### DECLARE VARIABLES
 ##. Color codes for UI
 #. Reset
@@ -599,6 +597,7 @@ load_parms(){
 	#. load last experiment
 	source $LABPATH/release
 	source $SFILE #: in one commad, loads all variables
+	SYSTEM=$HOSTNAME
 	EXP=$(echo $EXP|tr -d '\n') #? what do these lines do??
 	INT=$(echo $INT|tr -d '\n')
 	remember_scanners=0
