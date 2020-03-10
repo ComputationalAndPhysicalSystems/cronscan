@@ -739,12 +739,7 @@ cronit(){
 
 	[[ $REF > 0 ]] && \
 
-	printf "\$sp/util/lights.sh off $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
-	[[ $LIGHTS == "on" ]] && \
-	printf "\$sp/util/lights.sh on $EXP 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
-	[[ $XFER == "on" ]] && \
-	printf "\$sp/util/transfer.sh \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
 	echo >> $EP/xtab ###- blank line needed before EOF
 	echo
 	echo "xtab exported"

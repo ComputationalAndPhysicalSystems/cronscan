@@ -76,9 +76,7 @@ then
     slack "[UPDATE] SCAN# $ENUM"
 fi
 
-
-[[ $LIGHTS == "on" ]] && $LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG #. turn of lights if exp is using
-
+[[ $LIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
 echo $ENUM > $LOCAL_DIR/count
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
@@ -87,3 +85,5 @@ rsync $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENA
 rsync $2/*.pylog caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+
+[[ $XFER == "on" ]] `$LABPATH/util/transfer.sh \$ep 2>&1 | tee -a $EP/LOG`
