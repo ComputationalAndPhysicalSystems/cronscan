@@ -22,6 +22,9 @@ nows=$(date +%s)
 echo "==Beginning Scan================================="
 echo $now
 echo $nows
+
+[[ $LIGHTS == "on" ]] && $LABPATH/util/lights.sh off $EP 2>&1 | tee -a $EP/LOG #. turn of lights if exp is using
+
 echo "Scan count: $ENUM"
 echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $LOCAL_DIR"
 
@@ -72,6 +75,10 @@ if [ $(( $ENUM % $SLACK_INTERVAL )) -eq 0 ]
 then
     slack "[UPDATE] SCAN# $ENUM"
 fi
+
+
+[[ $LIGHTS == "on" ]] && $LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG #. turn of lights if exp is using
+
 
 echo $ENUM > $LOCAL_DIR/count
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
