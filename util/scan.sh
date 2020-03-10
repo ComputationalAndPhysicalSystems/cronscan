@@ -12,17 +12,14 @@ RESOLUTION=$1
 LOCAL_DIR=$2
 #DELAY=4
 
-ENUM=$(($(cat $LOCAL_DIR/count)+1))
+SCANS=$(($(cat $LOCAL_DIR/count)+1))
 EXPERIMENT_BASENAME=${LOCAL_DIR##*/}
 
 export SANE_USB_WORKAROUND=1
 
-now=$(date)
-nows=$(date +%s)
-echo "==Beginning Scan================================="
-echo $now
-echo $nows
-echo "Scan count: $ENUM"
+echo "==Beginning Scan=="
+date
+echo "Scan count: $SCANS"
 echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $LOCAL_DIR"
 
 # Create experiment direcotry if it doesn't already exist
@@ -47,12 +44,12 @@ then
 	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Scanners may require physical inspection."
 	source /usr/local/bin/caps_settings/slimehook
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
-    slack "RIP Acquisition #$ENUM, ~$(date +%s)"
+    slack "RIP Acquisition #$SCANS, ~$(date +%s)"
 fi
 si=1
 for scanner in $SCANNER_LIST; do
     scanner_safename=${scanner//:/_}
-    FILENAME="$ENUM.$EXPERIMENT_BASENAME.s$si.$nows.png"
+    FILENAME="$SCANS.$EXPERIMENT_BASENAME.s$si.$(date +%s).png" #$scanner_safename.$(date +%s).png
 
     echo "Scanning $scanner to $FILENAME"
 
@@ -68,16 +65,21 @@ test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXPERIMEN
 
 source /usr/local/bin/caps_settings/slimehook
 
-if [ $(( $ENUM % $SLACK_INTERVAL )) -eq 0 ]
+if [ $(( $SCANS % $SLACK_INTERVAL )) -eq 0 ]
 then
-    slack "[UPDATE] SCAN# $ENUM"
+    slack "[UPDATE] SCAN# $SCANS"
 fi
 
-echo $ENUM > $LOCAL_DIR/count
-rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+echo $SCANS > $LOCAL_DIR/count
+echo EXP=$EXP > $LABPATH/exp/status.env
+echo DISH_CNT=$DISH_CNT >> $LABPATH/exp/status.env
+echo SCANNERS=$SCANNERS >> $LABPATH/exp/status.env
+echo SCANS=$SCANS >> $LABPATH/exp/status.env
+echo STATUS=running >> $LABPATH/exp/status.env
+
+rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/*.pylog caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
 rsync $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-
