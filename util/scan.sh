@@ -7,6 +7,7 @@
 source /usr/local/bin/caps_settings/config
 source /usr/local/bin/caps_settings/physarumhook
 source /usr/local/bin/caps_settings/slimehook
+source $LABPATH/exp/status.env
 
 RESOLUTION=$1
 EP=$2
