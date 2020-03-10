@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', type=str)
 parser.add_argument('-c', type=int)
+parser.add_argument('-v', type=str)
 args = parser.parse_args()
 
 if GPIO.RPI_REVISION == 2:
@@ -46,10 +47,12 @@ LED = (split(Last_line))
 for num, led in enumerate(LED):
 	val = int(led)
 	if (val == 1):
-		print("LED"+str(num+1)+" ON")
+		if(args.v == "on"):
+			print("LED"+str(num+1)+" ON")
 		val = 255
-	else: 
-		print("LED"+str(num+1)+" OFF")
+	else:
+		if(args.v == "on"):
+			print("LED"+str(num+1)+" OFF")
 	strip.setPixelColor(num, Color(0,0,val))
 
 strip.show()

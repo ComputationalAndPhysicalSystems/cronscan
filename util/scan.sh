@@ -88,6 +88,7 @@ echo SCANNERS=$SCANNERS >> $STATUSFILE
 echo SCANS=$COUNT >> $STATUSFILE
 echo USELIGHTS=$USELIGHTS >> $STATUSFILE
 echo STATUS=running >> $STATUSFILE
+echo DIAGNOSTICS=$DIAGNOSTICS >> $STATUSFILE
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/

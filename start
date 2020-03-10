@@ -65,7 +65,7 @@ declare -a subvals #: the value to store in the associated EXP ARG, if different
 declare -a trueopts
 # declare -a lprog
 
-keys=(e s i r z x l a f o c)
+keys=(e s i r z x l a f o c h)
 mkeys=(T Z F S Q)
 
 opts+=("*/...")
@@ -79,11 +79,13 @@ opts+=("*/...")
 opts+=("*/...")
 opts+=("*/...")
 opts+=("*/...")
+opts+=("T")
 
 optslist+=("")
 optslist+=("1.to.9")
 optslist+=("")
 optslist+=("100.DPI/200.DPI/300.DPI/600.DPI")
+optslist+=("")
 optslist+=("")
 optslist+=("")
 optslist+=("")
@@ -103,11 +105,13 @@ subvals+=("")
 subvals+=("")
 subvals+=("")
 subvals+=("")
+subvals+=("")
 
 trueopts+=("")
 trueopts+=("C/123456789")
 trueopts+=("I/1234567890")
 trueopts+=("C/1/2/3/6")
+trueopts+=("")
 trueopts+=("")
 trueopts+=("")
 trueopts+=("")
@@ -127,6 +131,7 @@ args+=("SPECIES")
 args+=("FOODS")
 args+=("OTHER")
 args+=("SYSTEM")
+args+=("DIAGNOSTICS")
 
 blurbs+=("Exp Name")
 blurbs+=("Scanner Count")
@@ -139,6 +144,7 @@ blurbs+=("test animals")
 blurbs+=("food sources")
 blurbs+=("note other setup")
 blurbs+=("Computer system name")
+blurbs+=("* Diagnostics")
 
 #: menu blurbs
 mblurbs+=("Test NeoPixels")
@@ -158,6 +164,7 @@ subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
+subs+=("_sys")
 subs+=("_sys")
 # subs+=("_menu")
 # subs+=("_menu")
@@ -331,6 +338,10 @@ eatinput (){
 	# echo "limit reached" #-- TRACER
 }
 
+diagnostics(){
+	a=a
+}
+
 testlights(){
 	if [[ $CONTROLLER == "gpio" ]]
 	then
@@ -414,7 +425,6 @@ zero(){
 
 menukeys(){
 	case $key in
-
 	"T")			#: zero out crontabs
 		testlights
 	;;
@@ -612,7 +622,7 @@ update(){
 	then
 
 		local ix j ins ini inj
-		local ins=11 #: insert point in arrays (index padding)
+		local ins=12 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
 
 		#: hunt down dish entries and remove them
@@ -719,6 +729,7 @@ cronit(){
 	echo SCANS=0 >> $EROOT/status.env
 	echo USELIGHTS=$USELIGHTS >> $EROOT/status.env
 	echo STATUS=started >> $EROOT/status.env
+	echo DIAGNOSTICS=$DIAGNOSTICS >> $EROOT/status.env
 	#. init pylog file
 	buff=$(printf "%-${DISH_CNT}s" "0")
 	PYLOG=$EP/.track/pylog
