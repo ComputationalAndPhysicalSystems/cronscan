@@ -201,7 +201,7 @@ finish(){
     if [ $CONTROLLER == 'gpio' ]
     then
         echo "launch python"
-        sudo -E $LABPATH/util/gpio.sh $EXP $DISH_CNT $DIAGNOSTICS
+        sudo -E $LABPATH/util/gpio.sh $LABPATH #? pass the env variable cuz -E isn't working
         #sudo python $LABPATH/util/gpio.py -e $EXP -c $DISH_CNT
     else
         for i in ${!resultarray[@]}
