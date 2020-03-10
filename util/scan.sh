@@ -9,41 +9,43 @@ source /usr/local/bin/caps_settings/physarumhook
 source /usr/local/bin/caps_settings/slimehook
 
 RESOLUTION=$1
-LOCAL_DIR=$2
+EP=$2
 #DELAY=4
 
-SCANS=$(($(cat $LOCAL_DIR/count)+1))
-EXPERIMENT_BASENAME=${LOCAL_DIR##*/}
+SCANS=$(($(cat $EP/count)+1))
+EXPERIMENT_BASENAME=${EP##*/}
 
 export SANE_USB_WORKAROUND=1
+
+[[ $LIGHTS == "on" ]] && $LABPATH/util/lights.sh off $EP 2>&1 | tee -a $EP/LOG #. turn of lights if exp is using
 
 echo "==Beginning Scan=="
 date
 echo "Scan count: $SCANS"
-echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $LOCAL_DIR"
+echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $EP"
 
 # Create experiment direcotry if it doesn't already exist
-if [ ! -d "$LOCAL_DIR" ]; then
-    echo "$LOCAL_DIR not found, creating..."
-    mkdir -p $LOCAL_DIR
+if [ ! -d "$EP" ]; then
+    echo "$EP not found, creating..."
+    mkdir -p $EP
 fi
 
 SCANNER_LIST=$(scanimage -f "%d%n")
 SCANNER_COUNT=$(echo "$SCANNER_LIST" | wc -l)
 
 # Have we stored information about scanner count?
-if [ ! -f "$LOCAL_DIR/scanners" ]; then
-    echo "$SCANNER_COUNT" > "$LOCAL_DIR/scanners"
+if [ ! -f "$EP/scanners" ]; then
+    echo "$SCANNER_COUNT" > "$EP/scanners"
 fi
 
-echo "Found $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners:"
+echo "Found $SCANNER_COUNT/$(cat $EP/scanners) scanners:"
 echo "$SCANNER_LIST"
 
-if [ "$SCANNER_COUNT" -lt "$(cat $LOCAL_DIR/scanners)" ]
+if [ "$SCANNER_COUNT" -lt "$(cat $EP/scanners)" ]
 then
-	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners. Scanners may require physical inspection."
+	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners. Scanners may require physical inspection."
 	source /usr/local/bin/caps_settings/slimehook
-    slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $LOCAL_DIR/scanners) scanners."
+    slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners."
     slack "RIP Acquisition #$SCANS, ~$(date +%s)"
 fi
 si=1
@@ -53,7 +55,7 @@ for scanner in $SCANNER_LIST; do
 
     echo "Scanning $scanner to $FILENAME"
 
-    scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $LOCAL_DIR/$FILENAME
+    scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
     ((si++))
 #	echo "Delaying for $DELAY seconds"
 #	sleep $DELAY
@@ -70,7 +72,7 @@ then
     slack "[UPDATE] SCAN# $SCANS"
 fi
 
-echo $SCANS > $LOCAL_DIR/count
+echo $SCANS > $EP/count
 echo EXP=$EXP > $LABPATH/exp/status.env
 echo DISH_CNT=$DISH_CNT >> $LABPATH/exp/status.env
 echo SCANNERS=$SCANNERS >> $LABPATH/exp/status.env
