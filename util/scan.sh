@@ -7,13 +7,17 @@
 source /usr/local/bin/caps_settings/config
 source /usr/local/bin/caps_settings/physarumhook
 source /usr/local/bin/caps_settings/slimehook
+RESOLUTION=$1
+EP=$2
 
 STATUS=$LABPATH/exp/status.env
 source $STATUS
 
-RESOLUTION=$1
-EP=$2
-#DELAY=4
+# Create experiment direcotry if it doesn't already exist
+if [ ! -d "$EP" ]; then
+    echo "$EP not found, creating..."
+    mkdir -p $EP
+fi
 
 COUNT=$(($(cat $EP/count)+1))
 EXP=${EP##*/}
@@ -22,30 +26,22 @@ export SANE_USB_WORKAROUND=1
 
 now=$(date)
 nows=$(date +%s)
-echo "==Beginning Scan================================="
+echo "==Beginning Scan \"$EXP\"================================="
 echo $now
 echo $nows
+echo "local directory: $EP"
 
-[[ $LIGHTS == "on" ]] && . $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
+if [[ $LIGHTS == "on" ]]
+then
+  echo lights OFF for scan
+  . $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
+fi
 
 echo "Scan count: $COUNT"
-echo "Experiment \"$EXP\" will be stored in $EP"
-
-# Create experiment direcotry if it doesn't already exist
-if [ ! -d "$EP" ]; then
-    echo "$EP not found, creating..."
-    mkdir -p $EP
-fi
 
 SCANNER_LIST=$(scanimage -f "%d%n")
 SCANNER_COUNT=$(echo "$SCANNER_LIST" | wc -l)
 
-# Have we stored information about scanner count?
-#if [ ! -f "$EP/scanners" ]; then
-#    echo "$SCANNER_COUNT" > "$EP/scanners"
-#fi
-
-#echo "Found $SCANNER_COUNT/$(cat $EP/scanners) scanners:"
 echo "Found $SCANNER_COUNT/$SCANNERS scanners:"
 echo "$SCANNER_LIST"
 
@@ -64,8 +60,6 @@ for scanner in $SCANNER_LIST; do
 
     scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
     ((si++))
-#	echo "Delaying for $DELAY seconds"
-#	sleep $DELAY
 done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
@@ -79,7 +73,11 @@ then
     slack "[UPDATE] SCAN# $COUNT"
 fi
 
-[[ $LIGHTS == "on" ]] && . $LABPATH/util/lights.sh on $EXP >> $EP/LOG #. turn on lights if exp is using
+if [[ $LIGHTS == "on" ]]
+then
+  echo light program ON
+  . $LABPATH/util/lights.sh on $EXP >> $EP/LOG #. turn on lights if exp is using
+fi
 
 #[[ $LIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
