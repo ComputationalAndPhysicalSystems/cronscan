@@ -7,7 +7,9 @@
 source /usr/local/bin/caps_settings/config
 source /usr/local/bin/caps_settings/physarumhook
 source /usr/local/bin/caps_settings/slimehook
-source $LABPATH/exp/status.env
+
+STATUS=$LABPATH/exp/status.env
+source $STATUS
 
 RESOLUTION=$1
 EP=$2
@@ -81,12 +83,14 @@ fi
 
 #[[ $LIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
-echo $COUNT > $EP/count
+echo EXP=$EXP > $STATUS
+echo DISH_CNT=$DISH_CNT >> $STATUS
+echo SCANNERS=$SCANNERS >> $STATUS
+echo SCANS=$COUNT >> $STATUS
+echo STATUS=running >> $STATUS
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-rsync $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-rsync $2/*.pylog caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-rsync $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $STATUS caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 [[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EP >> $EP/LOG
