@@ -718,9 +718,18 @@ cronit(){
 	echo SCANNERS=$SCANNERS >> $EROOT/status.env
 	echo SCANS=0 >> $EROOT/status.env
 	echo STATUS=started >> $EROOT/status.env
+	#. init pylog file
 	buff=$(printf "%-${DISH_CNT}s" "0")
 	PYLOG=$EP/.track/pylog
 	echo -n "${buff// /0}" > $PYLOG
+	#. init togtrack file
+	TOGTRACK="$EP/.track/tog"
+	first='T'
+	for i in $DISH_CNT
+	do
+			[[ $first == "T" ]] && echo 0 > $TOGTRACK || echo 0 >> $TOGTRACK #: first iteration overwright TOG file
+			first='F'
+	done
 
 	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab

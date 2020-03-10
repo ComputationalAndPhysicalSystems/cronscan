@@ -31,7 +31,7 @@ EXP=$2 				#. exp name
 
 EP=$LABPATH/exp/$2 		#: experiment path
 LIGHTLOG=$EP/$EXP.lights	#. log the light results
-TOGTRACK=$EP/.track/tog		#. special toggle track file
+TOGTRACK="$EP/.track/tog"		#. special toggle track file
 PROG=$EP/$EXP.exp 		#: complete exp program file
 PYLOG=$EP/.track/pylog
 
@@ -158,13 +158,7 @@ togcalc(){
     first='T'
     for i in ${rarray[@]}
     do
-        if [[ $first == "T" ]]
-        then
-          echo init TOGTRACK 
-          echo $i > $TOGTRACK
-        else
-          echo $i >> $TOGTRACK #: first iteration overwright TOG file
-        fi
+        [[ $first == "T" ]] && echo $i > $TOGTRACK || echo $i >> $TOGTRACK #: first iteration overwright TOG file
         first='F'
     done
 }
