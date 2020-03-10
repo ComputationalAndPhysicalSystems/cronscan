@@ -725,10 +725,10 @@ cronit(){
 	#. init togtrack file
 	TOGTRACK="$EP/.track/tog"
 	first='T'
-	for i in $DISH_CNT
+	for (( c=0; c<$DISH_CNT; c++ ))
 	do
-			[[ $first == "T" ]] && echo 0 > $TOGTRACK || echo 0 >> $TOGTRACK #: first iteration overwright TOG file
-			first='F'
+		[[ $first == "T" ]] && echo 0 > $TOGTRACK || echo 0 >> $TOGTRACK #: first iteration overwright TOG file
+		first='F'
 	done
 
 	echo
