@@ -13,7 +13,7 @@ EP=$2
 #DELAY=4
 
 ENUM=$(($(cat $EP/count)+1))
-EXPERIMENT_BASENAME=${EP##*/}
+EXP=${EP##*/}
 
 export SANE_USB_WORKAROUND=1
 
@@ -23,10 +23,10 @@ echo "==Beginning Scan================================="
 echo $now
 echo $nows
 
-[[ $LIGHTS == "on" ]] && $LABPATH/util/lights.sh off $EP 2>&1 | tee -a $EP/LOG #. turn of lights if exp is using
+[[ $LIGHTS == "on" ]] && . $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
 
 echo "Scan count: $ENUM"
-echo "Experiment \"$EXPERIMENT_BASENAME\" will be stored in $EP"
+echo "Experiment \"$EXP\" will be stored in $EP"
 
 # Create experiment direcotry if it doesn't already exist
 if [ ! -d "$EP" ]; then
@@ -38,16 +38,17 @@ SCANNER_LIST=$(scanimage -f "%d%n")
 SCANNER_COUNT=$(echo "$SCANNER_LIST" | wc -l)
 
 # Have we stored information about scanner count?
-if [ ! -f "$EP/scanners" ]; then
-    echo "$SCANNER_COUNT" > "$EP/scanners"
-fi
+#if [ ! -f "$EP/scanners" ]; then
+#    echo "$SCANNER_COUNT" > "$EP/scanners"
+#fi
 
-echo "Found $SCANNER_COUNT/$(cat $EP/scanners) scanners:"
+#echo "Found $SCANNER_COUNT/$(cat $EP/scanners) scanners:"
+echo "Found $SCANNER_COUNT/$SCANNERS scanners:"
 echo "$SCANNER_LIST"
 
-if [ "$SCANNER_COUNT" -lt "$(cat $EP/scanners)" ]
+if [ $SCANNER_COUNT -lt $SCANNERS ]
 then
-	slack "[LAB ALERT] <EXP: $EXPERIMENT_BASENAME>: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners. Scanners may require physical inspection."
+	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners. Scanners may require physical inspection."
 	source /usr/local/bin/caps_settings/slimehook
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners."
     slack "RIP Acquisition #$ENUM, ~$(date +%s)"
@@ -55,7 +56,7 @@ fi
 si=1
 for scanner in $SCANNER_LIST; do
     scanner_safename=${scanner//:/_}
-    FILENAME="$ENUM.$EXPERIMENT_BASENAME.s$si.$nows.png"
+    FILENAME="$ENUM.$EXP.s$si.$nows.png"
 
     echo "Scanning $scanner to $FILENAME"
 
@@ -67,7 +68,7 @@ done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 source /usr/local/bin/caps_settings/physarumhook
-test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXPERIMENT_BASENAME"
+test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXP"
 
 source /usr/local/bin/caps_settings/slimehook
 
@@ -76,14 +77,16 @@ then
     slack "[UPDATE] SCAN# $ENUM"
 fi
 
-[[ $LIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
+[[ $LIGHTS == "on" ]] && . $LABPATH/util/lights.sh on $EXP >> $EP/LOG #. turn on lights if exp is using 
+
+#[[ $LIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
 
 echo $ENUM > $EP/count
-rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/*.pylog caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $2/count caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $2/xtab caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $2/*.pylog caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 [[ $XFER == "on" ]] `$LABPATH/util/transfer.sh \$ep 2>&1 | tee -a $EP/LOG`
