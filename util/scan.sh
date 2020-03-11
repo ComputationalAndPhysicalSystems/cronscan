@@ -29,7 +29,6 @@ nows=$(date +%s)
 echo "==Beginning Scan \"$EXP\"=================================(#$COUNT)"
 echo $now
 echo $nows
-echo "local directory: $EP"
 
 if [[ $USELIGHTS == "on" ]]
 then

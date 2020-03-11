@@ -765,10 +765,8 @@ cronit(){
 	echo "ep=$EP" >> $XTABFILE
 	echo
 	printf "*/$INT * * * * " >> $XTABFILE
-
 	[[ $REF > 0 ]] && \
-
-	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $XTABFILE
+	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $XTABFILE
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo
 	echo "xtab exported"
@@ -777,7 +775,15 @@ cronit(){
 	echo
 	echo "--scanning enabled"
 	sudo crontab $XTABFILE
+	#. initialize LOG with some project info
 	cp $EXPFILE $LOGFILE
+	printf '=%.0s' {1..31} >> $LOGFILE
+	echo -e "\nlocal project directory: $EP" >> $LOGFILE
+	echo -n "Crontab code: " >> $LOGFILE
+	printf "*/$INT * * * * " >> $LOGFILE
+	[[ $REF > 0 ]] && \
+	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $LOGFILE
+
 	if [[ $USELIGHTS == "on" ]]
 	then
 		echo
@@ -800,7 +806,7 @@ saveit(){
 	#: write out $EXP.exp and last.exp record files
 	echo "working with Directory $EP"
 	echo "writing $EXP.exp"
-	echo "#exp parameters" 2>&1 | tee $EXPFILE
+	echo "#exp parameters for \"$EXP\"" 2>&1 | tee $EXPFILE
 	echo CAPACITY="'$CAPACITY'" >> $EXPFILE
 	echo DISH_CNT="'$DISH_CNT'" >> $EXPFILE
 	for arg in "${args[@]}"
