@@ -12,6 +12,8 @@ EP=$2
 STATUSFILE=$LABPATH/exp/status.env
 LOGFILE=$EP/LOG
 COUNTFILE=$EP/.track/count
+TOGTRACK=$EP/.track/tog		#. special toggle track file
+RESTORETRACK=$EP/.track/restore
 
 source $STATUSFILE
 
@@ -47,6 +49,7 @@ then
     slack "RIP Acquisition #$COUNT, ~$(date +%s)"
 fi
 si=1
+cp $TOGTRACK $RESTORETRACK
 for scanner in $SCANNER_LIST; do
   if [[ $USELIGHTS == "on" ]]
   then
@@ -64,7 +67,7 @@ for scanner in $SCANNER_LIST; do
   if [[ $USELIGHTS == "on" ]]
   then
     echo restore lights $r0 to $r1
-    . $LABPATH/util/lights.sh restore $EXP $r0 $r1 >> $LOGFILE #. turn off lights if exp is using
+    . $LABPATH/util/lights.sh restore $EXP >> $LOGFILE #. turn off lights if exp is using
   fi
   ((si++))
 done
