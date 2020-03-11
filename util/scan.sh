@@ -11,6 +11,7 @@ RESOLUTION=$1
 EP=$2
 
 STATUSFILE=$LABPATH/exp/status.env
+
 source $STATUSFILE
 
 # Create experiment direcotry if it doesn't already exist
@@ -26,7 +27,7 @@ export SANE_USB_WORKAROUND=1
 
 now=$(date)
 nows=$(date +%s)
-echo "==Beginning Scan \"$EXP\"================================="
+echo "==Beginning Scan \"$EXP\"=================================(\#$COUNT)"
 echo $now
 echo $nows
 echo "local directory: $EP"
@@ -36,8 +37,6 @@ then
   echo lights OFF for scan
   . $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
 fi
-
-echo "Scan count: $COUNT"
 
 SCANNER_LIST=$(scanimage -f "%d%n")
 SCANNER_COUNT=$(echo "$SCANNER_LIST" | wc -l)

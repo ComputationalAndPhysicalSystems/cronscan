@@ -729,6 +729,7 @@ cronit(){
 	echo SCANNERS=$SCANNERS >> $EROOT/status.env
 	echo SCANS=0 >> $EROOT/status.env
 	echo USELIGHTS=$USELIGHTS >> $EROOT/status.env
+	echo XFER=$XFER >> $EROOT/status.env
 	echo STATUS=started >> $EROOT/status.env
 	echo DIAGNOSTICS=$DIAGNOSTICS >> $EROOT/status.env
 	#. init pylog file
