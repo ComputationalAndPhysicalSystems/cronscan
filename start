@@ -792,8 +792,8 @@ cronit(){
 		. $LABPATH/util/lights.sh on $EXP >> $LOGFILE
 
 	fi
-	export EP=$ep
-	export SP=$sp
+	export ep=$EP
+	export sp=$SP
 	exit
 }
 
