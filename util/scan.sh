@@ -68,7 +68,7 @@ test -e $2/.track/count && echo || slack "[LAUNCH] First scan for experiment $EX
 
 if [ $(( $COUNT % $SLACK_INTERVAL )) -eq 0 ]
 then
-    slack "[UPDATE] SCAN# $COUNT"
+    slack "[UPDATE $EXP] SCAN# $COUNT"
 fi
 
 if [[ $USELIGHTS == "on" ]]

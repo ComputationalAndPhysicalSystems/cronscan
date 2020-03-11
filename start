@@ -728,7 +728,7 @@ cronit(){
 	sudo chown $USER $EP/.track
 	cp $EXPFILE $EROOT/last.exp
 	echo EXP=$EXP > $STATUSFILE
-	echo SYSTEM=$SYSTEM > $STATUSFILE
+	echo SYSTEM=$SYSTEM >> $STATUSFILE
 	echo DISH_CNT=$DISH_CNT >> $STATUSFILE
 	echo SCANNERS=$SCANNERS >> $STATUSFILE
 	echo SCANS=0 >> $STATUSFILE
