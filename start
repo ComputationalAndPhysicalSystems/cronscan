@@ -721,17 +721,20 @@ update(){
 }
 
 cronit(){
+	LOGFILE=$EP/LOG
+	XTABFILE=$EP/xtab
+	STATUSFILE=$EROOT/status.env
 	mkdir $EP/.track
-	sudo chown $USER $EP/.track 
-	cp $EP/$EXP.exp $EROOT/last.exp
-	echo EXP=$EXP > $EROOT/status.env
-	echo DISH_CNT=$DISH_CNT >> $EROOT/status.env
-	echo SCANNERS=$SCANNERS >> $EROOT/status.env
-	echo SCANS=0 >> $EROOT/status.env
-	echo USELIGHTS=$USELIGHTS >> $EROOT/status.env
-	echo XFER=$XFER >> $EROOT/status.env
-	echo STATUS=started >> $EROOT/status.env
-	echo DIAGNOSTICS=$DIAGNOSTICS >> $EROOT/status.env
+	sudo chown $USER $EP/.track
+	cp $EXPFILE $EROOT/last.exp
+	echo EXP=$EXP > $STATUSFILE
+	echo DISH_CNT=$DISH_CNT >> $STATUSFILE
+	echo SCANNERS=$SCANNERS >> $STATUSFILE
+	echo SCANS=0 >> $STATUSFILE
+	echo USELIGHTS=$USELIGHTS >> $STATUSFILE
+	echo XFER=$XFER >> $STATUSFILE
+	echo STATUS=started >> $STATUSFILE
+	echo DIAGNOSTICS=$DIAGNOSTICS >> $STATUSFILE
 	#. init pylog file
 	buff=$(printf "%-${DISH_CNT}s" "0")
 	PYLOG=$EP/.track/pylog
@@ -747,39 +750,40 @@ cronit(){
 
 	echo
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
-	echo -n "#" >> $EP/xtab
-	printf '.%.0s' {1..34} >> $EP/xtab
-	echo >> $EP/xtab
+	echo -n "#" >> $XTABFILE
+	printf '.%.0s' {1..34} >> $XTABFILE
+	echo >> $XTABFILE
 	for ((i=0;i<${#keys[@]};i++))
 	do
-		echo -n "#" >> $EP/xtab
-		printf "%31s" "${blurbs[$i]}: " >> $EP/xtab
-		echo ${!args[$i]} >> $EP/xtab
+		echo -n "#" >> $XTABFILE
+		printf "%31s" "${blurbs[$i]}: " >> $XTABFILE
+		echo ${!args[$i]} >> $XTABFILE
 	done
 
 	echo
-	echo "sp=$LABPATH" >> $EP/xtab
-	echo "ep=$EP" >> $EP/xtab
+	echo "sp=$LABPATH" >> $XTABFILE
+	echo "ep=$EP" >> $XTABFILE
 	echo
-	printf "*/$INT * * * * " >> $EP/xtab
+	printf "*/$INT * * * * " >> $XTABFILE
 
 	[[ $REF > 0 ]] && \
 
-	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $EP/xtab
-	echo >> $EP/xtab ###- blank line needed before EOF
+	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $XTABFILE
+	echo >> $XTABFILE ###- blank line needed before EOF
 	echo
 	echo "xtab exported"
 	echo
 	echo "installing crontab..."
 	echo
 	echo "--scanning enabled"
-	sudo crontab $EP/xtab
+	sudo crontab $XTABFILE
+	cp $EXPFILE $LOGFILE
 	if [[ $USELIGHTS == "on" ]]
 	then
 		echo
 		echo "--init light tracking"
-		#. $LABPATH/hey.sh $EP hitme > LOG
-		. $LABPATH/util/lights.sh on $EXP > $EP/LOG
+		. $LABPATH/util/lights.sh on $EXP >> $LOGFILE
+
 	fi
 	exit
 }
@@ -789,18 +793,19 @@ saveit(){
 	DISH_CNT=$((CAPACITY*SCANNERS))
 	EROOT=${LABPATH}/exp/
 	EP=$EROOT${EXP}
+	EXPFILE=$EP/$EXP.exp
 	if [ ! -d "$EP" ]; then
 	    mkdir -p $EP
 	fi
 	#: write out $EXP.exp and last.exp record files
 	echo "working with Directory $EP"
 	echo "writing $EXP.exp"
-	echo "#exp parameters" 2>&1 | tee $EP/$EXP.exp
-	echo CAPACITY="'$CAPACITY'" >> $EP/$EXP.exp
-	echo DISH_CNT="'$DISH_CNT'" >> $EP/$EXP.exp
+	echo "#exp parameters" 2>&1 | tee $EXPFILE
+	echo CAPACITY="'$CAPACITY'" >> $EXPFILE
+	echo DISH_CNT="'$DISH_CNT'" >> $EXPFILE
 	for arg in "${args[@]}"
 	do
-	   echo ${arg}="'${!arg}'" >> $EP/$EXP.exp
+	   echo ${arg}="'${!arg}'" >> $EXPFILE
 	done
 	if [[ $USELIGHTS == "on" ]]
 	then
@@ -811,17 +816,17 @@ saveit(){
 			test="${!largs[$iq]}" #: get the value at index iq
 			case $test in
 			  "OFF")
-			    echo ${larg}="'OFF'" >> $EP/$EXP.exp
+			    echo ${larg}="'OFF'" >> $EXPFILE
 			    [[ $PROGRAM == "random.toggle" ]] && echo - >> $EP/tog
 			    ;;
 
 			  "ON")
-		   		echo ${larg}="'ON'" >> $EP/$EXP.exp
+		   		echo ${larg}="'ON'" >> $EXPFILE
 		   		[[ $PROGRAM == "random.toggle" ]] && echo + >> $EP/tog
 			    ;;
 
 			  *)
-		   		echo ${larg}="'${!larg}'" >> $EP/$EXP.exp
+		   		echo ${larg}="'${!larg}'" >> $EXPFILE
 		   		[[ $PROGRAM == "random.toggle" ]] && echo 0 >> $EP/tog
 			    ;;
 			esac

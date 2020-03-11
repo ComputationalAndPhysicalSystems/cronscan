@@ -5,8 +5,7 @@
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
 #! Set up webhooks here: https://capsidaho.slack.com/services/BNASXK525
 source /usr/local/bin/caps_settings/config
-source /usr/local/bin/caps_settings/physarumhook
-source /usr/local/bin/caps_settings/slimehook
+export APP_SLACK_WEBHOOK=$DEVHOOK
 RESOLUTION=$1
 EP=$2
 
@@ -27,7 +26,7 @@ export SANE_USB_WORKAROUND=1
 
 now=$(date)
 nows=$(date +%s)
-echo "==Beginning Scan \"$EXP\"=================================(\#$COUNT)"
+echo "==Beginning Scan \"$EXP\"=================================(#$COUNT)"
 echo $now
 echo $nows
 echo "local directory: $EP"
@@ -47,7 +46,8 @@ echo "$SCANNER_LIST"
 if [ $SCANNER_COUNT -lt $SCANNERS ]
 then
 	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners. Scanners may require physical inspection."
-	source /usr/local/bin/caps_settings/slimehook
+  [[ $DIAGONSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
+  #source /usr/local/bin/caps_settings/slimehook
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners."
     slack "RIP Acquisition #$COUNT, ~$(date +%s)"
 fi
@@ -62,10 +62,10 @@ for scanner in $SCANNER_LIST; do
 done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
-source /usr/local/bin/caps_settings/physarumhook
+[[ $DIAGONSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
 test -e $2/.track/count && echo || slack "[LAUNCH] First scan for experiment $EXP"
 
-source /usr/local/bin/caps_settings/slimehook
+[[ $DIAGONSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
 
 if [ $(( $COUNT % $SLACK_INTERVAL )) -eq 0 ]
 then
