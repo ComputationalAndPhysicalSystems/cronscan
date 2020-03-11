@@ -29,13 +29,15 @@ EXP=$2 				#. exp name
 i0=$3
 i1=$4
 
-echo "light control: $OPTION $EXP $i0 $i1"
+echo "<<LIGHTS.SH>> $OPTION / $EXP / $i0 / $i1"
 
 EP=$LABPATH/exp/$2 		#: experiment path
 LIGHTLOG=$EP/$EXP.lights	#. log the light results
-TOGTRACK="$EP/.track/tog"		#. special toggle track file
+TOGFILE=$EP/.track/tog		#. special toggle track file
+RESTOREFILE=$EP/.track/restore
 PROG=$EP/$EXP.exp 		#: complete exp program file
 PYLOG=$EP/.track/pylog
+
 
 source $PROG #: read in program and light variables
 
@@ -67,32 +69,40 @@ mainloop (){
   resultarray=()
   pythonarray=()
   report=()
-  echo $OPTION
-  echo $i0
-  echo $i1
-  echo dishes $DISH_CNT
+
+  if [[ $OPTION == "restore" ]] #. build the restore array from restorefile
+  then
+    restarray=()
+    while IFS= read -r restore
+    do
+      [[ $restore -eq 1 ]] && restarray+=(1) || restarray+=(0)
+    done <$RESTOREFILE
+  fi
+
   #: go through list of dishes and make triggerarray results
   for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
   do
       if [[ $OPTION == "off" ]]
       then
           triggerarray+=(0)
-      else                        #. option = 'on' or 'scan'
+      else                        #. option = 'on' or 'scan' or 'restore'
           found=-1
           if [[ $OPTION == "on" ]]
           then
             look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
             thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-          else                    #. option = 'scan'
+          fi
+          if [[ $OPTION == "scan" ]]
+          then
             #: assign $thisdish with the probability score for that dish
             #[[ $di -lt $i1 && $di -gt $i2 ]] && thisdish="OFF" || thisdish="ON"
-            if [[ $di -ge $i0 && $di -le $i1 ]]
-            then
-              thisdish="OFF"
-            else
-              thisdish="ON"
-            fi
-            echo light $di is $thisdish
+            [[ $di -ge $i0 && $di -le $i1 ]] && thisdish="OFF" || thisdish="ON"
+            echo temporary scan session, light $di is $thisdish
+          fi
+          if [[ $OPTION == "restore" ]]
+          then
+            [[ ${restarray[$di]} -eq 1 ]] && thisdish="OFF" || thisdish="ON"
+            echo restore light $di $thisdish
           fi
           [[ $thisdish == "ON" ]] && triggerarray+=(+)
           [[ $thisdish == "OFF" ]] && triggerarray+=(-)
@@ -145,7 +155,7 @@ resolve()
 togcalc(){
     #. compare previous results from TOG file to current trigger results to determine new state
     j=0
-    rarray=() #. rountine temp array for writting to $LAST (toggle result file)
+    rarray=() #. rountine temp array for writting to $TOGFILE (toggle result file)
     while IFS= read -r last
     do
         case $last in
@@ -172,11 +182,17 @@ togcalc(){
         esac
 
         ((j++))
-    done <$TOGTRACK
+    done <$TOGFILE
     first='T'
     for i in ${rarray[@]}
     do
-        [[ $first == "T" ]] && echo $i > $TOGTRACK || echo $i >> $TOGTRACK #: first iteration overwright TOG file
+        [[ $first == "T" ]] && echo $i > $TOGFILE || echo $i >> $TOGFILE #: first iteration overwrite TOG file
+        first='F'
+    done
+    first='T'
+    for i in ${report[@]}
+    do
+        [[ $first == "T" ]] && echo $i > $RESTOREFILE || echo $i >> $RESTOREFILE #: first iteration overwrite TOG file
         first='F'
     done
 }

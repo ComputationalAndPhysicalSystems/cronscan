@@ -10,6 +10,8 @@ RESOLUTION=$1
 EP=$2
 
 STATUSFILE=$LABPATH/exp/status.env
+LOGFILE=$EP/LOG
+COUNTFILE=$EP/.track/count
 
 source $STATUSFILE
 
@@ -19,7 +21,7 @@ if [ ! -d "$EP" ]; then
     mkdir -p $EP
 fi
 
-COUNT=$(($(cat $EP/.track/count)+1))
+COUNT=$(($(cat $COUNTFILE)+1))
 EXP=${EP##*/}
 
 export SANE_USB_WORKAROUND=1
@@ -48,19 +50,22 @@ si=1
 for scanner in $SCANNER_LIST; do
   if [[ $USELIGHTS == "on" ]]
   then
-    echo hey si = $si
-    echo and capacity = $CAPACITY
     i1=$((CAPACITY*si-1))
     i0=$((i1-CAPACITY))
     echo lights $i0 to $i1 OFF for scan
-    . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $EP/LOG #. turn off lights if exp is using
-    #. $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
+    r0=$i0
+    r1=$i0
+    . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
+    #. $LABPATH/util/lights.sh off $EXP >> $LOGFILE #. turn off lights if exp is using
   fi
   FILENAME="$COUNT.$EXP.s$si.$nows.png"
-
   echo "Scanning $scanner to $FILENAME"
-
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
+  if [[ $USELIGHTS == "on" ]]
+  then
+    echo restore lights $r0 to $r1
+    . $LABPATH/util/lights.sh restore $EXP $r0 $r1 >> $LOGFILE #. turn off lights if exp is using
+  fi
   ((si++))
 done
 
@@ -78,12 +83,12 @@ fi
 if [[ $USELIGHTS == "on" ]]
 then
   echo light program ON
-  . $LABPATH/util/lights.sh on $EXP >> $EP/LOG #. turn on lights if exp is using
+  . $LABPATH/util/lights.sh on $EXP >> $LOGFILE #. turn on lights if exp is using
 fi
 
-#[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $EP/LOG` #. turn of lights if exp is using
+#[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $LOGFILE` #. turn of lights if exp is using
 
-echo $COUNT > $EP/.track/count
+echo $COUNT > $COUNTFILE
 echo EXP=$EXP > $STATUSFILE
 echo SYSTEM=$SYSTEM >> $STATUSFILE
 echo DISH_CNT=$DISH_CNT >> $STATUSFILE
@@ -98,4 +103,4 @@ rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
-[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EP >> $EP/LOG
+[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EP >> $LOGFILE
