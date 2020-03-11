@@ -48,8 +48,10 @@ si=1
 for scanner in $SCANNER_LIST; do
   if [[ $USELIGHTS == "on" ]]
   then
+    echo hey si = $si
+    echo and capacity = $CAPACITY
     i1=$((CAPACITY*si-1))
-    i0=$(($i1-$CAPACITY))
+    i0=$((i1-CAPACITY))
     echo lights $i0 to $i1 OFF for scan
     . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $EP/LOG #. turn off lights if exp is using
     #. $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using

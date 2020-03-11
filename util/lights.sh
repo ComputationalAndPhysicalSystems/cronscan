@@ -29,6 +29,8 @@ EXP=$2 				#. exp name
 i0=$3
 i1=$4
 
+echo "light control: $OPTION $EXP $i0 $i1"
+
 EP=$LABPATH/exp/$2 		#: experiment path
 LIGHTLOG=$EP/$EXP.lights	#. log the light results
 TOGTRACK="$EP/.track/tog"		#. special toggle track file
