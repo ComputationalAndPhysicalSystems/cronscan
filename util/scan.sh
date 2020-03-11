@@ -64,7 +64,7 @@ done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 source /usr/local/bin/caps_settings/physarumhook
-test -e $2/count && echo || slack "[LAUNCH] First scan for experiment $EXP"
+test -e $2/.track/count && echo || slack "[LAUNCH] First scan for experiment $EXP"
 
 source /usr/local/bin/caps_settings/slimehook
 
