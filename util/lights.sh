@@ -28,8 +28,8 @@ OPTION=$1 			#. on/off
 EXP=$2 				#. exp name
 i0=$3
 i1=$4
-
-echo "<<LIGHTS.SH>> $OPTION / $EXP / $i0 / $i1"
+echo "============="
+echo "<<LIGHTS.SH>> $OPTION | $EXP | $i0 | $i1"
 
 EP=$LABPATH/exp/$2 		#: experiment path
 LIGHTLOG=$EP/$EXP.lights	#. log the light results
@@ -75,7 +75,9 @@ mainloop (){
     restarray=()
     while IFS= read -r restore
     do
+      echo "heres restore aint it: $restore"
       [[ $restore -eq 1 ]] && restarray+=(1) || restarray+=(0)
+      echo restore so far $restarray
     done <$RESTOREFILE
   fi
 

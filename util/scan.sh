@@ -1,5 +1,5 @@
 #!/bin/bash
-#WTF
+
 # Webhook so the script can complain to us in real time
 #! webhook established by Conrad; this might be the repo--I'm not sure
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
@@ -54,10 +54,10 @@ for scanner in $SCANNER_LIST; do
   if [[ $USELIGHTS == "on" ]]
   then
     i1=$((CAPACITY*si-1))
-    i0=$((i1-CAPACITY))
+    i0=$((i1-CAPACITY+1))
     echo lights $i0 to $i1 OFF for scan
     r0=$i0
-    r1=$i0
+    r1=$i1
     . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
     #. $LABPATH/util/lights.sh off $EXP >> $LOGFILE #. turn off lights if exp is using
   fi
