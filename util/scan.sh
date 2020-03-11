@@ -30,12 +30,6 @@ echo "==Beginning Scan \"$EXP\"=================================(#$COUNT)"
 echo $now
 echo $nows
 
-if [[ $USELIGHTS == "on" ]]
-then
-  echo lights OFF for scan
-  . $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
-fi
-
 SCANNER_LIST=$(scanimage -f "%d%n")
 SCANNER_COUNT=$(echo "$SCANNER_LIST" | wc -l)
 
@@ -52,12 +46,20 @@ then
 fi
 si=1
 for scanner in $SCANNER_LIST; do
-    FILENAME="$COUNT.$EXP.s$si.$nows.png"
+  if [[ $USELIGHTS == "on" ]]
+  then
+    i1=$(($CAPACITY*${si}-1))
+    i0=$(($i1-$CAPACITY))
+    echo lights $i0 to $i1 OFF for scan
+    . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $EP/LOG #. turn off lights if exp is using
+    #. $LABPATH/util/lights.sh off $EXP >> $EP/LOG #. turn off lights if exp is using
+  fi
+  FILENAME="$COUNT.$EXP.s$si.$nows.png"
 
-    echo "Scanning $scanner to $FILENAME"
+  echo "Scanning $scanner to $FILENAME"
 
-    scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
-    ((si++))
+  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
+  ((si++))
 done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...

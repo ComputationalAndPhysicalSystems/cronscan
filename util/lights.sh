@@ -26,6 +26,8 @@ DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
 #. attr reassignment
 OPTION=$1 			#. on/off
 EXP=$2 				#. exp name
+i0=$3
+i1=$4
 
 EP=$LABPATH/exp/$2 		#: experiment path
 LIGHTLOG=$EP/$EXP.lights	#. log the light results
@@ -57,61 +59,77 @@ rollrandom (){
 }
 
 mainloop (){
-i=0
-grouparray=()
-triggerarray=()
-resultarray=()
-pythonarray=()
-report=()
-
-#: go through list of dishes and make triggerarray results
-for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
-do
-    if [[ $OPTION == "off" ]]
-    then
-        triggerarray+=(0)
-    else
-        found=-1
-        look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
-        thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-        [[ $thisdish == "ON" ]] && triggerarray+=(+)
-        [[ $thisdish == "OFF" ]] && triggerarray+=(-)
-        [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
-        #: make grouparray based on unique group number assignments
-        #. rollrandom and store result per group in the grouparray
-        if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
-        then
-            rollrandom $thisdish
-            grouparray+=(${thisdish}:${result})
-        else
-            if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
+  i=0
+  grouparray=()
+  triggerarray=()
+  resultarray=()
+  pythonarray=()
+  report=()
+  echo $OPTION
+  echo $i0
+  echo $i1
+  echo dishes $DISH_CNT
+  #: go through list of dishes and make triggerarray results
+  for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
+  do
+      if [[ $OPTION == "off" ]]
+      then
+          triggerarray+=(0)
+      else                        #. option = 'on' or 'scan'
+          found=-1
+          if [[ $OPTION == "on" ]]
+          then
+            look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
+            thisdish="${!look}" #: assign $thisdish with the probability score for that dish
+          else                    #. option = 'scan'
+            #: assign $thisdish with the probability score for that dish
+            #[[ $di -lt $i1 && $di -gt $i2 ]] && thisdish="OFF" || thisdish="ON"
+            if [[ $di -ge $i0 && $di -le $i1 ]]
             then
-                for xi in "${!grouparray[@]}"
-                do
-                    if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
-                    then
-                        # echo found $thisdish at "${xi}"
-                        found=${x1}
-                        IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
-                        result="${buffer[1]}"
-                    fi
-                done
+              thisdish="OFF"
             else
-                rollrandom $thisdish
-                grouparray+=(${thisdish}:${result})
+              thisdish="ON"
             fi
-        fi
-        triggerarray+=(${result})
-    fi
-done
+            echo light $di is $thisdish
+          fi
+          [[ $thisdish == "ON" ]] && triggerarray+=(+)
+          [[ $thisdish == "OFF" ]] && triggerarray+=(-)
+          [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
+          #: make grouparray based on unique group number assignments
+          #. rollrandom and store result per group in the grouparray
+          if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
+          then
+              rollrandom $thisdish
+              grouparray+=(${thisdish}:${result})
+          else
+              if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
+              then
+                  for xi in "${!grouparray[@]}"
+                  do
+                      if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
+                      then
+                          # echo found $thisdish at "${xi}"
+                          found=${x1}
+                          IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
+                          result="${buffer[1]}"
+                      fi
+                  done
+              else
+                  rollrandom $thisdish
+                  grouparray+=(${thisdish}:${result})
+              fi
+          fi
+          triggerarray+=(${result})
+      fi
+  done
 }
 
 resolve()
 {
-    if [ $TOG -eq 1 ]
+    if [ $TOG -eq 1 ] #. this is a toggle light program
     then
         [[ $OPTION == "on" ]] && togcalc #: use togcalc procedure to calcualte results
-    else
+    else              #. not toggle program
         for t in ${triggerarray[@]}
         do
             [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
@@ -197,13 +215,13 @@ finish(){
         [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $PYLOG || echo -n "${pythonarray[$i]}" >> $PYLOG
     done
 
-    #. If using Arduino, send message to Device
-    if [ $CONTROLLER == 'gpio' ]
+    #. Resolve based on device
+    if [ $CONTROLLER == 'gpio' ]    #. GPIO resolve
     then
         echo "launch python"
         sudo -E $LABPATH/util/gpio.sh $LABPATH #? pass the env variable cuz -E isn't working
         #sudo python $LABPATH/util/gpio.py -e $EXP -c $DISH_CNT
-    else
+    else                            #. If using Arduino, send message to Device
         for i in ${!resultarray[@]}
         do
             echo "<+$i*${resultarray[$i]}>" > $DEVICE
