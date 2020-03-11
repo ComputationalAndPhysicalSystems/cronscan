@@ -40,7 +40,7 @@ strip.begin()
 
 print("flashing LED"+str(args.i))
 
-for _ in range(6):
+for _ in range(LEDCOUNT):
 	for x in np.nditer(LED):
 		x=x+0  #! for some reason i have to add zero to this to get it to work
 		strip.setPixelColor(x, Color(0,0,255))
