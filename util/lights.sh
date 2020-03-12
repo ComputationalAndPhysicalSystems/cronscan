@@ -1,18 +1,31 @@
 #!/bin/bash
+#== This is the script for controlling NEOPIXEL lights via
+#=  RPI GPIO or Arduino controller
+#=  See Arduino repository for Arduino programming
 
-#== This is the script for controlling NEOPIXEL lights via Arduino controller
-#   See Arduino repository for Arduino programming
+#..   $1, ($2), ($3), ($4)
+#.    $OPTION, $EXP, $i0, $i1
+#.ex  $LABPATH/util/lights.sh scan $EXP $i0 $i1
 
-#.. input parms:
-#.  $1 >  on/off  { lower case req }
-#.  $2 >  exp name
+#--announce
+echo -e "\n============="
+echo "<<lights.sh>> $1 | $2 | $3 | $4"
 
-#. random program assigns a random result to all samples with a given probability setting
+#.. sources
+#.  source golbal
+source $PWD/.func/assigned
 
-##### Source Configs
-source /usr/local/bin/caps_settings/config
+#.  source exp program
+source $PROG #: read in program and light variables
 
-##### HARD CODED
+#.. assignments
+#. attr reassignment
+OPTION=$1     #. on/off/scan/restore
+EXP=$2 				#. experiment name // reasiggnment from global optional
+i0=$3         #. scan start range L0 index
+i1=$4         #. scan end range L0 index
+
+#. --hard coded--
 #. red green and blue
 R="#FF0000"
 G="#00FF00"
@@ -21,35 +34,26 @@ OFF="#000000"
 PY_B="1" #"Color(0,0,255)"
 PY_OFF="0" #"Color(0,0,0)"
 
-DEVICE="/dev/ttyACM0" #- Arudino Leonardo signature;
-
-#. attr reassignment
-OPTION=$1 			#. on/off
-EXP=$2 				#. exp name
-i0=$3
-i1=$4
-echo "============="
-echo "<<LIGHTS.SH>> $OPTION | $EXP | $i0 | $i1"
-
-EP=$LABPATH/exp/$2 		#: experiment path
-LIGHTLOG=$EP/$EXP.lights	#. log the light results
-TOGFILE=$EP/.track/tog		#. special toggle track file
-RESTOREFILE=$EP/.track/restore
-PROG=$EP/$EXP.exp 		#: complete exp program file
-PYLOG=$EP/.track/pylog
-
-
-source $PROG #: read in program and light variables
-
+#.  local vars
 DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
-
 
 #. read and set if abs or relative [on/toggle]
 IFS='.' read -r -a buffer <<< "$PROGRAM"
 switch="${buffer[1]}"
 [[ $switch == "on" ]] && TOG=0 || TOG=1
 
-rollrandom (){
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+initvars(){
+  #.  arrays
+  #? i=0 #?? unneeded?
+  grouparray=()
+  triggerarray=()
+  resultarray=()
+  pythonarray=()
+  report=()
+}
+
+rollrandom(){
     #! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
     prob=$((1 + RANDOM % 10))
     # echo random prob = $prob >> $LOG #--testing only
@@ -62,80 +66,105 @@ rollrandom (){
     # echo "rolled $prob for $10% = $result"
 }
 
-mainloop (){
-  i=0
-  grouparray=()
-  triggerarray=()
-  resultarray=()
-  pythonarray=()
-  report=()
+mainloop(){
+  #--announce
+  echo -e "~~~~~~~~~~\n<mainloop>"
 
-  if [[ $OPTION == "restore" ]] #. build the restore array from restorefile
+  #.. assignments
+  initvars
+
+  #: build the restore array from RESTORETRACK
+  if [[ $OPTION == "restore" ]]
   then
+    #--trace
+    echo "|option = $OPTION"
     restarray=()
+    line=0
     while IFS= read -r restore
     do
-      echo "heres restore aint it: $restore"
+      echo "Light $line restore value: $restore"
       [[ $restore -eq 1 ]] && restarray+=(1) || restarray+=(0)
-      echo restore so far ${restarray[@]}
-    done <$RESTOREFILE
+      ((line++))
+    done <$RESTORETRACK
+    echo restore command array: ${restarray[@]}
   fi
 
-  #: go through list of dishes and make triggerarray results
-  for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
+  #:: go through list of dishes and make triggerarray results
+  #:  option = 'on' 'off' 'scan' 'restore'
+  #:  store w triggerarray for later action
+  for (( di=0; di<=$(( DISH_CNT-1 )); di++ )) #: zero-index lights
   do
-      if [[ $OPTION == "off" ]]
-      then
-          triggerarray+=(0)
-      else                        #. option = 'on' or 'scan' or 'restore'
-          found=-1
-          if [[ $OPTION == "on" ]]
-          then
+    case $OPTION in
+  			  "off")
+            triggerarray+=(0)
+  			    ;;
+
+  			  "on")
+            found=-1 #?? what is it?
             look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
             thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-          fi
-          if [[ $OPTION == "scan" ]]
-          then
-            #: assign $thisdish with the probability score for that dish
-            #[[ $di -lt $i1 && $di -gt $i2 ]] && thisdish="OFF" || thisdish="ON"
-            [[ $di -ge $i0 && $di -le $i1 ]] && thisdish="OFF" || thisdish="ON"
+  			    ;;
+          "scan")
+            if [ -z "$i0" ] || [ -z "$i1" ] #: scan.sh needs to send all 4 attrs
+            then
+              echo "missing range attrs; EXIT"
+              exit
+            fi
+            if [[ $di -ge $i0 && $di -le $i1 ]]
+            then
+              thisdish="OFF"
+            else
+              thisdish=`sed "$((${di}+1))q;d" $RESTORETRACK` #: +1 line number, 1-base index
+              #--trace
+              echo "previous setting from file $thisdish"
+            fi
+
             echo temporary scan session, light $di is $thisdish
-          fi
-          if [[ $OPTION == "restore" ]]
-          then
+            ;;
+          "restore")
             [[ ${restarray[$di]} -eq 1 ]] && thisdish="OFF" || thisdish="ON"
             echo restore light $di $thisdish
-          fi
-          [[ $thisdish == "ON" ]] && triggerarray+=(+)
-          [[ $thisdish == "OFF" ]] && triggerarray+=(-)
-          [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
+            ;;
+
+  			  *)
+  			    ;;
+  	esac
+    [[ $thisdish == "ON" ]] && triggerarray+=(+)
+    [[ $thisdish == "OFF" ]] && triggerarray+=(-)
+    [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
+    #[ $thisdish == "ON" -o $thisdish -eq 1 ] && triggerarray+=(+)
+    #[ $thisdish == "OFF" -o $thisdish -eq 0 ] && triggerarray+=(-)
+    #[ $thisdish == "ON" -o $thisdish == "OFF" -o \
+    #  $thisdish -eq 0 -o $thisdish -eq 1 ] && continue
           #: make grouparray based on unique group number assignments
           #. rollrandom and store result per group in the grouparray
-          if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
-          then
-              rollrandom $thisdish
-              grouparray+=(${thisdish}:${result})
-          else
-              if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
-              then
-                  for xi in "${!grouparray[@]}"
-                  do
-                      if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
-                      then
-                          # echo found $thisdish at "${xi}"
-                          found=${x1}
-                          IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
-                          result="${buffer[1]}"
-                      fi
-                  done
-              else
-                  rollrandom $thisdish
-                  grouparray+=(${thisdish}:${result})
-              fi
-          fi
-          triggerarray+=(${result})
-      fi
+    if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
+    then
+        rollrandom $thisdish
+        grouparray+=(${thisdish}:${result})
+    else
+        if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
+        then
+            for xi in "${!grouparray[@]}"
+            do
+                if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
+                then
+                    # echo found $thisdish at "${xi}"
+                    found=${x1}
+                    IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
+                    result="${buffer[1]}"
+                fi
+            done
+        else
+            rollrandom $thisdish
+            grouparray+=(${thisdish}:${result})
+        fi
+    fi
+    triggerarray+=(${result})
+
   done
+  echo ${triggerarray[@]}
+  read  
 }
 
 resolve()
@@ -152,9 +181,9 @@ resolve()
             [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
             if [[ $first == "T" ]]
             then
-              [ $t == "T" -o $t == "+" ] && echo 1 > $RESTOREFILE || echo 0 > $RESTOREFILE
+              [ $t == "T" -o $t == "+" ] && echo 1 > $RESTORETRACK || echo 0 > $RESTORETRACK
             else
-              [ $t == "T" -o $t == "+" ] && echo 1 >> $RESTOREFILE || echo 0 >> $RESTOREFILE
+              [ $t == "T" -o $t == "+" ] && echo 1 >> $RESTORETRACK || echo 0 >> $RESTORETRACK
             fi
             first='F'
 
@@ -197,30 +226,15 @@ togcalc(){
     for i in ${rarray[@]}
     do
         [[ $first == "T" ]] && echo $i > $TOGFILE || echo $i >> $TOGFILE #: first iteration overwrite TOG file
-        [[ $first == "T" ]] && echo $i > $RESTOREFILE || echo $i >> $RESTOREFILE
+        [[ $first == "T" ]] && echo $i > $RESTORETRACK || echo $i >> $RESTORETRACK
         first='F'
     done
 
 }
 
 finish(){
-    #. Make a log file if none exists
-    if [ ! -f "$LIGHTLOG" ]
-    then
-        echo "making a LOG file"
-        echo "# log of light instructions" > $LIGHTLOG
-        echo $PROGRAM light experiment >> $LIGHTLOG
-        echo -n "probabilities:" >> $LIGHTLOG
-        for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
-        do
-            look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
-            thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-            [ $thisdish != "ON" -a $thisdish != "OFF" ] && thisdish+="0%"
-            echo -n " D$((di+1)):$thisdish">> $LIGHTLOG
-        done
-        echo >> $LIGHTLOG
-        echo "==============" >> $LIGHTLOG
-    fi
+  [[ ! -f "$LIGHTLOG" ]] && . $LABPATH/.func/initlightlog.sh $LIGHTLOG
+
 
     #. write results to light log file
     [[ $OPTION == "on" ]] && echo -n "+" >> $LIGHTLOG || echo -n "-" >> $LIGHTLOG #: '+' for ON, '-' for OFF
@@ -236,7 +250,7 @@ finish(){
     #: write out python data file
     for i in ${!pythonarray[@]}
     do
-        [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $PYLOG || echo -n "${pythonarray[$i]}" >> $PYLOG
+        [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $PYTRACK || echo -n "${pythonarray[$i]}" >> $PYTRACK
     done
 
     #. Resolve based on device

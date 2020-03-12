@@ -1,12 +1,16 @@
 #!/bin/bash
 #: largs - light value array
-#source /usr/local/bin/caps_settings/config
-#export LABPATH
 
-CAPACITY=6 #. hard code 6 DISH_CNT per scanner
+source /usr/local/bin/caps_settings/config
+export LABPATH=$LABPATH
+
+
+#.. assignments
+
+#CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
-
-SFILE="$LABPATH/exp/last.exp"
+SFILE="$LABPATH/exp/last.exp" #: to initialize GUI
+FUNCDIR=$PWD/.func
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -455,7 +459,7 @@ menukeys(){
 		echo -e "${NC}"
 		if [[ $key = "q" ]]
 		then
-			echo "Adios"
+			echo -e "Adios Bye-Bye\n"
 			exit
 		else
 			return
@@ -721,35 +725,36 @@ update(){
 }
 
 cronit(){
-	LOGFILE=$EP/LOG
-	XTABFILE=$EP/xtab
-	STATUSFILE=$EROOT/status.env
-	mkdir $EP/.track
-	sudo chown $USER $EP/.track
-	cp $EXPFILE $EROOT/last.exp
-	echo EXP=$EXP > $STATUSFILE
-	echo SYSTEM=$SYSTEM >> $STATUSFILE
-	echo DISH_CNT=$DISH_CNT >> $STATUSFILE
-	echo SCANNERS=$SCANNERS >> $STATUSFILE
-	echo SCANS=0 >> $STATUSFILE
-	echo USELIGHTS=$USELIGHTS >> $STATUSFILE
-	echo XFER=$XFER >> $STATUSFILE
-	echo STATUS=started >> $STATUSFILE
-	echo DIAGNOSTICS=$DIAGNOSTICS >> $STATUSFILE
-	#. init pylog file
-	buff=$(printf "%-${DISH_CNT}s" "0")
-	PYLOG=$EP/.track/pylog
-	echo -n "${buff// /0}" > $PYLOG
-	#. init togtrack file
-	TOGTRACK="$EP/.track/tog"
-	first='T'
-	for (( c=0; c<$DISH_CNT; c++ ))
-	do
-		[[ $first == "T" ]] && echo 0 > $TOGTRACK || echo 0 >> $TOGTRACK #: first iteration overwright TOG file
-		first='F'
-	done
+	#--announce
+  echo -e "~~~~~~~~~~\n<cronit>"
+	source $ASSIGNED
+	[ ! -d $TRACKDIR ] && mkdir $TRACKDIR
+	#? sudo chown $USER $EP/.track
+	cp $SAVEFILE $EXPFILE
+	rm $SAVEFILE
+	cp $EXPFILE $LOGFILE
+	cp $EXPFILE $LASTFILE
 
-	echo
+	#..	make status file
+	source $FUNCDIR/status.sh; update
+
+	#..	make light initilizers
+	if [[ USELIGHTS == "on" ]]
+	then
+		#. init PYTRACK file
+		buff=$(printf "%-${DISH_CNT}s" "0")
+		PYTRACK=$EP/.track/PYTRACK
+		echo -n "${buff// /0}" > $PYTRACK
+
+		#. init togtrack file
+		TOGTRACK="$EP/.track/tog"
+		first='T'
+		for (( c=0; c<$DISH_CNT; c++ ))
+		do
+			[[ $first == "T" ]] && echo 0 > $TOGTRACK || echo 0 >> $TOGTRACK #: first iteration overwright TOG file
+			first='F'
+		done
+	fi
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $XTABFILE
 	printf '.%.0s' {1..34} >> $XTABFILE
@@ -760,22 +765,17 @@ cronit(){
 		printf "%31s" "${blurbs[$i]}: " >> $XTABFILE
 		echo ${!args[$i]} >> $XTABFILE
 	done
-
-	echo
 	echo "sp=$LABPATH" >> $XTABFILE
 	echo "ep=$EP" >> $XTABFILE
-	echo
 	printf "*/$INT * * * * " >> $XTABFILE
 	[[ $REF > 0 ]] && \
 	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $XTABFILE
 	echo >> $XTABFILE ###- blank line needed before EOF
-	echo
-	echo "xtab exported"
-	echo
-	echo "installing crontab..."
-	echo
-	echo "--scanning enabled"
+	echo -e "\nxtab exported"
+	echo -e "\ninstalling crontab..."
+	echo -e "\n--scanning enabled"
 	sudo crontab $XTABFILE
+
 	#. initialize LOG with some project info
 	cp $EXPFILE $LOGFILE
 	printf '=%.0s' {1..31} >> $LOGFILE
@@ -787,10 +787,9 @@ cronit(){
 
 	if [[ $USELIGHTS == "on" ]]
 	then
-		echo
-		echo "--init light tracking"
-		. $LABPATH/util/lights.sh on $EXP >> $LOGFILE
-
+		echo -e "\n--init light tracking"
+		source $SETUPSH; initlights
+		. $LABPATH/util/lights.sh on $EXP #!! >> $LOGFILE
 	fi
 	export ep=$EP
 	export sp=$SP
@@ -798,23 +797,28 @@ cronit(){
 }
 
 saveit(){
-	CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
+	. $PWD/.func/assign.sh $EXP
+	source $PWD/.func/assigned
+	#? CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	DISH_CNT=$((CAPACITY*SCANNERS))
-	EROOT=${LABPATH}/exp/
-	EP=$EROOT${EXP}
-	EXPFILE=$EP/$EXP.exp
+	#EROOT=${LABPATH}/exp/
+	#EP=$EROOT${EXP}
+	#SAVEFILE=$EP/$EXP.tmp
 	if [ ! -d "$EP" ]; then
 	    mkdir -p $EP
 	fi
+	echo "working with directory $EP"
+	echo "temp save: $SAVEFILE"
+
 	#: write out $EXP.exp and last.exp record files
-	echo "working with Directory $EP"
-	echo "writing $EXP.exp"
-	echo "#exp parameters for \"$EXP\"" 2>&1 | tee $EXPFILE
-	echo CAPACITY="'$CAPACITY'" >> $EXPFILE
-	echo DISH_CNT="'$DISH_CNT'" >> $EXPFILE
+	echo "#exp parameters for \"$EXP\"" > $SAVEFILE
+	echo CAPACITY=$CAPACITY >> $SAVEFILE
+	echo DISH_CNT=$DISH_CNT >> $SAVEFILE
+
+	#: regurgitate args
 	for arg in "${args[@]}"
 	do
-	   echo ${arg}="'${!arg}'" >> $EXPFILE
+	   echo ${arg}=${!arg} >> $SAVEFILE
 	done
 	if [[ $USELIGHTS == "on" ]]
 	then
@@ -825,17 +829,17 @@ saveit(){
 			test="${!largs[$iq]}" #: get the value at index iq
 			case $test in
 			  "OFF")
-			    echo ${larg}="'OFF'" >> $EXPFILE
+			    echo ${larg}=OFF >> $SAVEFILE
 			    [[ $PROGRAM == "random.toggle" ]] && echo - >> $EP/tog
 			    ;;
 
 			  "ON")
-		   		echo ${larg}="'ON'" >> $EXPFILE
+		   		echo ${larg}=ON >> $SAVEFILE
 		   		[[ $PROGRAM == "random.toggle" ]] && echo + >> $EP/tog
 			    ;;
 
 			  *)
-		   		echo ${larg}="'${!larg}'" >> $EXPFILE
+		   		echo ${larg}=${!larg} >> $SAVEFILE
 		   		[[ $PROGRAM == "random.toggle" ]] && echo 0 >> $EP/tog
 			    ;;
 			esac

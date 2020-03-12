@@ -1,55 +1,62 @@
 #!/bin/bash
 
-# Webhook so the script can complain to us in real time
+#! Webhook so the script can complain to us in real time
 #! webhook established by Conrad; this might be the repo--I'm not sure
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
 #! Set up webhooks here: https://capsidaho.slack.com/services/BNASXK525
-source /usr/local/bin/caps_settings/config
-export APP_SLACK_WEBHOOK=$DEVHOOK
-RESOLUTION=$1
-EP=$2
 
-STATUSFILE=$LABPATH/exp/status.env
-LOGFILE=$EP/LOG
-COUNTFILE=$EP/.track/count
-TOGTRACK=$EP/.track/tog		#. special toggle track file
-RESTORETRACK=$EP/.track/restore
-
+#.. sources
+#.  source golbal
+source $PWD/.func/assigned
+#.  announce data
+source $LABPATH/release
+gitlog=`git log --pretty=format:'%h' -n 1`
+#.  status data
 source $STATUSFILE
 
-# Create experiment direcotry if it doesn't already exist
-if [ ! -d "$EP" ]; then
-    echo "$EP not found, creating..."
-    mkdir -p $EP
-fi
+#--announce
+echo "GLOBAL||r:$release git:$gitlog"
+echo "<<scan.sh>> | $1 | $2 "
 
-COUNT=$(($(cat $COUNTFILE)+1))
-EXP=${EP##*/}
+#.. assignments
+#.  attr reassignment
+RESOLUTION=$1
+cron_EP=$2
 
-export SANE_USB_WORKAROUND=1
+#.  export env vars
+export APP_SLACK_WEBHOOK=$DEVHOOK #: set as default, reprogram dynamically
+export SANE_USB_WORKAROUND=1      #: Conrad's trick / dunno
 
+#.  local vars
+COUNT=$(($(cat $COUNTTRACK)+1))
 now=$(date)
 nows=$(date +%s)
-echo "==Beginning Scan \"$EXP\"=================================(#$COUNT)"
-echo $now
-echo $nows
-
 SCANNER_LIST=$(scanimage -f "%d%n")
 SCANNER_COUNT=$(echo "$SCANNER_LIST" | wc -l)
+si=1  #: scan loop initialize
 
+#:  Create experiment direcotry if it doesn't already exist
+#/  likely never to happen ---
+if [ ! -d "$cron_EP" ]; then
+    echo "$cron_EP not found, creating..."
+    mkdir -p $cron_EP
+fi
+
+#:  LOG file info
+echo "==Beginning Scan \"$EXP\"=================================(#$COUNT)"
+echo "$now || UNIX: $nows"
+echo
 echo "Found $SCANNER_COUNT/$SCANNERS scanners:"
-echo "$SCANNER_LIST"
+echo "  $SCANNER_LIST"
 
+#:  slack alert for missing scanners
 if [ $SCANNER_COUNT -lt $SCANNERS ]
 then
-	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners. Scanners may require physical inspection."
+	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $cron_EP/scanners) scanners. Scanners may require physical inspection."
   [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
-  #source /usr/local/bin/caps_settings/slimehook
-    slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners."
-    slack "RIP Acquisition #$COUNT, ~$(date +%s)"
+  slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $cron_EP/scanners) scanners."
+  slack "RIP Acquisition #$COUNT, ~$(date +%s)"
 fi
-si=1
-cp $TOGTRACK $RESTORETRACK
 for scanner in $SCANNER_LIST; do
   if [[ $USELIGHTS == "on" ]]
   then
@@ -59,17 +66,16 @@ for scanner in $SCANNER_LIST; do
     r0=$i0
     r1=$i1
     . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
-    #. $LABPATH/util/lights.sh off $EXP >> $LOGFILE #. turn off lights if exp is using
   fi
   FILENAME="$COUNT.$EXP.s$si.$nows.png"
   echo "Scanning $scanner to $FILENAME"
-  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
+  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $cron_EP/$FILENAME
   if [[ $USELIGHTS == "on" ]]
   then
     echo restore lights $r0 to $r1
     . $LABPATH/util/lights.sh restore $EXP >> $LOGFILE #. turn off lights if exp is using
   fi
-  ((si++))
+  ((si++)) #! begins at 1
 done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
@@ -90,20 +96,10 @@ then
 fi
 
 #[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $LOGFILE` #. turn of lights if exp is using
-
-echo $COUNT > $COUNTFILE
-echo EXP=$EXP > $STATUSFILEs
-echo SYSTEM=$SYSTEM >> $STATUSFILE
-echo DISH_CNT=$DISH_CNT >> $STATUSFILE
-echo SCANNERS=$SCANNERS >> $STATUSFILE
-echo SCANS=$COUNT >> $STATUSFILE
-echo USELIGHTS=$USELIGHTS >> $STATUSFILE
-echo XFER=$XFER >> $STATUSFILE
-echo STATUS=running >> $STATUSFILE
-echo DIAGNOSTICS=$DIAGNOSTICS >> $STATUSFILE
+source $FUNCDIR/update.sh; update
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
-[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EP >> $LOGFILE
+[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $cron_EP >> $LOGFILE
