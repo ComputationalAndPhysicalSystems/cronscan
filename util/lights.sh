@@ -77,7 +77,7 @@ mainloop (){
     do
       echo "heres restore aint it: $restore"
       [[ $restore -eq 1 ]] && restarray+=(1) || restarray+=(0)
-      echo restore so far $restarray
+      echo restore so far ${restarray[@]}
     done <$RESTOREFILE
   fi
 
