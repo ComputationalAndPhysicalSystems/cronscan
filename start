@@ -743,7 +743,6 @@ cronit(){
 	then
 		#. init PYTRACK file
 		buff=$(printf "%-${DISH_CNT}s" "0")
-		#PYTRACK=$EP/.track/PYTRACK
 		echo -n "${buff// /0}" > $PYTRACK
 
 		#. init togtrack file
