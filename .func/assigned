@@ -13,22 +13,22 @@ SLIMEHOOK=https://hooks.slack.com/services/T40G8FH6D/BNASXK525/yJ7Wr9IV9rSaPPoLY
 
 #.  pathing
 FUNCDIR=/usr/local/bin/cronscan/.func
-EP=/usr/local/bin/cronscan/exp/boo2
-TRACKDIR=/usr/local/bin/cronscan/exp/boo2/.track
+EP=/usr/local/bin/cronscan/exp/a
+TRACKDIR=/usr/local/bin/cronscan/exp/a/.track
 
 #.  output files
 STATUSFILE=/usr/local/bin/cronscan/exp/status.env
 LASTFILE=/usr/local/bin/cronscan/exp/last.exp
-SAVEFILE=/usr/local/bin/cronscan/exp/boo2/boo2.tmp
-EXPFILE=/usr/local/bin/cronscan/exp/boo2/boo2.exp
-PROG=/usr/local/bin/cronscan/exp/boo2/boo2.exp
-XTABFILE=/usr/local/bin/cronscan/exp/boo2/xtab
-LOGFILE=/usr/local/bin/cronscan/exp/boo2/LOG
-LIGHTLOG=/usr/local/bin/cronscan/exp/boo2/light.log
-PYTRACK=/usr/local/bin/cronscan/exp/boo2/.track/py
-TOGTRACK=/usr/local/bin/cronscan/exp/boo2/.track/tog
-COUNTTRACK=/usr/local/bin/cronscan/exp/boo2/.track/count
-RESTORETRACK=/usr/local/bin/cronscan/exp/boo2/.track/restore
+SAVEFILE=/usr/local/bin/cronscan/exp/a/a.tmp
+EXPFILE=/usr/local/bin/cronscan/exp/a/a.exp
+PROG=/usr/local/bin/cronscan/exp/a/a.exp
+XTABFILE=/usr/local/bin/cronscan/exp/a/xtab
+LOGFILE=/usr/local/bin/cronscan/exp/a/LOG
+LIGHTLOG=/usr/local/bin/cronscan/exp/a/light.log
+PYTRACK=/usr/local/bin/cronscan/exp/a/.track/py
+TOGTRACK=/usr/local/bin/cronscan/exp/a/.track/tog
+COUNTTRACK=/usr/local/bin/cronscan/exp/a/.track/count
+RESTORETRACK=/usr/local/bin/cronscan/exp/a/.track/restore
 
 #.  scripts
 SETUPSH=/usr/local/bin/cronscan/.func/setup.sh
