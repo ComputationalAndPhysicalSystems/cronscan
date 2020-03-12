@@ -1,5 +1,5 @@
 #!/bin/bash
-#-c $DISH_CNT 
+#-c $DISH_CNT
 
-SP=`pwd`
+SP=$LABPATH
 python $SP/util/clear.py -c $1

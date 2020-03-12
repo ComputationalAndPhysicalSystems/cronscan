@@ -7,7 +7,7 @@
 
 #.. sources
 #.  source golbal
-source $PWD/.func/assigned
+source $LABPATH/.func/assigned
 #.  announce data
 source $LABPATH/release
 gitlog=`git log --pretty=format:'%h' -n 1`

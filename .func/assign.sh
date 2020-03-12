@@ -16,7 +16,7 @@ EXP=$1
 
 #.. assignments
 #.  output files
-ASSIGNED=$PWD/.func/assigned #: the output from this script
+ASSIGNED=$LABPATH/.func/assigned #: the output from this script
 
 #.  local use for lazy
 ep=$LABPATH/exp

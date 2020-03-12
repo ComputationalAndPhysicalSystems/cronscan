@@ -10,7 +10,7 @@ export LABPATH=$LABPATH
 #CAPACITY=6 #. hard code 6 DISH_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
 SFILE="$LABPATH/exp/last.exp" #: to initialize GUI
-FUNCDIR=$PWD/.func
+FUNCDIR=$LABPATH/.func
 
 ### DECLARE VARIABLES
 ##. Color codes for UI
@@ -797,8 +797,8 @@ cronit(){
 }
 
 saveit(){
-	. $PWD/.func/assign.sh $EXP
-	source $PWD/.func/assigned
+	. $LABPATH/.func/assign.sh $EXP
+	source $LABPATH/.func/assigned
 	#? CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	DISH_CNT=$((CAPACITY*SCANNERS))
 	#EROOT=${LABPATH}/exp/

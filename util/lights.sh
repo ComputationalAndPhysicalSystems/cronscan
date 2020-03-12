@@ -13,7 +13,7 @@ echo "<<lights.sh>> $1 | $2 | $3 | $4"
 
 #.. sources
 #.  source golbal
-source $PWD/.func/assigned
+source $LABPATH/.func/assigned
 
 #.  source exp program
 source $PROG #: read in program and light variables
