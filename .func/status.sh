@@ -1,0 +1,14 @@
+#!bin/bash
+#. Make a log file if none exists
+
+update(){
+  echo EXP=$EXP > $STATUSFILE
+  echo SYSTEM=$SYSTEM >> $STATUSFILE
+  echo DISH_CNT=$DISH_CNT >> $STATUSFILE
+  echo SCANNERS=$SCANNERS >> $STATUSFILE
+  echo SCANS=0 >> $STATUSFILE
+  echo USELIGHTS=$USELIGHTS >> $STATUSFILE
+  echo XFER=$XFER >> $STATUSFILE
+  echo STATUS=started >> $STATUSFILE
+  echo DIAGNOSTICS=$DIAGNOSTICS >> $STATUSFILE
+}

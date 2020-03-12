@@ -1,0 +1,34 @@
+#!bin/bash
+
+#.  global settings
+LABPATH=/usr/local/bin/cronscan
+CAPACITY=6
+DEVICE=/dev/ttyACM0
+
+#.  slack
+SLACK_INTERVAL=20
+DEVHOOK=https://hooks.slack.com/services/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
+PHYHOOK=https://hooks.slack.com/services/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
+SLIMEHOOK=https://hooks.slack.com/services/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
+
+#.  pathing
+FUNCDIR=/usr/local/bin/cronscan/.func
+EP=/usr/local/bin/cronscan/exp/a2
+TRACKDIR=/usr/local/bin/cronscan/exp/a2/.track
+
+#.  output files
+STATUSFILE=/usr/local/bin/cronscan/exp/status.env
+LASTFILE=/usr/local/bin/cronscan/exp/last.exp
+SAVEFILE=/usr/local/bin/cronscan/exp/a2/a2.tmp
+EXPFILE=/usr/local/bin/cronscan/exp/a2/a2.exp
+PROG=/usr/local/bin/cronscan/exp/a2/a2.exp
+XTABFILE=/usr/local/bin/cronscan/exp/a2/xtab
+LOGFILE=/usr/local/bin/cronscan/exp/a2/LOG
+LIGHTLOG=/usr/local/bin/cronscan/exp/a2/light.log
+PYTRACK=/usr/local/bin/cronscan/exp/a2/.track/py
+TOGTRACK=/usr/local/bin/cronscan/exp/a2/.track/tog
+COUNTTRACK=/usr/local/bin/cronscan/exp/a2/.track/count
+RESTORETRACK=/usr/local/bin/cronscan/exp/a2/.track/restore
+
+#.  scripts
+SETUPSH=/usr/local/bin/cronscan/.func/setup.sh
