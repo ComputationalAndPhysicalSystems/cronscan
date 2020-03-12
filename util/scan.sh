@@ -43,7 +43,7 @@ echo "$SCANNER_LIST"
 if [ $SCANNER_COUNT -lt $SCANNERS ]
 then
 	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners. Scanners may require physical inspection."
-  [[ $DIAGONSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
+  [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
   #source /usr/local/bin/caps_settings/slimehook
     slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EP/scanners) scanners."
     slack "RIP Acquisition #$COUNT, ~$(date +%s)"
@@ -73,10 +73,10 @@ for scanner in $SCANNER_LIST; do
 done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
-[[ $DIAGONSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
+[[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
 test -e $2/.track/count && echo || slack "[LAUNCH] First scan for experiment $EXP"
 
-[[ $DIAGONSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
+[[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
 
 if [ $(( $COUNT % $SLACK_INTERVAL )) -eq 0 ]
 then
@@ -92,7 +92,7 @@ fi
 #[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $LOGFILE` #. turn of lights if exp is using
 
 echo $COUNT > $COUNTFILE
-echo EXP=$EXP > $STATUSFILE
+echo EXP=$EXP > $STATUSFILEs
 echo SYSTEM=$SYSTEM >> $STATUSFILE
 echo DISH_CNT=$DISH_CNT >> $STATUSFILE
 echo SCANNERS=$SCANNERS >> $STATUSFILE
