@@ -144,11 +144,19 @@ resolve()
     then
         [[ $OPTION == "on" ]] && togcalc #: use togcalc procedure to calcualte results
     else              #. not toggle program
+        first="T"
         for t in ${triggerarray[@]}
         do
             [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
             [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
             [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
+            if [[ $first == "T" ]]
+            then
+              [$t == "T" -o $t == "+" ] && echo 1 > $RESTOREFILE || echo 0 > $RESTOREFILE
+            else
+              [$t == "T" -o $t == "+" ] && echo 1 >> $RESTOREFILE || echo 0 >> $RESTOREFILE
+            fi
+            first='F'
 
         done
     fi
@@ -189,14 +197,10 @@ togcalc(){
     for i in ${rarray[@]}
     do
         [[ $first == "T" ]] && echo $i > $TOGFILE || echo $i >> $TOGFILE #: first iteration overwrite TOG file
+        [[ $first == "T" ]] && echo $i > $RESTOREFILE || echo $i >> $RESTOREFILE
         first='F'
     done
-    first='T'
-    for i in ${report[@]}
-    do
-        [[ $first == "T" ]] && echo $i > $RESTOREFILE || echo $i >> $RESTOREFILE #: first iteration overwrite TOG file
-        first='F'
-    done
+
 }
 
 finish(){
