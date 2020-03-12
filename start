@@ -741,18 +741,8 @@ cronit(){
 	#..	make light initilizers
 	if [[ $USELIGHTS == "on" ]]
 	then
-		#. init PYTRACK file
-		buff=$(printf "%-${DISH_CNT}s" "0")
-		echo -n "${buff// /0}" > $PYTRACK
-
-		#. init togtrack file
-		#TOGTRACK="$EP/.track/tog"
-		first='T'
-		for (( c=0; c<$DISH_CNT; c++ ))
-		do
-			[[ $first == "T" ]] && echo 0 > $TOGTRACK || echo 0 >> $TOGTRACK #: first iteration overwright TOG file
-			first='F'
-		done
+		echo abort for now
+		#. $LABPATH/util/lights.sh init
 	fi
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $XTABFILE
@@ -784,6 +774,7 @@ cronit(){
 	[[ $REF > 0 ]] && \
 	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $LOGFILE
 
+	#..	make light initilizers
 	if [[ $USELIGHTS == "on" ]]
 	then
 		echo -e "\n--init light tracking"

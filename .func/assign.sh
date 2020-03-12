@@ -27,6 +27,9 @@ EP=$ep/$EXP
 #!  be careful for first entry >
 echo \#!bin/bash > $ASSIGNED
 
+echo -e "\n#~~~~~~~~~~~" >> $ASSIGNED
+echo EXP=$EXP >> $ASSIGNED
+
 echo -e "\n#.  global settings" >> $ASSIGNED
 echo LABPATH=$LABPATH >> $ASSIGNED
 echo CAPACITY=$CAPACITY >> $ASSIGNED

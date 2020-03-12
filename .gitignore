@@ -3,4 +3,5 @@
 /exp/*/*
 *.log
 /exp/status.env
-.func/assigned
+/.func/assigned
+

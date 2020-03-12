@@ -20,7 +20,7 @@ source $PROG #: read in program and light variables
 
 #.. assignments
 #. attr reassignment
-OPTION=$1     #. on/off/scan/restore
+OPTION=$1     #. on/off/scan/restore/init
 EXP=$2 				#. experiment name // reasiggnment from global optional
 i0=$3         #. scan start range L0 index
 i1=$4         #. scan end range L0 index
@@ -124,6 +124,12 @@ mainloop(){
           "restore")
             [[ ${restarray[$di]} -eq 1 ]] && thisdish="OFF" || thisdish="ON"
             echo restore light $di $thisdish
+            ;;
+          "init")
+            echo initialize lighting
+            echo $EXP
+            echo $LIGHTLOG
+            echo "# log of light instructions for \"$EXP\"" > $LIGHTLOG
             ;;
 
   			  *)
