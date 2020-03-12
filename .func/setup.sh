@@ -9,7 +9,7 @@ initlights(){
   #--announce
   echo -e "~~~~~~~~~~~~~~~~~~\n<<initlightlog.sh>> | $1 "
   echo -e "\nmaking a LOG file"
-  echo "# log of light instructions for $EXP" > $LIGHTLOG
+  echo "# log of light instructions for \"$EXP\"" > $LIGHTLOG
   echo $PROGRAM light experiment >> $LIGHTLOG
   echo -n "probabilities:" >> $LIGHTLOG
   for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
