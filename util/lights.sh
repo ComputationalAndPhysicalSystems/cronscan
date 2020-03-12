@@ -152,9 +152,9 @@ resolve()
             [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
             if [[ $first == "T" ]]
             then
-              [$t == "T" -o $t == "+" ] && echo 1 > $RESTOREFILE || echo 0 > $RESTOREFILE
+              [ $t == "T" -o $t == "+" ] && echo 1 > $RESTOREFILE || echo 0 > $RESTOREFILE
             else
-              [$t == "T" -o $t == "+" ] && echo 1 >> $RESTOREFILE || echo 0 >> $RESTOREFILE
+              [ $t == "T" -o $t == "+" ] && echo 1 >> $RESTOREFILE || echo 0 >> $RESTOREFILE
             fi
             first='F'
 
