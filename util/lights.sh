@@ -164,7 +164,7 @@ mainloop(){
 
   done
   echo ${triggerarray[@]}
-  read  
+  read
 }
 
 resolve()
@@ -194,7 +194,7 @@ resolve()
 togcalc(){
     #. compare previous results from TOG file to current trigger results to determine new state
     j=0
-    rarray=() #. rountine temp array for writting to $TOGFILE (toggle result file)
+    rarray=() #. rountine temp array for writting to $TOGTRACK (toggle result file)
     while IFS= read -r last
     do
         case $last in
@@ -221,11 +221,11 @@ togcalc(){
         esac
 
         ((j++))
-    done <$TOGFILE
+    done <$TOGTRACK
     first='T'
     for i in ${rarray[@]}
     do
-        [[ $first == "T" ]] && echo $i > $TOGFILE || echo $i >> $TOGFILE #: first iteration overwrite TOG file
+        [[ $first == "T" ]] && echo $i > $TOGTRACK || echo $i >> $TOGTRACK #: first iteration overwrite TOG file
         [[ $first == "T" ]] && echo $i > $RESTORETRACK || echo $i >> $RESTORETRACK
         first='F'
     done
