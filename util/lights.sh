@@ -163,8 +163,6 @@ mainloop(){
     triggerarray+=(${result})
 
   done
-  echo ${triggerarray[@]}
-  read
 }
 
 resolve()

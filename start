@@ -739,6 +739,10 @@ cronit(){
 	source $FUNCDIR/status.sh; update
 
 	#..	make light initilizers
+	echo hey $USELIGHTS USELIGHTS
+	echo $PYTRACK
+	echo $TOGTRACK
+	read
 	if [[ USELIGHTS == "on" ]]
 	then
 		#. init PYTRACK file
