@@ -23,9 +23,9 @@ source $PROG #: read in program and light variables
 #. attr reassignment
 OPTION=$1     #. on/off/scan/restore/init
 EXP=$2 				#. experiment name // reasiggnment from global optional
-i0=$3         #. scan start range L0 index
-i1=$4         #. scan end range L0 index
-TIME=$5
+i0=$4         #. scan start range L0 index
+i1=$5         #. scan end range L0 index
+TIME=$3
 
 #. --hard coded--
 #. red green and blue
