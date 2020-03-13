@@ -116,9 +116,9 @@ fi
 #[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $LOGFILE` #. turn of lights if exp is using
 #..	update status file
 source $FUNCDIR/status.sh; update
-rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 [[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EXP >> $LOGFILE

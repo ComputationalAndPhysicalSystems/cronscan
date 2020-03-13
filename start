@@ -738,6 +738,7 @@ cronit(){
 	cp $EXPFILE $LASTFILE
 
 	#..	make status file
+	COUNT=0
 	source $FUNCDIR/status.sh; update
 
 	#.. scan counter
