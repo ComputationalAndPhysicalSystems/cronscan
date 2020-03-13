@@ -6,28 +6,29 @@
 #! Set up webhooks here: https://capsidaho.slack.com/services/BNASXK525
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#.. sources
+#.. SOURCES
 #.  source golbal
 source /usr/local/bin/caps_settings/labpath
-source $LABPATH/.func/assigned
-#.  announce data
-source $LABPATH/release
-
-#!! maybe it worked once?
-#? cd "${BASH_SOURCE%/*}"
-gitlog=`git log --pretty=format:'%h' -n 1`
+source $ASSIGNED
 
 #.  status data
 source $STATUSFILE
 
-#--announce
-echo -e "\nGLOBAL||r:$release git:$gitlog"
-echo "<<scan.sh>> | $1 | $2 "
+#.  announce data
+source $LABPATH/release
 
-#.. assignments
 #.  attr reassignment
 RESOLUTION=$1
-[[ ! -z "$2" ]] && EXP=$2
+
+#!! maybe it worked once? CHECK THE GIT REPORT SEE if it works
+#? cd "${BASH_SOURCE%/*}"
+gitlog=`git log --pretty=format:'%h' -n 1`
+
+#--announce
+echo -e "\nGLOBAL||r:$release git:$gitlog"
+echo "<<scan.sh>> | resolution=$1"
+
+#.. assignments
 
 #.  export env vars
 export APP_SLACK_WEBHOOK=$DEVHOOK #: set as default, reprogram dynamically

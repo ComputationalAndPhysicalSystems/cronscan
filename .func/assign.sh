@@ -13,12 +13,12 @@ echo "<<assign.sh>> | $1 | $2"
 
 #.. attr reassignment
 #.  LABPATH override // may be needed for some testing environs
-EXP=$1
-[[ ! -z "$2" ]] && LABPATH=$2
+[[ ! -z "$2" ]] && EXP=$1
+[[ ! -z "$2" ]] && LABPATH=$2 #:~ if for any reason we want a different root path
 
 #.. assignments
 #.  output files
-ASSIGNED=$LABPATH/.func/assigned #: the output from this script
+ASSIGNED=$LABPATH/exp/$EXP/.track/assigned #: the output from this script
 
 #.  local use for lazy
 ep=$LABPATH/exp

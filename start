@@ -728,6 +728,7 @@ cronit(){
 	#--announce
   echo -e "~~~~~~~~~~\n<cronit>"
 	echo EXP=$EXP > $LABPATH/exp/current
+	ASSIGNED=$LABPATH/exp/$EXP/.track/assigned
 	source $ASSIGNED #: just made it, now load it.
 	[ ! -d $TRACKDIR ] && mkdir $TRACKDIR
 	#? sudo chown $USER $EP/.track
@@ -753,10 +754,9 @@ cronit(){
 		echo ${!args[$i]} >> $XTABFILE
 	done
 	echo "sp=$LABPATH" >> $XTABFILE
-	echo "ep=$EP" >> $XTABFILE
 	printf "*/$INT * * * * " >> $XTABFILE
 	[[ $REF > 0 ]] && \
-	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$LOGFILE; " >> $XTABFILE
+	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE; " >> $XTABFILE
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo -e "\nxtab exported"
 	echo -e "\ninstalling crontab..."
@@ -770,7 +770,7 @@ cronit(){
 	echo -n "Crontab code: " >> $LOGFILE
 	printf "*/$INT * * * * " >> $LOGFILE
 	[[ $REF > 0 ]] && \
-	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $LOGFILE
+	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE; " >> $LOGFILE
 
 	printf '=%.0s' {1..31} >> $LOGFILE
 
