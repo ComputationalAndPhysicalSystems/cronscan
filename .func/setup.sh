@@ -7,8 +7,8 @@
 
 initlights(){
   #--announce
-  echo -e "~~~~~~~~~~~~~~~~~~\n<<initlightlog.sh>> | $1 "
-  echo -e "\nmaking a LOG file"
+  echo -e "~~~~~~~~~~~~~~~~~~\n<<initlightlog.sh>> | $1 " >> $LOGFILE
+  echo -e "\nmaking a LOG file" >> $LOGFILE
   echo "# log of light instructions for \"$EXP\"" > $LIGHTLOG
   echo $PROGRAM light experiment >> $LIGHTLOG
   echo -n "probabilities:" >> $LIGHTLOG

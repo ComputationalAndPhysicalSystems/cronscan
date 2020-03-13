@@ -738,12 +738,6 @@ cronit(){
 	#..	make status file
 	source $FUNCDIR/status.sh; update
 
-	#..	make light initilizers
-	if [[ $USELIGHTS == "on" ]]
-	then
-		echo abort for now
-		#. $LABPATH/util/lights.sh init
-	fi
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $XTABFILE
 	printf '.%.0s' {1..34} >> $XTABFILE
@@ -758,7 +752,7 @@ cronit(){
 	echo "ep=$EP" >> $XTABFILE
 	printf "*/$INT * * * * " >> $XTABFILE
 	[[ $REF > 0 ]] && \
-	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $XTABFILE
+	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$LOGFILE; " >> $XTABFILE
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo -e "\nxtab exported"
 	echo -e "\ninstalling crontab..."
@@ -768,16 +762,20 @@ cronit(){
 	#. initialize LOG with some project info
 	cp $EXPFILE $LOGFILE
 	printf '=%.0s' {1..31} >> $LOGFILE
-	echo -e "\nlocal project directory: $EP" >> $LOGFILE
+
 	echo -n "Crontab code: " >> $LOGFILE
 	printf "*/$INT * * * * " >> $LOGFILE
 	[[ $REF > 0 ]] && \
-	  printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $LOGFILE
+	printf "\$sp/util/scan.sh $RES \$ep 2>&1 | tee -a \$ep/LOG; " >> $LOGFILE
+
+	printf '=%.0s' {1..31} >> $LOGFILE
+
+	echo -e "\nLOCAL DIRECTORY on $HOSTNAME: $EP" >> $LOGFILE
 
 	#..	make light initilizers
 	if [[ $USELIGHTS == "on" ]]
 	then
-		echo -e "\n--init light tracking"
+		echo -e "\n--init light tracking" >> $LOGFILE
 		source $SETUPSH; initlights
 		. $LABPATH/util/lights.sh on $EXP #!! >> $LOGFILE
 	fi
