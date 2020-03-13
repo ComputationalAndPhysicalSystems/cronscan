@@ -79,7 +79,9 @@ for scanner in $SCANNER_LIST; do
     echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
-    . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
+    . $LABPATH/util/lights.sh off $EXP >> $LOGFILE #. turn off lights if exp is using
+
+#    . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
   fi
 
   #: restore lights
