@@ -109,6 +109,7 @@ fi
 
 if [[ $USELIGHTS == "on" ]]
 then
+  nows=$(date +%s)
   echo light program ON
   . $LABPATH/util/lights.sh on $EXP $nows >> $LOGFILE #. turn on lights if exp is using
 fi
