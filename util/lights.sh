@@ -123,7 +123,7 @@ mainloop(){
             echo temporary scan session, light $di is $thisdish
             ;;
           "restore")
-            [[ ${restarray[$di]} -eq 1 ]] && thisdish="OFF" || thisdish="ON"
+            [[ ${restarray[$di]} -eq 1 ]] && thisdish=1 || thisdish=0
             echo restore light $di $thisdish
             ;;
           "init")
@@ -132,43 +132,43 @@ mainloop(){
             echo $LIGHTLOG
             echo "# log of light instructions for \"$EXP\"" > $LIGHTLOG
             ;;
-
   			  *)
   			    ;;
   	esac
     [[ $thisdish == "ON" ]] && triggerarray+=(+)
     [[ $thisdish == "OFF" ]] && triggerarray+=(-)
     [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
-    #[ $thisdish == "ON" -o $thisdish -eq 1 ] && triggerarray+=(+)
-    #[ $thisdish == "OFF" -o $thisdish -eq 0 ] && triggerarray+=(-)
-    #[ $thisdish == "ON" -o $thisdish == "OFF" -o \
-    #  $thisdish -eq 0 -o $thisdish -eq 1 ] && continue
-          #: make grouparray based on unique group number assignments
-          #. rollrandom and store result per group in the grouparray
-    if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
+
+    #: make grouparray based on unique group number assignments
+    #. rollrandom and store result per group in the grouparray
+    if [[ $OPTION == "on" ]]
     then
-        rollrandom $thisdish
-        grouparray+=(${thisdish}:${result})
-    else
-        if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
-        then
-            for xi in "${!grouparray[@]}"
-            do
-                if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
-                then
-                    # echo found $thisdish at "${xi}"
-                    found=${x1}
-                    IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
-                    result="${buffer[1]}"
-                fi
-            done
-        else
-            rollrandom $thisdish
-            grouparray+=(${thisdish}:${result})
-        fi
+      if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
+      then
+          rollrandom $thisdish
+          grouparray+=(${thisdish}:${result})
+      else
+          if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
+          then
+              for xi in "${!grouparray[@]}"
+              do
+                  if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
+                  then
+                      # echo found $thisdish at "${xi}"
+                      found=${x1}
+                      IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
+                      result="${buffer[1]}"
+                  fi
+              done
+          else
+              rollrandom $thisdish
+              grouparray+=(${thisdish}:${result})
+          fi
+      fi
     fi
     triggerarray+=(${result})
-
+    #-- trace
+    echo finished dish loop
   done
 }
 

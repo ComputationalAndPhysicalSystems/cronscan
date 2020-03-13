@@ -727,7 +727,8 @@ update(){
 cronit(){
 	#--announce
   echo -e "~~~~~~~~~~\n<cronit>"
-	source $ASSIGNED
+	echo EXP=$EXP > $LABPATH/exp/current
+	source $ASSIGNED #: just made it, now load it.
 	[ ! -d $TRACKDIR ] && mkdir $TRACKDIR
 	#? sudo chown $USER $EP/.track
 	cp $SAVEFILE $EXPFILE
@@ -737,6 +738,9 @@ cronit(){
 
 	#..	make status file
 	source $FUNCDIR/status.sh; update
+
+	#.. scan counter
+	echo 0 >> $COUNTTRACK
 
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $XTABFILE

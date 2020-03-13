@@ -13,11 +13,13 @@ source $LABPATH/.func/assigned
 #.  announce data
 source $LABPATH/release
 
-cd "${BASH_SOURCE%/*}"
+#!! maybe it worked once?
+#? cd "${BASH_SOURCE%/*}"
 gitlog=`git log --pretty=format:'%h' -n 1`
+
 #.  status data
 source $STATUSFILE
-echo uselighs? $USELIGHTS
+
 #--announce
 echo -e "\nGLOBAL||r:$release git:$gitlog"
 echo "<<scan.sh>> | $1 | $2 "
@@ -25,7 +27,7 @@ echo "<<scan.sh>> | $1 | $2 "
 #.. assignments
 #.  attr reassignment
 RESOLUTION=$1
-cron_EP=$2
+[[ ! -z "$2" ]] && EXP=$2
 
 #.  export env vars
 export APP_SLACK_WEBHOOK=$DEVHOOK #: set as default, reprogram dynamically
@@ -41,39 +43,48 @@ si=1  #: scan loop initialize
 
 #:  Create experiment direcotry if it doesn't already exist
 #/  likely never to happen ---
-if [ ! -d "$cron_EP" ]; then
-    echo "$cron_EP not found, creating..."
-    mkdir -p $cron_EP
+if [ ! -d "$EXP" ]; then
+    echo "$EXP not found, creating..."
+    mkdir -p $EXP
 fi
 
 #:  LOG file info
-echo "==Beginning Scan \"$EXP\"=================================(#$COUNT)"
+echo -e "\n==Beginning Scan \"$EXP\"=================================(#$COUNT)"
 echo "$now || UNIX: $nows"
-echo
-echo "Found $SCANNER_COUNT/$SCANNERS scanners:"
-echo "  $SCANNER_LIST"
+
+#:  check on scanners
+echo -e "\nFound $SCANNER_COUNT/$SCANNERS scanners:"
+echo -e "  $SCANNER_LIST \n"
 
 #:  slack alert for missing scanners
 if [ $SCANNER_COUNT -lt $SCANNERS ]
 then
-	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $cron_EP/scanners) scanners. Scanners may require physical inspection."
+	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $EXP/scanners) scanners. Scanners may require physical inspection."
   [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
-  slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $cron_EP/scanners) scanners."
+  slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EXP/scanners) scanners."
   slack "RIP Acquisition #$COUNT, ~$(date +%s)"
 fi
+
+
 for scanner in $SCANNER_LIST; do
+  FILENAME="$COUNT.$EXP.s$si.$nows.png"
+
+  #: turn off lights
   if [[ $USELIGHTS == "on" ]]
   then
+    echo -e "\nlights off on scanner $si"
     i1=$((CAPACITY*si-1))
     i0=$((i1-CAPACITY+1))
-    echo lights $i0 to $i1 OFF for scan
+    echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
     . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
   fi
-  FILENAME="$COUNT.$EXP.s$si.$nows.png"
-  echo "Scanning $scanner to $FILENAME"
-  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $cron_EP/$FILENAME
+
+  #: restore lights
+  echo "-> Scanning $scanner to $FILENAME"
+  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EXP/$FILENAME
+
   if [[ $USELIGHTS == "on" ]]
   then
     echo restore lights $r0 to $r1
@@ -100,10 +111,11 @@ then
 fi
 
 #[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $LOGFILE` #. turn of lights if exp is using
-source $FUNCDIR/update.sh; update
+#..	update status file
+source $FUNCDIR/status.sh; update
 rsync $2/*.exp caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $2/*.lights caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $2/LOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
-[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $cron_EP >> $LOGFILE
+[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EXP >> $LOGFILE
