@@ -1,9 +1,9 @@
 #!/bin/bash
-#: largs - light value array
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#.. sources
+#.  source golbal
+source /usr/local/bin/caps_settings/labpath
 source /usr/local/bin/caps_settings/config
-export LABPATH=$LABPATH
-
 
 #.. assignments
 

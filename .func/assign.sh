@@ -1,8 +1,10 @@
 #!bin/bash
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #..   $1, ($2)
 #.    $EXP name, /cronscan/path,
 
 #.. sources
+source /usr/local/bin/caps_settings/labpath
 source /usr/local/bin/caps_settings/config
 
 #--announce

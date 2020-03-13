@@ -1,12 +1,14 @@
 #!/bin/bash
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #! Webhook so the script can complain to us in real time
 #! webhook established by Conrad; this might be the repo--I'm not sure
 #! https://gist.github.com/andkirby/67a774513215d7ba06384186dd441d9e
 #! Set up webhooks here: https://capsidaho.slack.com/services/BNASXK525
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #.. sources
 #.  source golbal
+source /usr/local/bin/caps_settings/labpath
 source $LABPATH/.func/assigned
 #.  announce data
 source $LABPATH/release

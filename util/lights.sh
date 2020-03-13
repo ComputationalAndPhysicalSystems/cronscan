@@ -1,19 +1,22 @@
 #!/bin/bash
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #== This is the script for controlling NEOPIXEL lights via
 #=  RPI GPIO or Arduino controller
 #=  See Arduino repository for Arduino programming
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #..   $1, ($2), ($3), ($4)
 #.    $OPTION, $EXP, $i0, $i1
 #.ex  $LABPATH/util/lights.sh scan $EXP $i0 $i1
+#.. sources
+#.  source golbal
+source /usr/local/bin/caps_settings/labpath
+source $LABPATH/.func/assigned
 
 #--announce
 echo -e "\n============="
 echo "<<lights.sh>> $1 | $2 | $3 | $4"
 
-#.. sources
-#.  source golbal
-source $LABPATH/.func/assigned
+
 
 #.  source exp program
 source $PROG #: read in program and light variables
