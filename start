@@ -790,7 +790,7 @@ cronit(){
 
 saveit(){
 	. $LABPATH/.func/assign.sh $EXP
-	source $LABPATH/.func/assigned
+	source $ASSIGNED
 	#? CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	DISH_CNT=$((CAPACITY*SCANNERS))
 	#EROOT=${LABPATH}/exp/

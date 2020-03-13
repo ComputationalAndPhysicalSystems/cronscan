@@ -18,7 +18,7 @@ echo "<<assign.sh>> | $1 | $2"
 
 #.. assignments
 #.  output files
-ASSIGNED=$LABPATH/exp/$EXP/.track/assigned #: the output from this script
+ASSIGNED=$LABPATH/.func/assigned #: the output from this script
 
 #.  local use for lazy
 ep=$LABPATH/exp
