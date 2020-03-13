@@ -11,4 +11,5 @@ update(){
   echo XFER=$XFER >> $STATUSFILE
   echo STATUS=started >> $STATUSFILE
   echo DIAGNOSTICS=$DIAGNOSTICS >> $STATUSFILE
+  echo $COUNT > $COUNTTRACK
 }
