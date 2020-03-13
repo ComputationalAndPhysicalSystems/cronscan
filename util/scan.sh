@@ -9,7 +9,7 @@
 #.. SOURCES
 #.  source golbal
 source /usr/local/bin/caps_settings/labpath
-source $ASSIGNED
+source $LABPATH/.func/assigned
 
 #.  status data
 source $STATUSFILE
