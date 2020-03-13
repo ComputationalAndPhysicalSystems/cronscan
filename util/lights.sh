@@ -4,8 +4,8 @@
 #=  RPI GPIO or Arduino controller
 #=  See Arduino repository for Arduino programming
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#..   $1, ($2), ($3), ($4)
-#.    $OPTION, $EXP, $i0, $i1
+#..   $1, ($2), ($3), ($4), ($5)
+#.    $OPTION, $EXP, $nows, $i0, $i1
 #.ex  $LABPATH/util/lights.sh scan $EXP $i0 $i1
 #.. sources
 #.  source golbal
@@ -14,7 +14,7 @@ source $LABPATH/.func/assigned
 
 #--announce
 echo -e "\n============="
-echo "<<lights.sh>> $1 | $2 | $3 | $4"
+echo "<<lights.sh>> $1 | $2 | $3 | $4 | $5"
 
 #.  source exp program
 source $PROG #: read in program and light variables
@@ -25,6 +25,7 @@ OPTION=$1     #. on/off/scan/restore/init
 EXP=$2 				#. experiment name // reasiggnment from global optional
 i0=$3         #. scan start range L0 index
 i1=$4         #. scan end range L0 index
+TIME=$5
 
 #. --hard coded--
 #. red green and blue
@@ -244,7 +245,7 @@ finish(){
     #. write results to light log file
     [[ $OPTION == "on" ]] && echo -n "+" >> $LIGHTLOG || echo -n "-" >> $LIGHTLOG #: '+' for ON, '-' for OFF
 
-    echo -n ${report} $(date +%s) >> $LIGHTLOG
+    echo -n ${report} $TIME >> $LIGHTLOG
     if [ $OPTION == "on" ]
     then
         echo "|| ${grouparray[@]} " >> $LIGHTLOG

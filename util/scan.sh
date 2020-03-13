@@ -79,9 +79,9 @@ for scanner in $SCANNER_LIST; do
     echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
-    . $LABPATH/util/lights.sh off $EXP >> $LOGFILE #. turn off lights if exp is using
+    . $LABPATH/util/lights.sh off $EXP $nows >> $LOGFILE #. turn off lights if exp is using
 
-#    . $LABPATH/util/lights.sh scan $EXP $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
+#    . $LABPATH/util/lights.sh scan $EXP $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
   fi
 
   #: restore lights
@@ -91,7 +91,7 @@ for scanner in $SCANNER_LIST; do
   if [[ $USELIGHTS == "on" ]]
   then
     echo restore lights $r0 to $r1
-    . $LABPATH/util/lights.sh restore $EXP >> $LOGFILE #. turn off lights if exp is using
+    . $LABPATH/util/lights.sh restore $EXP $nows >> $LOGFILE #. turn off lights if exp is using
   fi
   ((si++)) #! begins at 1
 done
@@ -110,7 +110,7 @@ fi
 if [[ $USELIGHTS == "on" ]]
 then
   echo light program ON
-  . $LABPATH/util/lights.sh on $EXP >> $LOGFILE #. turn on lights if exp is using
+  . $LABPATH/util/lights.sh on $EXP $nows >> $LOGFILE #. turn on lights if exp is using
 fi
 
 #[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $LOGFILE` #. turn of lights if exp is using
