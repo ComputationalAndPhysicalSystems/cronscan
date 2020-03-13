@@ -16,8 +16,6 @@ source $LABPATH/.func/assigned
 echo -e "\n============="
 echo "<<lights.sh>> $1 | $2 | $3 | $4"
 
-
-
 #.  source exp program
 source $PROG #: read in program and light variables
 

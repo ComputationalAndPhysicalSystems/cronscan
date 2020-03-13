@@ -12,12 +12,14 @@ source /usr/local/bin/caps_settings/labpath
 source $LABPATH/.func/assigned
 #.  announce data
 source $LABPATH/release
+
+cd "${BASH_SOURCE%/*}"
 gitlog=`git log --pretty=format:'%h' -n 1`
 #.  status data
 source $STATUSFILE
-
+echo uselighs? $USELIGHTS
 #--announce
-echo "GLOBAL||r:$release git:$gitlog"
+echo -e "\nGLOBAL||r:$release git:$gitlog"
 echo "<<scan.sh>> | $1 | $2 "
 
 #.. assignments
