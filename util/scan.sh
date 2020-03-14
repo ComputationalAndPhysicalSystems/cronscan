@@ -21,7 +21,7 @@ source $LABPATH/release
 RESOLUTION=$1
 
 #!! maybe it worked once? CHECK THE GIT REPORT SEE if it works
-#? cd "${BASH_SOURCE%/*}"
+cd "${BASH_SOURCE%/*}"
 gitlog=`git log --pretty=format:'%h' -n 1`
 
 #--announce
@@ -55,7 +55,7 @@ echo "$now || UNIX: $nows"
 
 #:  check on scanners
 echo -e "\nFound $SCANNER_COUNT/$SCANNERS scanners:"
-echo -e "  $SCANNER_LIST \n"
+echo -e "$SCANNER_LIST\n"
 
 #:  slack alert for missing scanners
 if [ $SCANNER_COUNT -lt $SCANNERS ]

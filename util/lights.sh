@@ -7,6 +7,9 @@
 #..   $1, ($2), ($3), ($4), ($5)
 #.    $OPTION, $EXP, $nows, $i0, $i1
 #.ex  $LABPATH/util/lights.sh scan $EXP $i0 $i1
+
+#------------------>
+
 #.. sources
 #.  source golbal
 source /usr/local/bin/caps_settings/labpath
@@ -23,9 +26,9 @@ source $PROG #: read in program and light variables
 #. attr reassignment
 OPTION=$1     #. on/off/scan/restore/init
 EXP=$2 				#. experiment name // reasiggnment from global optional
+TIME=$3
 i0=$4         #. scan start range L0 index
 i1=$5         #. scan end range L0 index
-TIME=$3
 
 #. --hard coded--
 #. red green and blue
@@ -40,8 +43,7 @@ PY_OFF="0" #"Color(0,0,0)"
 DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
 
 #. read and set if abs or relative [on/toggle]
-IFS='.' read -r -a buffer <<< "$PROGRAM"
-switch="${buffer[1]}"
+switch="${PROGRAM[1]}"
 [[ $switch == "on" ]] && TOG=0 || TOG=1
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,6 +77,7 @@ mainloop(){
   #.. assignments
   initvars
 
+#--restore---------------->
   #: build the restore array from RESTORETRACK
   if [[ $OPTION == "restore" ]]
   then
@@ -90,6 +93,9 @@ mainloop(){
     done <$RESTORETRACK
     echo restore command array: ${restarray[@]}
   fi
+#--restore----------------<
+#------------------>
+#------------------>
 
   #:: go through list of dishes and make triggerarray results
   #:  option = 'on' 'off' 'scan' 'restore'
@@ -173,13 +179,16 @@ mainloop(){
   done
 }
 
+#PROGRAM=random.on
+
 resolve()
 {
-    if [ $TOG -eq 1 ] #. this is a toggle light program
+    if [ $PROGRAM == "random.toggle" ] #. this is a toggle light program
     then
-        [[ $OPTION == "on" ]] && togcalc #: use togcalc procedure to calcualte results
-    else              #. not toggle program
-        first="T"
+        #: use togcalc procedure to calcualte results
+        [[ $OPTION == "on" ]] && togcalc
+    else              #. not toggle program - random.on or steady
+        first="T"     #. first time thru flag
         for t in ${triggerarray[@]}
         do
             [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
