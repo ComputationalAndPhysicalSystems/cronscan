@@ -99,7 +99,7 @@ done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
-test -e $2/.track/count && echo || slack "[LAUNCH] First scan for experiment $EXP"
+test -e $COUNTTRACK && echo || slack "[LAUNCH] First scan for experiment $EXP"
 
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
 
