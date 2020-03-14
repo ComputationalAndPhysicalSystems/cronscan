@@ -19,7 +19,7 @@ for scanner in $SCANNER_LIST; do
   fi
 
   echo "-> Scanning $scanner to $FILENAME"
-  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EXP/$FILENAME
+  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $PWD/$FILENAME
 
   #: restore lights // later feature
   if [[ $USELIGHTS == "on" ]]
