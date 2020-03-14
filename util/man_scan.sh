@@ -1,4 +1,6 @@
 #!/bin/bash
+RESOLUTION=$1
+
 COUNT=manual
 nows=$(date +%s)
 SCANNER_LIST=$(scanimage -f "%d%n")
