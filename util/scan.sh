@@ -90,6 +90,7 @@ for scanner in $SCANNER_LIST; do
 
   if [[ $USELIGHTS == "on" ]]
   then
+    nothing=nothing
     #!!echo restore lights $r0 to $r1
     #!!. $LABPATH/util/lights.sh restore $EXP $nows >> $LOGFILE #. turn off lights if exp is using
   fi

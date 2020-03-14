@@ -755,9 +755,10 @@ cronit(){
 		echo ${!args[$i]} >> $XTABFILE
 	done
 	echo "sp=$LABPATH" >> $XTABFILE
+	echo "logfile=$LOGFILE" >> $XTABFILE
 	printf "*/$INT * * * * " >> $XTABFILE
 	[[ $REF > 0 ]] && \
-	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE; " >> $XTABFILE
+	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile; " >> $XTABFILE
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo -e "\nxtab exported"
 	echo -e "\ninstalling crontab..."
