@@ -90,8 +90,8 @@ for scanner in $SCANNER_LIST; do
 
   if [[ $USELIGHTS == "on" ]]
   then
-    echo restore lights $r0 to $r1
-    . $LABPATH/util/lights.sh restore $EXP $nows >> $LOGFILE #. turn off lights if exp is using
+    #!!echo restore lights $r0 to $r1
+    #!!. $LABPATH/util/lights.sh restore $EXP $nows >> $LOGFILE #. turn off lights if exp is using
   fi
   ((si++)) #! begins at 1
 done
@@ -119,7 +119,7 @@ fi
 source $FUNCDIR/status.sh; update
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-[[ $USELIGHTS == "on" ]] && rsync $2/*.log caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+[[ $USELIGHTS == "on" ]] && rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 [[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EXP >> $LOGFILE
