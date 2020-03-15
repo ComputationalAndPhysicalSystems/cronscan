@@ -13,7 +13,7 @@ echo "<<assign.sh>> | $1 | ($2)"
 
 #.. attr reassignment
 #.  LABPATH override // may be needed for some testing environs
-[[ ! -z "$2" ]] && EXP=$1
+[[ ! -z "$1" ]] && EXP=$1
 [[ ! -z "$2" ]] && LABPATH=$2 #:~ if for any reason we want a different root path
 
 #.. assignments
