@@ -116,11 +116,13 @@ if [[ $USELIGHTS == "on" ]]
 then
   #restore lights for new state
   nows=$(date +%s)
-  . $LABPATH/util/lights2.sh $nows 0 0 >> $LOGFILE #. turn off lights if exp is using
+  . $LABPATH/util/lights2.sh $nows 0 "-1" >> $LOGFILE #. turn off lights if exp is using
 
   #. $LABPATH/util/lights.sh on $EXP $nows >> $LOGFILE #. turn on lights if exp is using
 fi
 
+echo "-----------------------------"
+echo EXP $EXP EP $EP
 #..	update status file
 source $FUNCDIR/status.sh; update
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
@@ -128,6 +130,6 @@ rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
-[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EXP >> $LOGFILE
+[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EP >> $LOGFILE
 
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$HOSTNAME$STATUSFILE
