@@ -63,9 +63,9 @@ echo -e "$SCANNER_LIST\n"
 #:  slack alert for missing scanners
 if [ $SCANNER_COUNT -lt $SCANNERS ]
 then
-	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$(cat $EXP/scanners) scanners. Scanners may require physical inspection."
+	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$SCANNERS scanners. Scanners may require physical inspection."
   [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
-  slack "[WARNING]: Only detected $SCANNER_COUNT/$(cat $EXP/scanners) scanners."
+  slack "[WARNING]: Only detected $SCANNER_COUNT/$SCANNERS scanners."
   slack "RIP Acquisition #$COUNT, ~$(date +%s)"
 fi
 
@@ -125,6 +125,7 @@ echo "-----------------------------"
 echo EXP $EXP EP $EP
 #..	update status file
 source $FUNCDIR/status.sh; update
+echo EXP=$EXP >> $STATUSFILE
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
