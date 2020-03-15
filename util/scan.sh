@@ -91,19 +91,13 @@ for scanner in $SCANNER_LIST; do
   echo "-> Scanning $scanner to $FILENAME"
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
 
-  if [[ $USELIGHTS == "on" ]]
-  then
-    nothing=nothing
-    #!!echo restore lights $r0 to $r1
-    #!!. $LABPATH/util/lights.sh restore $EXP $nows >> $LOGFILE #. turn off lights if exp is using
-  fi
   ((si++)) #! begins at 1
 done
 
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
-test -e $COUNTTRACK && echo || slack "[LAUNCH] First scan for experiment $EXP"
+[[ $COUNT -eq 1 ]]  && echo || slack "[LAUNCH] First scan for experiment $EXP"
 
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
 
