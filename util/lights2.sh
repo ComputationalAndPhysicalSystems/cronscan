@@ -229,8 +229,7 @@ prepscanner(){
   if [ $CONTROLLER == 'gpio' ]    #. GPIO resolve
   then
       echo "launch python"
-      #!!
-      #sudo -E $LABPATH/util/gpio.sh $LABPATH #? pass the env variable cuz -E isn't working
+      sudo -E $LABPATH/util/gpio.sh $LABPATH #? pass the env variable cuz -E isn't working
       #sudo python $LABPATH/util/gpio.py -e $EXP -c $DISH_CNT
   else                            #. If using Arduino, send message to Device
       for i in ${!resultarray[@]}

@@ -79,7 +79,7 @@ for scanner in $SCANNER_LIST; do
     echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
-    . $LABPATH/util/lights.sh $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
+    . $LABPATH/util/lights2.sh $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
 
 #    . $LABPATH/util/lights.sh scan $EXP $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
   fi
@@ -97,6 +97,7 @@ for scanner in $SCANNER_LIST; do
   ((si++)) #! begins at 1
 done
 
+
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
 test -e $COUNTTRACK && echo || slack "[LAUNCH] First scan for experiment $EXP"
@@ -110,12 +111,13 @@ fi
 
 if [[ $USELIGHTS == "on" ]]
 then
+  #restore lights for new state
   nows=$(date +%s)
-  echo light program ON
-  . $LABPATH/util/lights.sh on $EXP $nows >> $LOGFILE #. turn on lights if exp is using
+  . $LABPATH/util/lights2.sh $nows 0 0 >> $LOGFILE #. turn off lights if exp is using
+
+  #. $LABPATH/util/lights.sh on $EXP $nows >> $LOGFILE #. turn on lights if exp is using
 fi
 
-#[[ $USELIGHTS == "on" ]] && `$LABPATH/util/lights.sh on $EP 2>&1 | tee -a $LOGFILE` #. turn of lights if exp is using
 #..	update status file
 source $FUNCDIR/status.sh; update
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
