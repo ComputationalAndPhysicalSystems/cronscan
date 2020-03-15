@@ -728,7 +728,7 @@ cronit(){
 	#--announce
   echo -e "~~~~~~~~~~\n<cronit>"
 	echo EXP=$EXP > $LABPATH/exp/current
-	ASSIGNED=$LABPATH/exp/$EXP/.track/assigned
+	ASSIGNED=$LABPATH/.func/assigned
 	source $ASSIGNED #: just made it, now load it.
 	[ ! -d $TRACKDIR ] && mkdir $TRACKDIR
 	#? sudo chown $USER $EP/.track
