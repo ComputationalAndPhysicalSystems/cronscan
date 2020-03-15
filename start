@@ -775,7 +775,7 @@ cronit(){
 	cp $EXPFILE $LOGFILE
 	printf '=%.0s' {1..31} >> $LOGFILE
 
-	echo -n "Crontab code: " >> $LOGFILE
+	echo -e -n "\nCrontab code: " >> $LOGFILE
 	printf "*/$INT * * * * " >> $LOGFILE
 	[[ $REF > 0 ]] && \
 	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE; " >> $LOGFILE

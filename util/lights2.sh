@@ -75,6 +75,17 @@ DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
 
 #~ROUTINES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+initvars(){
+  #.  arrays
+  #? i=0 #?? unneeded?
+  grouparray=()
+  triggerarray=()
+  resultarray=()
+  pythonarray=()
+  report=()
+}
+
+
 # ---rollrandom----------------->>
 rollrandom(){
     #! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
@@ -255,16 +266,14 @@ seekstate(){
 
 #: if light index start is 0, this is the first run; make new LLIST
 # $i1 will be zero for the final go, rest lights...
+initvars
 
 echo dishcnt $DISH_CNT
 echo $PROG
-echo lets scan scanner 1, so make next calc then turn off lights for scanner1
-echo then replace .track/state with new state
 
+#: hard code the 5 so we can move on for now...
+[[ $i1 -eq 5 ]] && triggerlist || seekstate
 
-[[ $i0 -eq 0 ]] && triggerlist || seekstate
-
-echo ok, did that. Now turn off scannerX, switch remaining scanners to new state
 echo report is: $report
 
 prepscanner

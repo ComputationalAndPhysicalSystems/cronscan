@@ -14,6 +14,9 @@ source $LABPATH/.func/assigned
 #.  status data
 source $STATUSFILE
 
+#!! temp
+cat $STATUSFILE
+
 #.  announce data
 source $LABPATH/release
 
@@ -44,10 +47,10 @@ si=1  #: scan loop initialize
 
 #:  Create experiment direcotry if it doesn't already exist
 #/  likely never to happen ---
-if [ ! -d "$EXP" ]; then
-    echo "$EXP not found, creating..."
-    mkdir -p $EXP
-fi
+#if [ ! -d "NEED FULL PATH HERE $EXP" ]; then
+#    echo "$EXP not found, creating..."
+#    mkdir -p $EXP
+#fi
 
 #:  LOG file info
 echo -e "\n==Beginning Scan \"$EXP\"=================================(#$COUNT)"
@@ -86,7 +89,7 @@ for scanner in $SCANNER_LIST; do
 
   #: restore lights
   echo "-> Scanning $scanner to $FILENAME"
-  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EXP/$FILENAME
+  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
 
   if [[ $USELIGHTS == "on" ]]
   then
