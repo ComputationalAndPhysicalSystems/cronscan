@@ -763,6 +763,12 @@ cronit(){
 	echo -e "\nxtab exported"
 	echo -e "\ninstalling crontab..."
 	echo -e "\n--scanning enabled"
+
+	#!!!! temp disable !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	# launch first scan
+	#echo -e "\nBEGIN first scan"
+	#. $sp/util/scan.sh $RES 2>&1 | tee -a \$logfile
+
 	sudo crontab $XTABFILE
 
 	#. initialize LOG with some project info
@@ -785,22 +791,35 @@ cronit(){
 		source $SETUPSH; initlights
 		. $LABPATH/util/lights.sh on $EXP #!! >> $LOGFILE
 	fi
-	export ep=$EP
+	read
+	export ep=$EP #! this is just for easy troubleshooting in terminal
 	export sp=$SP
 	exit
 }
 
 saveit(){
+	#: but first, the directory check...
+	EP=$LABPATH/exp/$EXP
+	if [ -d "$EP" ]
+	then
+		echo -e "\n${BRed} THIS DIRECTORY EXISTS, IT WILL BE DELETED. ARE YOU SURE? (y/n)${NC}\c"
+		read -s -r -n 1 response
+		response=${response,,}    # tolower
+		if [[ "$response" =~ ^(yes|y)$ ]]
+		then
+			rm $EP/* -f
+    	mkdir -p $EP
+		fi
+	else
+    mkdir -p $EP
+	fi
+
+	#: now make the files....
 	. $LABPATH/.func/assign.sh $EXP
 	source $ASSIGNED
 	#? CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	DISH_CNT=$((CAPACITY*SCANNERS))
-	#EROOT=${LABPATH}/exp/
-	#EP=$EROOT${EXP}
-	#SAVEFILE=$EP/$EXP.tmp
-	if [ ! -d "$EP" ]; then
-	    mkdir -p $EP
-	fi
+
 	echo "working with directory $EP"
 	echo "temp save: $SAVEFILE"
 
@@ -849,8 +868,9 @@ saveit(){
 	response=${response,,}    # tolower
 	if [[ "$response" =~ ^(yes|y)$ ]]
 	then
-		echo
-		echo -e  ${BRed}${Inv} Make sure scanners are connected and powered. ${NC}
+		echo -e  "\n${BRed}${Inv} Make sure scanners are connected and powered. ${NC}"
+		echo -e -n "\n Scan will be triggered immediately. Press enter to proceed"
+		read -s -r -n 1 response
 		cronit
 	else
 		return

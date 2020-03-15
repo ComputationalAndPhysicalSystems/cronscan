@@ -73,13 +73,13 @@ for scanner in $SCANNER_LIST; do
   #: turn off lights
   if [[ $USELIGHTS == "on" ]]
   then
-    echo -e "\nlights off on scanner $si"
+    echo -e "\nScanning on scanner $si"
     i1=$((CAPACITY*si-1))
     i0=$((i1-CAPACITY+1))
     echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
-    . $LABPATH/util/lights.sh off $EXP $nows >> $LOGFILE #. turn off lights if exp is using
+    . $LABPATH/util/lights.sh $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
 
 #    . $LABPATH/util/lights.sh scan $EXP $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
   fi
@@ -124,3 +124,5 @@ rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 [[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EXP >> $LOGFILE
+
+rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$HOSTNAME$STATUSFILE

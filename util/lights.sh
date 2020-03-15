@@ -42,11 +42,8 @@ PY_OFF="0" #"Color(0,0,0)"
 #.  local vars
 DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
 
-#. read and set if abs or relative [on/toggle]
-switch="${PROGRAM[1]}"
-[[ $switch == "on" ]] && TOG=0 || TOG=1
+#~ROUTINES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 initvars(){
   #.  arrays
   #? i=0 #?? unneeded?
@@ -77,7 +74,7 @@ mainloop(){
   #.. assignments
   initvars
 
-#--restore---------------->
+  #--restore---------------->
   #: build the restore array from RESTORETRACK
   if [[ $OPTION == "restore" ]]
   then
@@ -93,14 +90,13 @@ mainloop(){
     done <$RESTORETRACK
     echo restore command array: ${restarray[@]}
   fi
-#--restore----------------<
-#------------------>
-#------------------>
+  #--restore----------------<
 
+  #------------------>
   #:: go through list of dishes and make triggerarray results
   #:  option = 'on' 'off' 'scan' 'restore'
   #:  store w triggerarray for later action
-  for (( di=0; di<=$(( DISH_CNT-1 )); di++ )) #: zero-index lights
+  for (( di=0; di<=$(( DishI)); di++ )) #: zero-index lights
   do
     case $OPTION in
   			  "off")
@@ -227,7 +223,7 @@ togcalc(){
             ;;
           *)
             [[ ${triggerarray[$j]} == "T" ]] && trigger=1 || trigger=0
-            tresult=`echo $(( last - TOG * trigger )) | sed 's/-//'`
+            tresult=`echo $(( last - 1 * trigger )) | sed 's/-//'`
             [[ $tresult -eq 1 ]] && resultarray+=($B) || resultarray+=($OFF)
             [[ $tresult -eq 1 ]] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
             [[ $tresult -eq 1 ]] && report+=1 || report+=0

@@ -8,8 +8,8 @@ source /usr/local/bin/caps_settings/labpath
 source /usr/local/bin/caps_settings/config
 
 #--announce
-echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-echo "<<assign.sh>> | $1 | $2"
+echo -e "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "<<assign.sh>> | $1 | ($2)"
 
 #.. attr reassignment
 #.  LABPATH override // may be needed for some testing environs
@@ -61,6 +61,8 @@ echo PYTRACK=$EP/.track/py >> $ASSIGNED
 echo TOGTRACK=$EP/.track/tog	>> $ASSIGNED	      #. special toggle track file
 echo COUNTTRACK=$EP/.track/count >> $ASSIGNED
 echo RESTORETRACK=$EP/.track/restore >> $ASSIGNED
+echo -n LLIST=$EP/.track/llist >> $ASSIGNED     #: cheatsheet for lights, one string
+
 
 echo -e "\n#.  scripts" >> $ASSIGNED
 echo SETUPSH=$LABPATH/.func/setup.sh >> $ASSIGNED
