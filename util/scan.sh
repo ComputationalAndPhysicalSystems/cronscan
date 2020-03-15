@@ -123,8 +123,8 @@ fi
 
 echo "-----------------------------"
 #..	update status file
-source $LABPATH/exp/current
 source $FUNCDIR/status.sh; update
+
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/

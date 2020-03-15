@@ -23,7 +23,7 @@ echo "<<lights.sh>> $1 | $2 | $3 | ($4)"
 TIME=$1
 i0=$2         #. scan start range L0 index
 i1=$3         #. scan end range L0 index
-EXP=$4				#. experiment name // reasiggnment from global optional
+[[ ! -z "$4" ]] && EXP=$4				#. experiment name // reasiggnment from global optional
 
 #. --hard coded--
 #. red green and blue for arduino serial code
