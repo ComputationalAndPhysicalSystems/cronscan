@@ -742,7 +742,7 @@ cronit(){
 	source $FUNCDIR/status.sh; update
 
 	#.. scan counter
-	echo 0 >> $COUNTTRACK
+	# handled elsewhere now..  !! echo 0 >> $COUNTTRACK
 
 	echo "# programatic crontab file generated for CAPS scanner control"> $EP/xtab
 	echo -n "#" >> $XTABFILE
@@ -789,9 +789,9 @@ cronit(){
 	then
 		echo -e "\n--init light tracking" >> $LOGFILE
 		source $SETUPSH; initlights
-		. $LABPATH/util/lights.sh on $EXP #!! >> $LOGFILE
+		#!!!
+		#. $LABPATH/util/lights.sh on $EXP #!! >> $LOGFILE
 	fi
-	read
 	export ep=$EP #! this is just for easy troubleshooting in terminal
 	export sp=$SP
 	exit

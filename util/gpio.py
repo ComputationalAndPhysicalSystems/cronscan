@@ -18,7 +18,7 @@ if GPIO.RPI_REVISION == 3:
 	GPIOPIN = 21
 
 
-Msg = "/usr/local/bin/cronscan/exp/" + args.e +"/.track/py"
+Msg = "/usr/local/bin/cronscan/exp/" + args.e +"/.track/setpy"
 
 LEDCOUNT = args.c # int(Cnt) # Number of LEDs
 FREQ = 800000
