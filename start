@@ -740,7 +740,6 @@ cronit(){
 	#..	make status file
 	COUNT=0
 	source $FUNCDIR/status.sh; update
-	echo EXP=$EXP >> $STATUSFILE
 
 	#.. scan counter
 	# handled elsewhere now..  !! echo 0 >> $COUNTTRACK

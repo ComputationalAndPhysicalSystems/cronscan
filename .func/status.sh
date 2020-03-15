@@ -2,8 +2,8 @@
 #. Make a log file if none exists
 
 update(){
-  #echo EXP=$EXP > $STATUSFILE
-  echo SYSTEM=$SYSTEM > $STATUSFILE
+  echo EXP=$EXP > $STATUSFILE
+  echo SYSTEM=$SYSTEM >> $STATUSFILE
   echo DISH_CNT=$DISH_CNT >> $STATUSFILE
   echo SCANNERS=$SCANNERS >> $STATUSFILE
   echo SCANS=$COUNT >> $STATUSFILE
