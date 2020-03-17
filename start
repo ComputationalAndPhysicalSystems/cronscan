@@ -12,6 +12,10 @@ source /usr/local/bin/caps_settings/config
 SFILE="$LABPATH/exp/last.exp" #: to initialize GUI
 FUNCDIR=$LABPATH/.func
 
+
+cd "${BASH_SOURCE%/*}"
+gitlog_init=`git log --pretty=format:'%h' -n 1`
+
 ### DECLARE VARIABLES
 ##. Color codes for UI
 #. Reset
@@ -184,27 +188,26 @@ stay_TF=true
 #=> tips from https://www.youtube.com/watch?v=jeq161yD8tk
 
 sfile(){
-
-options=($(find $LABPATH/exp/ -maxdepth 2 -iname '*.exp' -print0|xargs -0 ))
-echo
-echo "Load prior EXP"
-select opt in `basename "${options[@]%.*}"` "CANCEL";
-do
-	if ((REPLY == 1 + ${#options[@]}))
-	then
-		return
-	elif (( REPLY <= ${#options[@]}))
-	then
-		SFILE=$opt
-		#display=$(basename $opt)
-		echo $SFILE
-		#echo "File selected $display"
-		load_parms
-		return
-	else
-		echo "Not valid"
-	fi
-done
+	options=($(find $LABPATH/exp/ -maxdepth 2 -iname '*.exp' -print0|xargs -0 ))
+	echo
+	echo "Load prior EXP"
+	select opt in `basename "${options[@]%.*}"` "CANCEL";
+	do
+		if ((REPLY == 1 + ${#options[@]}))
+		then
+			return
+		elif (( REPLY <= ${#options[@]}))
+		then
+			SFILE=$opt
+			#display=$(basename $opt)
+			echo $SFILE
+			#echo "File selected $display"
+			load_parms
+			return
+		else
+			echo "Not valid"
+		fi
+	done
 }
 
 
@@ -825,6 +828,8 @@ saveit(){
 
 	#: write out $EXP.exp and last.exp record files
 	echo "#exp parameters for \"$EXP\"" > $SAVEFILE
+	echo release=$release >> $SAVEFILE
+	echo gitlog_init=$gitlog_init >> $SAVEFILE
 	echo CAPACITY=$CAPACITY >> $SAVEFILE
 	echo DISH_CNT=$DISH_CNT >> $SAVEFILE
 
@@ -921,6 +926,12 @@ findi(){
 	done
 }
 
+#!! maybe it worked once? CHECK THE GIT REPORT SEE if it works
+
+
+#--announce
+
+
 main(){
  #: main looop --------------------------------------------
  # echo "(------MAIN MAIN MAIN -----)"; sleep 1 #-- TRACER
@@ -935,8 +946,8 @@ while [ "$stay_TF" = "true" ]
 	do
 		clear -x #!! temp disable for TRACER
 		echo -e "${BPurple}"
-		printf " CREATE NEW CRONTAB EXPERIMENT - v$release"
-		echo
+		printf " CREATE NEW CRONTAB EXPERIMENT"
+		echo -e "\n ||--r:$release git:$gitlog--||"
 		echo -e "${Green} >> Settings loaded from ${BGreen}$(basename $SFILE)${NC}"
 		echo
 		isub=0

@@ -39,40 +39,6 @@ PY_OFF="0" #"Color(0,0,0)"
 #.  local vars
 DishI=$((DISH_CNT-1)) #: get the dish index number for convenient use later
 
-##____ELIMINATE
-#init: one line /scanner, complete string of light orders
-#ex 2scanners with TOGGLE -,+,3x5,8x5
-
-# .track/setpy (regardless of ON/TOGGLE, ie no Toggle compare, since all previous state was off anyway)
-# roll dice
-# writes out calculations for this state
-# 010000011111 (for example)
-#_____________
-
-
-
-#scan:
-#scan right off the bat when launching START
-
-#IF scan count = 0, treat as not a toggle (initiliaze)
-#IF TOGGLE
-#read /state (previous state, really)
-#ELSE do nothing
-
-# roll dice
-# resolve.
-# create a scan sequence, spliting by scanner #
-#ex
-# scanline+ 000000011111
-# scanline+ 010000000000 <<< last scanner
-# then combine with OR =
-# state= 010000011111 > .track/state
-
-#for each SI (scanner index) do
-# send scanner line SI (turns off those lights)
-# perform scan
-# next SI
-
 #~ROUTINES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 initvars(){
@@ -186,8 +152,10 @@ nextstate(){
 # ---newlist----------------->>
 triggerlist(){
   #:: go through list of dishes and make triggerarray results
-  #:  option = 'on' 'off' 'scan' 'restore'
   #:  store w triggerarray for later action
+
+  #!! this is the clumsy way of looking up the values from the EXP list.
+  #!! let's look at the LLIST file, instad.
   for (( di=0; di<=$DishI; di++ )) #: zero-index lights
   do
     found=-1 #?? what is it?
@@ -264,8 +232,10 @@ seekstate(){
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #$ needed: $LLIST
 
-#: if light index start is 0, this is the first run; make new LLIST
-# $i1 will be zero for the final go, rest lights...
+#--> if light index start is 0, this is the first run; make new LLIST <-- maybe use this if there's a per/dish scanners
+#: curently checking if $i1 is '5', which means it's the first scanner, in a 6 dish configuration
+# $i1 will be 0 for the final go, reset lights...
+
 initvars
 
 echo dishcnt $DISH_CNT

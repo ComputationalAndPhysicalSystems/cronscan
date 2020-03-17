@@ -53,6 +53,7 @@ si=1  #: scan loop initialize
 #fi
 
 #:  LOG file info
+[[ $gitlog != $gitlog_init ]] && slack "[WARNING]: The gitlog has changed, indiating a code update since the experiment began."
 echo -e "\n==Beginning Scan \"$EXP\"=================================(#$COUNT)"
 echo "$now || UNIX: $nows"
 
