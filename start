@@ -837,7 +837,7 @@ saveit(){
 	#: regurgitate args
 	for arg in "${args[@]}"
 	do
-	   echo ${arg}="${!arg}" >> $SAVEFILE
+	   echo ${arg}=\"${!arg}\" >> $SAVEFILE
 	done
 	if [[ $USELIGHTS == "on" ]]
 	then
