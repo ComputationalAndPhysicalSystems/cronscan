@@ -10,9 +10,10 @@ listarray=()
 
 initlights(){
   #--announce
-  echo -e "~~~~~~~~~~~~~~~~~~\n<<initlightlog.sh>> | $1 " >> $LOGFILE
+  echo -e "~~~~~~~~~~~~~~~~~~\n<<setup.sh {initlights} >> | $1 " >> $LOGFILE
   echo -e "\nmaking a LOG file" >> $LOGFILE
-  echo "# log of light instructions for \"$EXP\"" > $LIGHTLOG
+  echo LIGHTLOG file: $LIGHTLOG > $LIGHTLOG
+  echo "# log of light instructions for \"$EXP\"" >> $LIGHTLOG
   echo $PROGRAM light experiment >> $LIGHTLOG
   echo -n "probabilities:" >> $LIGHTLOG
   for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
