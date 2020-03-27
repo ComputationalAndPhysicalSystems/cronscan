@@ -76,7 +76,9 @@ fi
 
 
 for scanner in $SCANNER_LIST; do
-  FILENAME="$COUNT.$EXP.s$si.$nows.png"
+  pad=`printf %04d $COUNT`
+  SCANFILE="$pad.$EXP.s$si.$nows.png"
+  MPEGFILE="$pad.$EXP.s$si.png"
 
   #: turn off lights
   if [[ $USELIGHTS == "on" ]]
@@ -93,8 +95,8 @@ for scanner in $SCANNER_LIST; do
   fi
 
   #: restore lights
-  echo "-> Scanning $scanner to $FILENAME"
-  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$FILENAME
+  echo "-> Scanning $scanner to $SCANFILE"
+  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$SCANFILE
 
   ((si++)) #! begins at 1
 done
@@ -129,6 +131,15 @@ rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 [[ $USELIGHTS == "on" ]] && rsync $LIGHTLOG caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
-[[ $XFER == "on" ]] && . $LABPATH/util/transfer.sh $EP >> $LOGFILE
+if [ $XFER == "on" ]
+then
+  echo "Moving image files to Mnemosyne - folder $EXPERIMENT_BASENAME"
+  rsync -zha --progress --remove-source-files $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
+  rsync -zvh caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/$SCANFILE \
+    caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/movie/$MPEGFILE
+  #-- used to call transfer.sh this way
+  #-  find $1/*.png -type f -printf "%f\n"
+  #-  . $LABPATH/util/transfer.sh $EP >> $LOGFILE
+fi
 
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$HOSTNAME$STATUSFILE

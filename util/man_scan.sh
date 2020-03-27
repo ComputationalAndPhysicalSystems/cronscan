@@ -8,7 +8,7 @@ si=1  #: scan loop initialize
 
 
 for scanner in $SCANNER_LIST; do
-  FILENAME="$COUNT.$EXP.s$si.$nows.png"
+  SCANFILE="$COUNT.$EXP.s$si.$nows.png"
 
   #: turn off lights // later feature
   if [[ $USELIGHTS == "on" ]]
@@ -18,8 +18,8 @@ for scanner in $SCANNER_LIST; do
 #    . $LABPATH/util/lights.sh scan $EXP $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
   fi
 
-  echo "-> Scanning $scanner to $FILENAME"
-  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $PWD/$FILENAME
+  echo "-> Scanning $scanner to $SCANFILE"
+  scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $PWD/$SCANFILE
 
   #: restore lights // later feature
   if [[ $USELIGHTS == "on" ]]

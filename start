@@ -425,8 +425,17 @@ zero(){
 		echo `sudo crontab -r`
 		clearpix
 		echo make report
+		report
 		read
 	fi
+
+}
+
+report (){
+	a=a
+	#ffmpeg code to run on client
+	#ffmpeg -i halflight_pink_1b.mp4  -vf "transpose=1" rotate.mp4
+	#ffmpeg -r 20 -f image2 -s 1700x2354 -i %04d.200318_halflight_pink_1b.png -vcodec libx264 -crf 25 -pix_fmt yuv420p test2.mp4
 
 }
 
