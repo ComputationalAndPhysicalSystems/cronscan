@@ -14,9 +14,6 @@ source $LABPATH/.func/assigned
 #.  status data
 source $STATUSFILE
 
-#!! temp
-cat $STATUSFILE
-
 #.  announce data
 source $LABPATH/release
 
@@ -143,17 +140,13 @@ rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 if [ $XFER == "on" ]
 then
-  echo "Moving image files to Mnemosyne - folder $EXP"
+  echo "Moving image files to Mnemosyne - folder \"$EXP\""
   rsync -zha --quiet $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-  rsync -zha --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$MPEGFILE
+  rsync -zha --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/movie/$MPEGFILE
 
-  #!! can't get this ssh copy command to work. not cp, not scp, not rsync...
+  #!! can't get this remote server copy command to work. not ssh, not cp, not scp, not rsync...
   #! ssh -A caps@129.101.130.89 rsync /beta/data/CAPS/experiments/$EXP/$SCANFILE /beta/data/CAPS/experiments/$EXP/$MPEGFILE
 
-  #- rsync -zvh caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/movie/$MPEGFILE
-  #-- used to call transfer.sh this way
-  #-  find $1/*.png -type f -printf "%f\n"
-  #-  . $LABPATH/util/transfer.sh $EP >> $LOGFILE
 fi
 
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/${HOSTNAME}_status
