@@ -4,38 +4,35 @@
 #=  RPI GPIO or Arduino controller
 #=  See Arduino repository for Arduino programming
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#..   $1, ($2), ($3), ($4), ($5)
-#.    $OPTION, $EXP, $nows, $i0, $i1
-#.ex  $LABPATH/util/lights.sh scan $EXP $i0 $i1
-
+# attrs: $nows $i0 $i1 ($EXP)
 #------------------>
 
 #.. sources
-#.  source golbal
 source /usr/local/bin/caps_settings/labpath
 source $LABPATH/.func/assigned
+source $PROG #: read in program and light variables || ../exp/$EXP/$EXP.exp
 
 #--announce
 echo -e "\n============="
-echo "<<lights.sh>> $1 | $2 | $3 | $4 | $5"
+echo "<<lights.sh>> $1 | $2 | $3 | ($4)"
 
-#.  source exp program
-source $PROG #: read in program and light variables
 
 #.. assignments
 #. attr reassignment
-OPTION=$1     #. on/off/scan/restore/init
-EXP=$2 				#. experiment name // reasiggnment from global optional
-TIME=$3
-i0=$4         #. scan start range L0 index
-i1=$5         #. scan end range L0 index
+#OPTION=$1     #. on/off/scan/restore/init
+TIME=$1
+i0=$2         #. scan start range L0 index
+i1=$3         #. scan end range L0 index
+[[ ! -z "$4" ]] && EXP=$4				#. experiment name // reasiggnment from global optional
 
 #. --hard coded--
-#. red green and blue
+#. red green and blue for arduino serial code
 R="#FF0000"
 G="#00FF00"
 B="#0000FF"
 OFF="#000000"
+
+#. python codes (needs GPIO shell scripts)
 PY_B="1" #"Color(0,0,255)"
 PY_OFF="0" #"Color(0,0,0)"
 
@@ -54,6 +51,8 @@ initvars(){
   report=()
 }
 
+
+# ---rollrandom----------------->>
 rollrandom(){
     #! coding for REL or ABS for the time being is exclusive. One of these variables must be zero
     prob=$((1 + RANDOM % 10))
@@ -67,183 +66,65 @@ rollrandom(){
     # echo "rolled $prob for $10% = $result"
 }
 
-mainloop(){
-  #--announce
-  echo -e "~~~~~~~~~~\n<mainloop>"
-
-  #.. assignments
-  initvars
-
-  #--restore---------------->
-  #: build the restore array from RESTORETRACK
-  if [[ $OPTION == "restore" ]]
-  then
-    #--trace
-    echo "|option = $OPTION"
-    restarray=()
-    line=0
-    while IFS= read -r restore
-    do
-      echo "Light $line restore value: $restore"
-      [[ $restore -eq 1 ]] && restarray+=(1) || restarray+=(0)
-      ((line++))
-    done <$RESTORETRACK
-    echo restore command array: ${restarray[@]}
-  fi
-  #--restore----------------<
-
-  #------------------>
-  #:: go through list of dishes and make triggerarray results
-  #:  option = 'on' 'off' 'scan' 'restore'
-  #:  store w triggerarray for later action
-  for (( di=0; di<=$(( DishI)); di++ )) #: zero-index lights
-  do
-    case $OPTION in
-  			  "off")
-            triggerarray+=(0)
-  			    ;;
-
-  			  "on")
-            found=-1 #?? what is it?
-            look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
-            thisdish="${!look}" #: assign $thisdish with the probability score for that dish
-  			    ;;
-          "scan")
-            if [ -z "$i0" ] || [ -z "$i1" ] #: scan.sh needs to send all 4 attrs
-            then
-              echo "missing range attrs; EXIT"
-              exit
-            fi
-            if [[ $di -ge $i0 && $di -le $i1 ]]
-            then
-              thisdish="OFF"
-            else
-              thisdish=`sed "$((${di}+1))q;d" $RESTORETRACK` #: +1 line number, 1-base index
-              #--trace
-              echo "previous setting from file $thisdish"
-            fi
-
-            echo temporary scan session, light $di is $thisdish
-            ;;
-          "restore")
-            [[ ${restarray[$di]} -eq 1 ]] && thisdish=1 || thisdish=0
-            echo restore light $di $thisdish
-            ;;
-          "init")
-            echo initialize lighting
-            echo $EXP
-            echo $LIGHTLOG
-            echo "# log of light instructions for \"$EXP\"" > $LIGHTLOG
-            ;;
-  			  *)
-  			    ;;
-  	esac
-    [[ $thisdish == "ON" ]] && triggerarray+=(+)
-    [[ $thisdish == "OFF" ]] && triggerarray+=(-)
-    [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
-
+group(){
     #: make grouparray based on unique group number assignments
     #. rollrandom and store result per group in the grouparray
-    if [[ $OPTION == "on" ]]
+    if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
     then
-      if [[ $di -eq 0 ]] #: first iteration, add thisdish to grouparray
+      rollrandom $thisdish
+      echo result $result
+      read
+      grouparray+=(${thisdish}:${result})
+    else
+      if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
       then
-          rollrandom $thisdish
-          grouparray+=(${thisdish}:${result})
-      else
-          if printf '%s\n' ${grouparray[@]} | grep -q -P ${thisdish}
+        for xi in "${!grouparray[@]}"
+        do
+          if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
           then
-              for xi in "${!grouparray[@]}"
-              do
-                  if [[ "${grouparray[$xi]}" =~ ${thisdish} ]]
-                  then
-                      # echo found $thisdish at "${xi}"
-                      found=${x1}
-                      IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
-                      result="${buffer[1]}"
-                  fi
-              done
-          else
-              rollrandom $thisdish
-              grouparray+=(${thisdish}:${result})
+            echo found $thisdish at "${xi}"
+            found=${x1}
+            IFS=':' read -r -a buffer <<< "${grouparray[$xi]}"
+            result="${buffer[1]}"
           fi
+        done
+        echo grouparray $grouparray
+      else
+        rollrandom $thisdish
+        grouparray+=(${thisdish}:${result})
       fi
     fi
     triggerarray+=(${result})
     #-- trace
     echo finished dish loop
-  done
+  }
+# ---rollrandom------------------<<
+# ---rollrandom----------------->>
+
+# ---resolve----------------->>
+resolove(){
+  :
 }
+# ---resolve-----------------<<
 
-#PROGRAM=random.on
-
-resolve()
-{
-    if [ $PROGRAM == "random.toggle" ] #. this is a toggle light program
-    then
-        #: use togcalc procedure to calcualte results
-        [[ $OPTION == "on" ]] && togcalc
-    else              #. not toggle program - random.on or steady
-        first="T"     #. first time thru flag
-        for t in ${triggerarray[@]}
-        do
-            [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
-            [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
-            [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
-            if [[ $first == "T" ]]
-            then
-              [ $t == "T" -o $t == "+" ] && echo 1 > $RESTORETRACK || echo 0 > $RESTORETRACK
-            else
-              [ $t == "T" -o $t == "+" ] && echo 1 >> $RESTORETRACK || echo 0 >> $RESTORETRACK
-            fi
-            first='F'
-
-        done
-    fi
+# ---toggle----------------->>
+toggle(){
+  :
 }
+# ---toggle-----------------<<
 
-togcalc(){
-    #. compare previous results from TOG file to current trigger results to determine new state
-    j=0
-    rarray=() #. rountine temp array for writting to $TOGTRACK (toggle result file)
-    while IFS= read -r last
-    do
-        case $last in
-          -)
-            report+=0
-            rarray+=(-)
-            resultarray+=($OFF)
-            pythonarray+=($PY_OFF)
-            ;;
-          +)
-            report+=1
-            rarray+=(+)
-            resultarray+=($B)
-            pythonarray+=($PY_B)
-            ;;
-          *)
-            [[ ${triggerarray[$j]} == "T" ]] && trigger=1 || trigger=0
-            tresult=`echo $(( last - 1 * trigger )) | sed 's/-//'`
-            [[ $tresult -eq 1 ]] && resultarray+=($B) || resultarray+=($OFF)
-            [[ $tresult -eq 1 ]] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
-            [[ $tresult -eq 1 ]] && report+=1 || report+=0
-            [[ $tresult -eq 1 ]] && rarray+=(1) || rarray+=(0) #. temp buffer for tog result file
-            ;;
-        esac
+# ---mainloop----------------->>
+mainloop(){
+  #--announce
+  echo -e "~~~~~~~~~~\n<mainloop>"
 
-        ((j++))
-    done <$TOGTRACK
-    first='T'
-    for i in ${rarray[@]}
-    do
-        [[ $first == "T" ]] && echo $i > $TOGTRACK || echo $i >> $TOGTRACK #: first iteration overwrite TOG file
-        [[ $first == "T" ]] && echo $i > $RESTORETRACK || echo $i >> $RESTORETRACK
-        first='F'
-    done
+
 
 }
+# ---mainloop-----------------<<
 
-finish(){
+
+nextstate(){
   [[ ! -f "$LIGHTLOG" ]] && . $LABPATH/.func/initlightlog.sh $LIGHTLOG
 
 
@@ -258,28 +139,110 @@ finish(){
         echo "|| turn off for scan">> $LIGHTLOG
     fi
 
-    #: write out python data file
+    #: write out nextstate file
     for i in ${!pythonarray[@]}
     do
-        [[ $i -eq 0 ]] && printf "\n${pythonarray[$i]}" >> $SETPY || echo -n "${pythonarray[$i]}" >> $SETPY
+        [[ $i -eq 0 ]] && printf "${pythonarray[$i]}" > $STATETRACK || echo -n "${pythonarray[$i]}" >> $STATETRACK
     done
 
-    #. Resolve based on device
-    if [ $CONTROLLER == 'gpio' ]    #. GPIO resolve
-    then
-        echo "launch python"
-        #!!!!!!
-        #sudo -E $LABPATH/util/gpio.sh $LABPATH #? pass the env variable cuz -E isn't working
-        #sudo python $LABPATH/util/gpio.py -e $EXP -c $DISH_CNT
-    else                            #. If using Arduino, send message to Device
-        for i in ${!resultarray[@]}
-        do
-            echo "<+$i*${resultarray[$i]}>" > $DEVICE
-            echo "<+$i*${resultarray[$i]}>"
-        done
-    fi
+    #: write out python data file
+
 }
 
-mainloop
-resolve
-finish
+# ---newlist----------------->>
+triggerlist(){
+  #:: go through list of dishes and make triggerarray results
+  #:  store w triggerarray for later action
+
+  #!! this is the clumsy way of looking up the values from the EXP list.
+  #!! let's look at the LLIST file, instad.
+  for (( di=0; di<=$DishI; di++ )) #: zero-index lights
+  do
+    found=-1 #?? what is it?
+    look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
+    thisdish="${!look}" #: assign $thisdish with the probability score for that dish
+    [[ $thisdish == "ON" ]] && triggerarray+=(+)
+    [[ $thisdish == "OFF" ]] && triggerarray+=(-)
+    [ $thisdish == "ON" -o $thisdish == "OFF" ] && continue
+  done
+
+  #:  evaluate triggererarray
+  first="T"     #. first time thru flag
+  for t in ${triggerarray[@]}
+  do
+      [ $t == "T" -o $t == "+" ] && report+=1 || report+=0 #: summarize into one string for report purposes
+      [ $t == "T" -o $t == "+" ] && resultarray+=($B) || resultarray+=($OFF)
+      [ $t == "T" -o $t == "+" ] && pythonarray+=($PY_B) || pythonarray+=($PY_OFF)
+      if [[ $first == "T" ]]
+      then
+        [ $t == "T" -o $t == "+" ] && echo 1 > $RESTORETRACK || echo 0 > $RESTORETRACK
+      else
+        [ $t == "T" -o $t == "+" ] && echo 1 >> $RESTORETRACK || echo 0 >> $RESTORETRACK
+      fi
+      first='F'
+  done
+  OPTION=on #!!!!TEMP
+  nextstate #:  write it out to .track/state file
+
+}
+# ---newlist-----------------<<
+
+prepscanner(){
+
+  #: write out python data file : si = state of i
+
+  echo $i0, $i1
+  for i in ${!pythonarray[@]}
+  do
+      #: range test to turn off light
+      r=${pythonarray[$i]}
+
+      [ $i -ge $i0 -a $i -le $i1 ] && r=0
+
+      #: write one i at a time.
+      [[ $i -eq 0 ]] && printf $r > $SETPY || echo -n $r >> $SETPY
+
+  done
+
+  #. Resolve based on device
+  if [ $CONTROLLER == 'gpio' ]    #. GPIO resolve
+  then
+      echo "launch python"
+      sudo -E $LABPATH/util/gpio.sh $LABPATH #? pass the env variable cuz -E isn't working
+      #sudo python $LABPATH/util/gpio.py -e $EXP -c $DISH_CNT
+  else                            #. If using Arduino, send message to Device
+      for i in ${!resultarray[@]}
+      do
+          echo "<+$i*${resultarray[$i]}>" > $DEVICE
+          echo "<+$i*${resultarray[$i]}>"
+      done
+  fi
+}
+
+seekstate(){
+  n=()
+  i=0
+  while read -r -n1 n[i]
+  do
+    pythonarray+=(${n[i]})
+    ((++i))
+  done < $STATETRACK
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#$ needed: $LLIST
+
+#--> if light index start is 0, this is the first run; make new LLIST <-- maybe use this if there's a per/dish scanners
+#: curently checking if $i1 is '5', which means it's the first scanner, in a 6 dish configuration
+# $i1 will be 0 for the final go, reset lights...
+initvars
+
+#: hard code the 5 so we can move on for now...
+[[ $i1 -eq 5 ]] && triggerlist || seekstate
+
+echo report is: $report
+
+prepscanner
+
+#resolve
+#mainloop

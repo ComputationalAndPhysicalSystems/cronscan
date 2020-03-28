@@ -25,10 +25,11 @@ cd "${BASH_SOURCE%/*}"
 gitlog=`git log --pretty=format:'%h' -n 1`
 
 #--announce
-printf '~%.0s' {1..31}
+echo
+printf '~%.0s' {1..45}
 echo -e "\nGLOBAL||r:$release git:$gitlog"
 echo "<<scan.sh>> | resolution=$1"
-printf '~%.0s' {1..31}
+printf '~%.0s' {1..29}
 echo
 #.. assignments
 
@@ -91,7 +92,7 @@ for scanner in $SCANNER_LIST; do
     echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
-    . $LABPATH/util/lights2.sh $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
+    . $LABPATH/util/lights.sh $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
 
 #    . $LABPATH/util/lights.sh scan $EXP $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
   fi
@@ -124,7 +125,7 @@ if [[ $USELIGHTS == "on" ]]
 then
   #restore lights for new state
   nows=$(date +%s)
-  . $LABPATH/util/lights2.sh $nows 0 "-1" >> $LOGFILE #. turn off lights if exp is using
+  . $LABPATH/util/lights.sh $nows 0 "-1" >> $LOGFILE #. turn off lights if exp is using
 
   #. $LABPATH/util/lights.sh on $EXP $nows >> $LOGFILE #. turn on lights if exp is using
 fi
