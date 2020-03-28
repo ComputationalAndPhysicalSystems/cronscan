@@ -787,15 +787,13 @@ cronit(){
 	#. initialize LOG with some project info
 	cp $EXPFILE $LOGFILE
 	printf '=%.0s' {1..31} >> $LOGFILE
-
 	echo -e -n "\nCrontab code: " >> $LOGFILE
-
 	printf "*/$INT * * * * " >> $LOGFILE
 	[[ $REF > 0 ]] && \
-	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE;\n " >> $LOGFILE
+	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE;\n" >> $LOGFILE
 	printf '=%.0s' {1..31} >> $LOGFILE
 
-	echo -e "\nLOCAL DIRECTORY on $HOSTNAME: $EP" >> $LOGFILE
+	echo -e "\nWORKING DIRECTORY on $HOSTNAME: $EP" >> $LOGFILE
 
 	#..	make light initilizers
 	if [[ $USELIGHTS == "on" ]]

@@ -55,6 +55,7 @@ si=1  #: scan loop initialize
 #:  LOG file info
 if [ $gitlog != $gitlog_init -a $GITALERT != "warned" ]
 then
+  echo "*** slack alert for gitlog change"
   slack "[WARNING]: The gitlog has changed, indiating a code update since the experiment began."
   GITALERT="warned"
 fi
@@ -68,13 +69,15 @@ echo -e "$SCANNER_LIST\n"
 #:  slack alert for missing scanners
 if [ $SCANNER_COUNT -lt $SCANNERS ]
 then
+  echo "*** slack alert for missing scanner"
 	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$SCANNERS scanners. Scanners may require physical inspection."
   [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
   slack "[WARNING]: Only detected $SCANNER_COUNT/$SCANNERS scanners."
   slack "RIP Acquisition #$COUNT, ~$(date +%s)"
 fi
 
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#:  scan command loop
 for scanner in $SCANNER_LIST; do
   pad=`printf %04d $COUNT`
   SCANFILE="$pad.$EXP.s$si.$nows.png"
@@ -104,12 +107,17 @@ done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
-[[ $COUNT -eq 1 ]]  && slack "[LAUNCH] First scan for experiment $EXP"
+if [ $COUNT -eq 1 ]
+then
+  echo "* slack report first scan"
+  slack "[LAUNCH] First scan for experiment $EXP"
+fi
 
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
 
 if [ $(( $COUNT % $SLACK_INTERVAL )) -eq 0 ]
 then
+    echo "* slack scan frequency report "
     slack "[UPDATE $EXP] SCAN# $COUNT"
 fi
 
