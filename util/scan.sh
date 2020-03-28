@@ -32,6 +32,7 @@ printf '~%.0s' {1..31}
 echo -e "\nGLOBAL||r:$release git:$gitlog"
 echo "<<scan.sh>> | resolution=$1"
 printf '~%.0s' {1..31}
+echo
 #.. assignments
 
 #.  export env vars
@@ -56,7 +57,7 @@ si=1  #: scan loop initialize
 #:  LOG file info
 if [ "$gitlog" != "$gitlog_init" -a "$GITALERT" != "warned" ]
 then
-  echo "*** slack alert for gitlog change"
+  echo -e "\n*** slack alert for gitlog change"
   slack "[WARNING]: The gitlog has changed, indiating a code update since the experiment began."
   GITALERT="warned"
 fi
@@ -144,7 +145,7 @@ if [ $XFER == "on" ]
 then
   echo "Moving image files to Mnemosyne - folder $EXP"
   rsync -zha --progress --remove-source-files $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-  ssh -A 129.101.130.89 rsync /beta/data/CAPS/experiments/$EXP/$SCANFILE /beta/data/CAPS/experiments/$EXP/$MPEGFILE
+  ssh -A caps@129.101.130.89 rsync /beta/data/CAPS/experiments/$EXP/$SCANFILE /beta/data/CAPS/experiments/$EXP/$MPEGFILE
 
   #- rsync -zvh caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/movie/$MPEGFILE
   #-- used to call transfer.sh this way
