@@ -54,7 +54,7 @@ si=1  #: scan loop initialize
 #fi
 
 #:  LOG file info
-if [ $gitlog != $gitlog_init -a $GITALERT != "warned" ]
+if [ "$gitlog" != "$gitlog_init" -a "$GITALERT" != "warned" ]
 then
   echo "*** slack alert for gitlog change"
   slack "[WARNING]: The gitlog has changed, indiating a code update since the experiment began."
@@ -144,8 +144,9 @@ if [ $XFER == "on" ]
 then
   echo "Moving image files to Mnemosyne - folder $EXP"
   rsync -zha --progress --remove-source-files $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-  rsync -zvh caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/$SCANFILE \
-    caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/movie/$MPEGFILE
+  ssh -A 129.101.130.89 rsync /beta/data/CAPS/experiments/$EXP/$SCANFILE /beta/data/CAPS/experiments/$EXP/$MPEGFILE
+
+  #- rsync -zvh caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/movie/$MPEGFILE
   #-- used to call transfer.sh this way
   #-  find $1/*.png -type f -printf "%f\n"
   #-  . $LABPATH/util/transfer.sh $EP >> $LOGFILE
