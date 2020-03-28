@@ -153,4 +153,4 @@ then
   #-  . $LABPATH/util/transfer.sh $EP >> $LOGFILE
 fi
 
-rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$HOSTNAME$STATUSFILE
+rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/${HOSTNAME}_status
