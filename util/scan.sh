@@ -141,8 +141,11 @@ rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 if [ $XFER == "on" ]
 then
-  echo "Moving image files to Mnemosyne - folder \"$EXP\""
+  echo "copy scan to Mnemosyne"
   rsync -zha --quiet $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+  echo "moving image to Phil for movie FFMPEG"
+  rsync $EXPFILE caps@129.101.130.90:~/lab/$EXP/
+  rsync $STATUSFILE caps@129.101.130.90:~/lab/$EXP/  
   rsync -zha --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/$EXP/$MPEGFILE
 
   #!! can't get this remote server copy command to work. not ssh, not cp, not scp, not rsync...
