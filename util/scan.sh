@@ -28,9 +28,10 @@ cd "${BASH_SOURCE%/*}"
 gitlog=`git log --pretty=format:'%h' -n 1`
 
 #--announce
+printf '~%.0s' {1..31}
 echo -e "\nGLOBAL||r:$release git:$gitlog"
 echo "<<scan.sh>> | resolution=$1"
-
+printf '~%.0s' {1..31}
 #.. assignments
 
 #.  export env vars
