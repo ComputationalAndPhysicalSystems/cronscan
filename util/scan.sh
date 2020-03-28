@@ -141,10 +141,10 @@ rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 if [ $XFER == "on" ]
 then
-  echo "Moving image files to Mnemosyne - folder $EXPERIMENT_BASENAME"
-  rsync -zha --progress --remove-source-files $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/
-  rsync -zvh caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/$SCANFILE \
-    caps@129.101.130.89:/beta/data/CAPS/experiments/$EXPERIMENT_BASENAME/movie/$MPEGFILE
+  echo "Moving image files to Mnemosyne - folder $EXP"
+  rsync -zha --progress --remove-source-files $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+  rsync -zvh caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/$SCANFILE \
+    caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/movie/$MPEGFILE
   #-- used to call transfer.sh this way
   #-  find $1/*.png -type f -printf "%f\n"
   #-  . $LABPATH/util/transfer.sh $EP >> $LOGFILE
