@@ -74,7 +74,7 @@ declare -a trueopts
 # declare -a lprog
 
 keys=(e s i r z x l a f o c h)
-mkeys=(T Z F S Q)
+mkeys=(T Z R F S Q)
 
 opts+=("*/...")
 opts+=("C/1..9")
@@ -157,6 +157,7 @@ blurbs+=("* Diagnostics")
 #: menu blurbs
 mblurbs+=("Test NeoPixels")
 mblurbs+=("STOP experiment")
+mblurbs+=("Make Report")
 mblurbs+=("LOAD from file")
 mblurbs+=("SAVE program")
 mblurbs+=("QUIT")
@@ -407,9 +408,9 @@ zero(){
 	echo -e
 	printf "%32s"  "[y]..Stop Exp <"
 	echo -e
-	printf "%32s"  "[Y]..Stop and Report <"
+	printf "%32s"  "[r]..Stop and Report <"
 	echo -e "${NC}"
-	printf "%32s"  "Chose [n/y/Y] >"
+	printf "%32s"  "Chose [n/y/r] >"
 	read -n 1 zkey
 	if [[ $zkey = "n" ]]
 	then
@@ -420,7 +421,7 @@ zero(){
 		echo `sudo crontab -r`
 		clearpix
 	fi
-	if [[ $zkey = "Y" ]]
+	if [[ $zkey = "r" ]]
 	then
 		echo `sudo crontab -r`
 		clearpix
@@ -433,6 +434,14 @@ zero(){
 
 report (){
 	a=a
+	echo report
+	read
+	echo "EXP=$EXP" > $EP/moviejob
+	#. talk to phil
+	ssh -A caps@129.101.130.90 rsync $LABPATH/release ~/lab/movie/$EXP/release
+	ssh -A caps@129.101.130.90 rsync $LABPATH/util/movie.sh ~/lab/movie/movie.sh
+	ssh -A caps@129.101.130.90 rsync $EP/moviejob ~/lab/movie/moviejob
+	
 	#ffmpeg code to run on client
 	#ffmpeg -i halflight_pink_1b.mp4  -vf "transpose=1" rotate.mp4
 	#ffmpeg -r 20 -f image2 -s 1700x2354 -i %04d.200318_halflight_pink_1b.png -vcodec libx264 -crf 25 -pix_fmt yuv420p test2.mp4
@@ -448,6 +457,11 @@ menukeys(){
 	"Z")			#: zero out crontabs
 		zero
 	;;
+
+	"R")			#: zero out crontabs
+		report
+	;;
+
 	"F")			#: load from file
 		sfile
 	;;
