@@ -29,4 +29,4 @@ for scanner in $2; do
   ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$2.png -vcodec $vcodec -crf $crf -pix_fmt $pix_fmt $movie
 done
 
-echo "$2 movie(s) generated for #1, on $now. R $3" >> joblog
+echo "$2 movie(s) generated for $1, on $now. R $3" >> joblog
