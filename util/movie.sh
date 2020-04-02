@@ -25,6 +25,7 @@ pix_fmt="yuv420p"
 now=$(date)
 
 for scanner in $2; do
+  echo "starting on $scanner of $2"
   movie="${1}.s${scanner}.mp4"
   ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$scanner.png -vcodec $vcodec -vf "transpose=2" -crf $crf -pix_fmt $pix_fmt $movie < /dev/null
 done
