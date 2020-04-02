@@ -434,9 +434,10 @@ zero(){
 
 report (){
 	echo report...
+	now=$(date)
 	source $LABPATH/exp/$EXP/$EXP.exp
 	MOVIEJOB=$LABPATH/exp/$EXP/moviejob
-	echo "EXP=$EXP" > $MOVIEJOB
+	echo $now > $MOVIEJOB
 	#. talk to phil
 	#? is -A necessary? "Enables forwarding of the authentication agent connection."
 	echo "copy moviejob to phil: key to continue"
