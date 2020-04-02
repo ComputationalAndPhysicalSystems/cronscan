@@ -434,13 +434,13 @@ zero(){
 
 report (){
 	echo report...
-	echo "EXP=$EXP" > $EP/moviejob
+	echo "EXP=$EXP" > $LABPATH/exp/$EXP/moviejob
 	#. talk to phil
 	#? is -A necessary? "Enables forwarding of the authentication agent connection."
 	ssh -A caps@129.101.130.90 rsync $LABPATH/release ~/lab/movie/$EXP/release
 	ssh -A caps@129.101.130.90 rsync $EP/moviejob ~/lab/movie/moviejob
 	# example: ssh -A caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh test 1 3.4.4
-	ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh $EXP $SCANNERS $release
+	ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < util/movie.sh $EXP $SCANNERS $release
 
 	read
 
