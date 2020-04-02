@@ -24,10 +24,11 @@ crf="25"
 pix_fmt="yuv420p"
 now=$(date)
 
-for scanner in $2; do
-  echo "starting on $scanner of $2"
-  movie="${1}.s${scanner}.mp4"
-  ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$scanner.png -vcodec $vcodec -vf "transpose=2" -crf $crf -pix_fmt $pix_fmt $movie < /dev/null
+for (( i=1; i<=$2; i++ ))
+do
+  echo "starting on $i of $2"
+  movie="${1}.s${i}.mp4"
+  ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$i.png -vcodec $vcodec -vf "transpose=2" -crf $crf -pix_fmt $pix_fmt $movie < /dev/null
 done
 
 echo "$2 movies generated for $1, on $now. R $3" >> joblog
