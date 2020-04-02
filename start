@@ -433,15 +433,17 @@ zero(){
 }
 
 report (){
-	a=a
-	echo report
-	read
+	echo report...
 	echo "EXP=$EXP" > $EP/moviejob
 	#. talk to phil
+	#? is -A necessary? "Enables forwarding of the authentication agent connection."
 	ssh -A caps@129.101.130.90 rsync $LABPATH/release ~/lab/movie/$EXP/release
-	ssh -A caps@129.101.130.90 rsync $LABPATH/util/movie.sh ~/lab/movie/movie.sh
 	ssh -A caps@129.101.130.90 rsync $EP/moviejob ~/lab/movie/moviejob
-	
+	# example: ssh -A caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh test 1 3.4.4
+	ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh $EXP $SCANNERS $release
+
+
+
 	#ffmpeg code to run on client
 	#ffmpeg -i halflight_pink_1b.mp4  -vf "transpose=1" rotate.mp4
 	#ffmpeg -r 20 -f image2 -s 1700x2354 -i %04d.200318_halflight_pink_1b.png -vcodec libx264 -crf 25 -pix_fmt yuv420p test2.mp4
