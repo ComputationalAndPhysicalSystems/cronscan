@@ -442,7 +442,7 @@ report (){
 	# example: ssh -A caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh test 1 3.4.4
 	ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh $EXP $SCANNERS $release
 
-
+	read
 
 	#ffmpeg code to run on client
 	#ffmpeg -i halflight_pink_1b.mp4  -vf "transpose=1" rotate.mp4
