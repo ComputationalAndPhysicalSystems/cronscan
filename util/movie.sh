@@ -26,7 +26,7 @@ now=$(date)
 
 for scanner in $2; do
   movie="${1}.s${scanner}.mp4"
-  ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$2.png -vcodec $vcodec -vf "transpose=2" -crf $crf -pix_fmt $pix_fmt $movie
+  ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$2.png -vcodec $vcodec -vf "transpose=2" -crf $crf -pix_fmt $pix_fmt $movie < /dev/null
 done
-echo
+
 echo "$2 movies generated for $1, on $now. R $3" >> joblog
