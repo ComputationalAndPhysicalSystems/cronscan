@@ -142,14 +142,17 @@ rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 if [ $XFER == "on" ]
 then
   echo "copy scan to Mnemosyne"
-  rsync -zha --quiet $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+  rsync -za --quiet $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+  echo "copy scan to Repeller"
+  rsync -za --quiet $EP/$SCANFILE caps@129.101.130.88:~/lab/segment/$EXP/
+
   echo "moving image to Phil for movie FFMPEG"
 
-  #: note that it necesssary to move an existing file without name change to the leaf directory with rsync, because trying to sync a file to a leaf that doesn't yet exist will not work when CHANGING THE NAME of the file at destination. IT's very stupid.
+  #: note that it necesssary to move an existing file without name change to the leaf directory with rsync, because trying to sync a file to a leaf that doesn't yet exist will not work when SPECIFYING THE NAME of the file at destination. IT's very stupid.
   #: talk to phil, movie server
   rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$EXP/
   rsync $STATUSFILE caps@129.101.130.90:~/lab/movie/$EXP/
-  rsync -zha --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
+  rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
 
   #!! can't get this remote server copy command to work. not ssh, not cp, not scp, not rsync...
   #! ssh -A caps@129.101.130.89 rsync /beta/data/CAPS/experiments/$EXP/$SCANFILE /beta/data/CAPS/experiments/$EXP/$MPEGFILE
