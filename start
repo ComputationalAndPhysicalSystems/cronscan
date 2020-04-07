@@ -433,6 +433,7 @@ zero(){
 }
 
 report (){
+	#! need to inlcude scanner resolution setting for FFMPEG commands in movie.sh
 	echo report...
 	now=$(date)
 	source $LABPATH/exp/$EXP/$EXP.exp
