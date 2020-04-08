@@ -1,4 +1,4 @@
 #!/bin/bash
-#-c $DISH_CNT 
+#-c $PLATE_CNT 
 
 python $LABPATH/util/blue.py -c $1

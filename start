@@ -7,7 +7,7 @@ source /usr/local/bin/caps_settings/config
 
 #.. assignments
 
-#CAPACITY=6 #. hard code 6 DISH_CNT per scanner
+#CAPACITY=6 #. hard code 6 PLATE_CNT per scanner
 #!! WTF, need to redeclare CAPACITY again during saveit()
 SFILE="$LABPATH/exp/last.exp" #: to initialize GUI
 FUNCDIR=$LABPATH/.func
@@ -73,7 +73,7 @@ declare -a subvals #: the value to store in the associated EXP ARG, if different
 declare -a trueopts
 # declare -a lprog
 
-keys=(e s i r z x l a f o c h)
+keys=(e s i r z x l a f o c d)
 mkeys=(T Z R F S Q)
 
 opts+=("*/...")
@@ -180,7 +180,7 @@ subs+=("_sys")
 
 subblurbs+=("${Inv}_____Experiment Parameters_____${NC} [${Red} WARNING${NC} | ${LtBlue}LAST EXP${NC} | ${Green}new value${NC} ]")
 subblurbs+=("${On_IBlack}________ System Setup__________${NC}")
-subblurbs+=("${On_IBlack}___________Dish Setup__________${NC}")
+subblurbs+=("${On_IBlack}___________Plate Setup__________${NC}")
 
 ##. flow booleans
 stay_TF=true
@@ -368,8 +368,8 @@ testlights(){
 			echo
 			echo -e "${Red}   Watch the lights!${NC}"
 			echo
-			#sudo python $SP/util/gpio-test.py -c $DISH_CNT -i $zkey
-			echo `sudo -E $LABPATH/util/gpio-test.sh $DISH_CNT $zkey`
+			#sudo python $SP/util/gpio-test.py -c $PLATE_CNT -i $zkey
+			echo `sudo -E $LABPATH/util/gpio-test.sh $PLATE_CNT $zkey`
 			echo "paused for error readout. <enter> to clear lights"
 			read
 			clearpix
@@ -397,7 +397,7 @@ testlights(){
 }
 
 clearpix(){
-	echo `sudo $LABPATH/util/clear.sh $DISH_CNT`
+	echo `sudo $LABPATH/util/clear.sh $PLATE_CNT`
 }
 
 zero(){
@@ -574,8 +574,8 @@ program_lights(){
 	# echo "(----------program_lights ()---------)" #-- TRACER
 	if [[ firstrun -ne 0 ]] #: escape prog
 	then
-		local dish=${!args[(($i))]} #: find the value of each dish arg
-		case $dish in
+		local plate=${!args[(($i))]} #: find the value of each plate arg
+		case $plate in
 
 		"neg-ctrl")			#: CHOICE
 			val=OFF
@@ -587,12 +587,12 @@ program_lights(){
 			#! previous code edit
 			# lpI=$((${#args[@]}-1))
 			# val=${!args[$lpI]}
-			IFS='.' read -ra vals <<< $dish
+			IFS='.' read -ra vals <<< $plate
 
 			val=${vals[1]}
 			;;
 		esac
-		eval ${largs[$lj]}=$val #: sets the new value for the dish light
+		eval ${largs[$lj]}=$val #: sets the new value for the plate light
 		((lj++))
 	fi
 }
@@ -663,10 +663,10 @@ update(){
 		local ins=12 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
 
-		#: hunt down dish entries and remove them
+		#: hunt down plate entries and remove them
 		for ((ix=((${#keys[@]}-1));ix>0;ix--)) #((ix=0;ix<lKeys;ix++))
 		do
-			if [[ ${subs[$ix]} = "_dish" ]]
+			if [[ ${subs[$ix]} = "_plate" ]]
 			then
 				unset args[$ix]
 				unset blurbs[$ix]
@@ -689,7 +689,7 @@ update(){
 			insert args $(( ini )) SCANNER${ix}_ID
 			insert blurbs $(( ini )) "Scanner${ix} ID"
 			insert keys $(( ini )) k
-			insert subs $(( ini )) "_dish"
+			insert subs $(( ini )) "_plate"
 			insert opts $(( ini )) "*"
 			insert optslist $(( ini )) ""
 			insert cols $(( ini )) "$LtBlue"
@@ -700,17 +700,17 @@ update(){
 			insert args $(( ini )) TEMPLATE${ix}_ID
 			insert blurbs $(( ini )) "Template${ix} ID"
 			insert keys $(( ini )) t
-			insert subs $(( ini )) "_dish"
+			insert subs $(( ini )) "_plate"
 			insert opts $(( ini )) "*"
 			insert optslist $(( ini )) ""
 			insert cols $(( ini )) "$LtBlue"
 			insert trueopts $(( ini )) ""
 			insert subvals $(( ini )) ""
 
-			#: dish specific
+			#: plate specific
 			for ((j=1;j<$(( CAPACITY+1 ));j++))
 			do
-				if [[ $j -eq 1 && $ix -eq 1 ]] #: first dish (numeric)
+				if [[ $j -eq 1 && $ix -eq 1 ]] #: first plate (numeric)
 				then
 					lj=0 #: light j(index) reset
 					lset="L0"
@@ -720,10 +720,10 @@ update(){
 				fi
 				inj=$((ini+j))
 				insert largs $(( lj )) "$lset"
-				insert args $(( inj )) "DISH${ix}_${j}"
-				insert keys $(( inj )) d
-				insert blurbs $(( inj )) "S${ix} Dish${j}"
-				insert subs $(( inj )) "_dish"
+				insert args $(( inj )) "PLATE${ix}_${j}"
+				insert keys $(( inj )) p
+				insert blurbs $(( inj )) "S${ix} Plate${j}"
+				insert subs $(( inj )) "_plate"
 				insert opts $(( inj )) "C/-/=/1..9"
 				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"
 				insert cols $(( inj )) "$LtBlue"
@@ -851,7 +851,7 @@ saveit(){
 	. $LABPATH/.func/assign.sh $EXP
 	source $ASSIGNED
 	#? CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
-	DISH_CNT=$((CAPACITY*SCANNERS))
+	PLATE_CNT=$((CAPACITY*SCANNERS))
 
 	echo "working with directory $EP"
 	echo "temp save: $SAVEFILE"
@@ -861,7 +861,7 @@ saveit(){
 	echo release=$release >> $SAVEFILE
 	echo gitlog_init=$gitlog_init >> $SAVEFILE
 	echo CAPACITY=$CAPACITY >> $SAVEFILE
-	echo DISH_CNT=$DISH_CNT >> $SAVEFILE
+	echo PLATE_CNT=$PLATE_CNT >> $SAVEFILE
 
 	#: regurgitate args
 	for arg in "${args[@]}"
@@ -920,7 +920,7 @@ storelongest(){
 	do
 		temp=${!args[$ix]}
 		comp=${#temp}
-		if [[ $comp -gt $longest && ${subs[$ix]} = "_dish" ]]
+		if [[ $comp -gt $longest && ${subs[$ix]} = "_plate" ]]
 		then
 			longest=$comp
 		fi
@@ -1007,7 +1007,7 @@ while [ "$stay_TF" = "true" ]
 			arglen=${#arg}
 			push=$(($margin-arglen))
 
-			#: display dish settings
+			#: display plate settings
 			if [[ ${keys[$i]} = "d" && $USELIGHTS = "on" ]]
 			then
 				lp=${!largs[$dindex]} #:light program setting as string
@@ -1016,7 +1016,7 @@ while [ "$stay_TF" = "true" ]
 				lp=""
 			fi
 			# echo -n $arg $lp
-			#: eliminate the dish setup columns by stopping push below; consolidate to one value
+			#: eliminate the plate setup columns by stopping push below; consolidate to one value
 
 			printf "%1s %${push}s" "$arg" "$lp"
 			echo -e ${NC}
@@ -1077,7 +1077,7 @@ while [ "$stay_TF" = "true" ]
 firstrun=0
 init_colors
 load_parms
-update ${keys[1]} #: send scanner count hotkey to populate statrup dish args
+update ${keys[1]} #: send scanner count hotkey to populate statrup plate args
 #update ${keys[6]} #: now for lights, if on
 storelongest
 main "$@"

@@ -16,20 +16,20 @@ initlights(){
   echo "# log of light instructions for \"$EXP\"" > $LIGHTLOG
   echo $PROGRAM light experiment >> $LIGHTLOG
   echo -n "probabilities:" >> $LIGHTLOG
-  for (( di=0; di<=$(( DISH_CNT-1 )); di++ ))
+  for (( di=0; di<=$(( PLATE_CNT-1 )); di++ ))
   do
-    look=L$di #: make a string L0..Ln, for looking at the dish probability variable in the .exp file
-    thisdish="${!look}" #: assign $thisdish with the probability score for that dish
+    look=L$di #: make a string L0..Ln, for looking at the plate probability variable in the .exp file
+    thisplate="${!look}" #: assign $thisplate with the probability score for that plate
 
     #: lout to make $LPROG
-    lout=$thisdish                      #:
-    [ $thisdish == "ON" ] && lout="+"
-    [ $thisdish == "OFF" ] && lout="-"
+    lout=$thisplate                      #:
+    [ $thisplate == "ON" ] && lout="+"
+    [ $thisplate == "OFF" ] && lout="-"
     listarray+=$lout
 
     #: make the human readable report line 0
-    [ $thisdish != "ON" -a $thisdish != "OFF" ] && thisdish+="0%"
-    echo -n " D$((di+1)):$thisdish">> $LIGHTLOG
+    [ $thisplate != "ON" -a $thisplate != "OFF" ] && thisplate+="0%"
+    echo -n " D$((di+1)):$thisplate">> $LIGHTLOG
     echo -n
 
 
