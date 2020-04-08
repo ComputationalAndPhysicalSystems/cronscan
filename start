@@ -550,7 +550,7 @@ eatkeys(){ #: digest user key inputs
 	echo -e "${Cyan}${Italic}${opts[$i]:2}${NC}] >\c"
 	eatinput
 	cols[$i]=$xcolor
-	if [[ ${keys[$i]} = "d" ]]
+	if [[ ${keys[$i]} = "p" ]]
 	then
 		program_lights
 	fi
@@ -560,7 +560,7 @@ eatkeys(){ #: digest user key inputs
 		lj=0
 		for argi in "${keys[@]}"
 		do
-			if [[ $argi = "d" ]]
+			if [[ $argi = "p" ]]
 			then
 				program_lights
 			fi
@@ -660,6 +660,8 @@ update(){
 	then
 
 		local ix j ins ini inj
+
+		#!! configure baed on how many special args are added after system setup catagory
 		local ins=12 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
 
@@ -686,9 +688,9 @@ update(){
 		for ((ix=1;ix<$(( SCANNERS+1 ));ix++)) #: add features related to scanner/multiple
 		do
 			ini=$((ins+((ix-1))*2+((ix-1))*CAPACITY))
+			insert keys $(( ini )) k
 			insert args $(( ini )) SCANNER${ix}_ID
 			insert blurbs $(( ini )) "Scanner${ix} ID"
-			insert keys $(( ini )) k
 			insert subs $(( ini )) "_plate"
 			insert opts $(( ini )) "*"
 			insert optslist $(( ini )) ""
@@ -696,10 +698,21 @@ update(){
 			insert trueopts $(( ini )) ""
 			insert subvals $(( ini )) ""
 
+			# ((ini++))
+			# insert keys $(( ini )) h
+			# insert args $(( ini )) HOOD${ix}
+			# insert blurbs $(( ini )) "Hood${ix}"
+			# insert subs $(( ini )) "_plate"
+			# insert opts $(( inj )) "C/-/=/1..9"
+			# insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"
+			# insert cols $(( inj )) "$LtBlue"
+			# insert trueopts $(( inj )) "C/-/=/123456789"
+			# insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/group.^"
+			#
 			((ini++))
+			insert keys $(( ini )) t
 			insert args $(( ini )) TEMPLATE${ix}_ID
 			insert blurbs $(( ini )) "Template${ix} ID"
-			insert keys $(( ini )) t
 			insert subs $(( ini )) "_plate"
 			insert opts $(( ini )) "*"
 			insert optslist $(( ini )) ""
@@ -719,16 +732,16 @@ update(){
 					lset="L$lj"
 				fi
 				inj=$((ini+j))
+				insert keys $(( inj )) p
 				insert largs $(( lj )) "$lset"
 				insert args $(( inj )) "PLATE${ix}_${j}"
-				insert keys $(( inj )) p
 				insert blurbs $(( inj )) "S${ix} Plate${j}"
 				insert subs $(( inj )) "_plate"
 				insert opts $(( inj )) "C/-/=/1..9"
 				insert optslist $(( ini )) "[-]..neg-ctrl/[=]..pos-ctrl/1..9"
 				insert cols $(( inj )) "$LtBlue"
-				insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/group.^"
 				insert trueopts $(( inj )) "C/-/=/123456789"
+				insert subvals $(( inj )) "C/neg-ctrl/pos-ctrl/group.^"
 				program_lights
 			done
 		done
@@ -1008,7 +1021,7 @@ while [ "$stay_TF" = "true" ]
 			push=$(($margin-arglen))
 
 			#: display plate settings
-			if [[ ${keys[$i]} = "d" && $USELIGHTS = "on" ]]
+			if [[ ${keys[$i]} = "p" && $USELIGHTS = "on" ]]
 			then
 				lp=${!largs[$dindex]} #:light program setting as string
 				((dindex++))
