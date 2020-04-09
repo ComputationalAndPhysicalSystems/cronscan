@@ -48,3 +48,10 @@
 # declare prefix_$suffix=mystr
 # varname=prefix_$suffix
 # echo ${!varname}
+
+#------------.
+source $LABPATH/.func/assigned
+scanner=1
+cropfile=$TRACKDIR/s${scanner}.crop
+SCANFILE=0001.theoretical.s1.45464564.png
+rsync $cropfile caps@129.101.130.90:~/lab/movie/$SCANFILE.crop

@@ -104,9 +104,8 @@ do
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$SCANFILE
 
   #. upload the crop files to phil
-
-  # ssh caps@129.101.130.90 "echo llist=$llist touch > ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"
-  # ssh caps@129.101.130.90 "echo =$llist touch >> ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"
+  cropfile=$TRACKDIR/s${scanner}.crop
+  rsync $cropfile caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
 
 
 
@@ -162,7 +161,8 @@ then
   rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$EXP/
   rsync $STATUSFILE caps@129.101.130.90:~/lab/movie/$EXP/
 
-  rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
+  #rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
+  rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$SCANFILE
 
   #!! can't get this remote server copy command to work. not ssh, not cp, not scp, not rsync...
   #! ssh -A caps@129.101.130.89 rsync /beta/data/CAPS/experiments/$EXP/$SCANFILE /beta/data/CAPS/experiments/$EXP/$MPEGFILE

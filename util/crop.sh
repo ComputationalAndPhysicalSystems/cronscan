@@ -11,23 +11,32 @@ source /usr/local/bin/caps_settings/labpath
 source $LABPATH/release
 
 #.  attr reassignment
+time=$4
+img=$5
 # OFFX=$6
 # OFFY=$7
 
 #.. local vars
 #. dynamic vars
-label=()
+pLab=()
 crops=()
-label+=("dummy") #. fill the zero index
+root="/home/caps/lab/movie/"
+mp="${root}${2}"
+fullimg=${mp}/${img}
+movimg=${1}.${2}.s${3}
+data=${root}${img}.crop
+echo load data from $data
+source $data
+
+dLab=`date -d @$time`
+pLab+=("dummy") #. fill the zero index
 for i in {1..6}
 do
-  label+=("$1: plate $i")
+  fetch=PLATE${3}_${i}
+  pLab+=("$2: $fetch=${!fetch}")
 done
 
 #.  constants
-mp="/home/caps/lab/movie/${2}"
-fullimg=${mp}/${img}
-movimg=${1}.${2}.s${3}
 crops+=("696x696") #. crop[0] = image size
 crops+=("900+79")
 crops+=("900+868")
@@ -37,10 +46,11 @@ crops+=("116+868")
 crops+=("116+79")
 S=${crops[0]}
 
+
 #--announce
 echo
 printf '~%.0s' {1..45}
-echo -e "\n<<crop.sh>> | num=$1 | name=$2 | scanner=$3 | time=$4 | img=$5 | llist=$6" # (offsetx=$6) | (offsety=$7)
+echo -e "\n<<crop.sh>> | num=$1 | name=$2 | scanner=$3 | time=$4 | img=$5 " # (offsetx=$6) | (offsety=$7)
 printf '~%.0s' {1..29}
 echo -e "\nset path: $mp"
 echo
@@ -90,14 +100,53 @@ done
 # l=${label[5]}
 # y="boooo"
 
-echo -e "\nAppend labels"
+
+
+
+
+echo -e "\nAppend plate labels"
 
 for i in {1..6}
 do
-  convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${label[$i]}" \
-        +swap -gravity west -append ${mp}/${i}/${movimg}_${i}.png
+
+  convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${pLab[$i]}" \
+    +swap -gravity west -append ${mp}/${i}/${movimg}_${i}.png
   echo "...plate $i appended"
 done
+
+echo -e "\nAppend date (( $dLab ))"
+
+for i in {1..6}
+do
+  convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${time}  ${dLab}" \
+        -gravity west -append ${mp}/${i}/${movimg}_${i}.png
+done
+
+echo -e "\nAppend light/hood markers"
+
+fetch=HOOD${3}
+for i in {1..6}
+do
+  if grep -q "$i" <<< "${!fetch}"
+  then
+    echo "found it"
+    col="teal"
+  else
+    col="black"
+  fi
+  echo col ${col}
+  convert ${mp}/${i}/${movimg}_${i}.png -background "${col}" -gravity West -extent 716x716 \
+    -background black -gravity East -extent 736x716 ${mp}/${i}/${movimg}_${i}.png
+  echo "...plate $i appended"
+done
+
+rm -f $data
+# for i in {1..6}
+# do
+#   convert ${mp}/${i}/${movimg}_${i}.png -fill white -draw "rectangle 676,0 696,696" \
+#   -gravity west -append ${mp}/${i}/${movimg}_${i}.png
+#   echo "...plate $i appended"
+# done
 #
 #
 # convert $2/1/${1}_1.png -fill white -draw "rectangle 350,0 696,20 rectangle 350,716 696,736" $2/1/${1}_1.png
