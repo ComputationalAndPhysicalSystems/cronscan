@@ -40,7 +40,7 @@ export APP_SLACK_WEBHOOK=$DEVHOOK #: set as default, reprogram dynamically
 export SANE_USB_WORKAROUND=1      #: Conrad's trick / dunno
 
 #.  local vars
-((SCAN++))
+((SCANS++))
 echo "----------------------------------------new SCANS $SCANS"
 now=$(date)
 nows=$(date +%s)
@@ -159,7 +159,19 @@ echo "-----------------------------"
 #..	update status file
 echo "update status file"
 echo SCANS is $SCANS
-source $FUNCDIR/status.sh
+#source $FUNCDIR/status.sh
+
+echo EXP=$EXP > $STATUSFILE
+echo SYSTEM=$SYSTEM >> $STATUSFILE
+echo PLATE_CNT=$PLATE_CNT >> $STATUSFILE
+echo SCANNERS=$SCANNERS >> $STATUSFILE
+echo SCANS=$SCANS >> $STATUSFILE
+echo USELIGHTS=$USELIGHTS >> $STATUSFILE
+echo XFER=$XFER >> $STATUSFILE
+echo STATUS=started >> $STATUSFILE
+echo DIAGNOSTICS=$DIAGNOSTICS >> $STATUSFILE
+echo GITALERT=$GITALERT >> $STATUSFILE
+
 
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
