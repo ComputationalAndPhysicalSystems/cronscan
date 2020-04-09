@@ -103,12 +103,23 @@ do
   echo "-> Scanning $scanner to $SCANFILE"
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$SCANFILE
 
+  echo "copy scan to Mnemosyne"
+  rsync -za --quiet $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
+  echo "copying image to Phil for movie FFMPEG"
+  #: note that it necesssary to move an existing file without name change to the leaf directory with rsync, because trying to sync a file to a leaf that doesn't yet exist will not work when SPECIFYING THE NAME of the file at destination. IT's very stupid.
+
+  #: talk to phil, movie server
   #. upload the crop files to phil
+  rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$EXP/
+  rsync $STATUSFILE caps@129.101.130.90:~/lab/movie/$EXP/
+  #rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
+  rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$SCANFILE
+
+
+
   cropfile=$TRACKDIR/s${si}.crop
   echo "sync cropfile: $(basename -- $cropfile) to phil"
   rsync $cropfile caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
-  # rsync $cropfile caps@129.101.130.90:~/lab/
-  # rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
 
 
 
@@ -154,20 +165,10 @@ rsync $LOGFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 
 if [ $XFER == "on" ]
 then
-  echo "copy scan to Mnemosyne"
-  rsync -za --quiet $EP/$SCANFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
-  echo "copy scan to Repeller"
-  rsync -za --quiet $EP/$SCANFILE caps@129.101.130.88:~/lab/segment/$EXP/
+  a=a
+  # echo "copy scan to Repeller"
+  # rsync -za --quiet $EP/$SCANFILE caps@129.101.130.88:~/lab/segment/$EXP/
 
-  echo "moving image to Phil for movie FFMPEG"
-
-  #: note that it necesssary to move an existing file without name change to the leaf directory with rsync, because trying to sync a file to a leaf that doesn't yet exist will not work when SPECIFYING THE NAME of the file at destination. IT's very stupid.
-  #: talk to phil, movie server
-  rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$EXP/
-  rsync $STATUSFILE caps@129.101.130.90:~/lab/movie/$EXP/
-
-  #rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
-  rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$SCANFILE
 
   #!! can't get this remote server copy command to work. not ssh, not cp, not scp, not rsync...
   #! ssh -A caps@129.101.130.89 rsync /beta/data/CAPS/experiments/$EXP/$SCANFILE /beta/data/CAPS/experiments/$EXP/$MPEGFILE
