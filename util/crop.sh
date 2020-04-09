@@ -67,7 +67,7 @@ echo gonna crop em
 for i in {1..6}
 do
   convert ${fullimg} -crop $S+${crops[$i]} ${mp}/${i}/${movimg}_${i}.png
-  echo "...plate $i cropped"
+  # echo "...plate $i cropped"
 done
 
 
@@ -110,8 +110,9 @@ for i in {1..6}
 do
 
   convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${pLab[$i]}" \
+    -font Times-New-Roman -pointsize 24 \
     +swap -gravity west -append ${mp}/${i}/${movimg}_${i}.png
-  echo "...plate $i appended"
+  # echo "...plate $i appended"
 done
 
 echo -e "\nAppend date (( $dLab ))"
@@ -119,7 +120,8 @@ echo -e "\nAppend date (( $dLab ))"
 for i in {1..6}
 do
   convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${time}  ${dLab}" \
-        -gravity west -append ${mp}/${i}/${movimg}_${i}.png
+    -font Times-New-Roman -pointsize 24 \
+    -gravity west -append ${mp}/${i}/${movimg}_${i}.png
 done
 
 echo -e "\nAppend light/hood markers"
@@ -129,29 +131,13 @@ for i in {1..6}
 do
   if grep -q "$i" <<< "${!fetch}"
   then
-    echo "found it"
     col="teal"
   else
     col="black"
   fi
-  echo col ${col}
-  convert ${mp}/${i}/${movimg}_${i}.png -background "${col}" -gravity West -extent 736x736 \
-    -background black -gravity East -extent 736x736 ${mp}/${i}/${movimg}_${i}.png
-  echo "...plate $i appended"
+  convert ${mp}/${i}/${movimg}_${i}.png -background "${col}" -gravity West -extent 705x714 \
+    -background black -gravity East -extent 714x714 ${mp}/${i}/${movimg}_${i}.png
+  # echo "...plate $i appended"
 done
 
 rm -f $data
-# for i in {1..6}
-# do
-#   convert ${mp}/${i}/${movimg}_${i}.png -fill white -draw "rectangle 676,0 696,696" \
-#   -gravity west -append ${mp}/${i}/${movimg}_${i}.png
-#   echo "...plate $i appended"
-# done
-#
-#
-# convert $2/1/${1}_1.png -fill white -draw "rectangle 350,0 696,20 rectangle 350,716 696,736" $2/1/${1}_1.png
-# convert $2/2/${1}_2.png -fill white -draw "rectangle 350,0 696,20 rectangle 350,716 696,736" $2/2/${1}_2.png
-# convert $2/3/${1}_3.png -fill white -draw "rectangle 350,0 696,20 rectangle 350,716 696,736" $2/3/${1}_3.png
-# convert $2/4/${1}_4.png -fill white -draw "rectangle 350,0 696,20 rectangle 350,716 696,736" $2/4/${1}_4.png
-# convert $2/5/${1}_5.png -fill white -draw "rectangle 350,0 696,20 rectangle 350,716 696,736" $2/5/${1}_5.png
-# convert $2/6/${1}_6.png -fill white -draw "rectangle 350,0 696,20 rectangle 350,716 696,736" $2/6/${1}_6.png

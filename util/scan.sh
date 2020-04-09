@@ -39,7 +39,9 @@ export APP_SLACK_WEBHOOK=$DEVHOOK #: set as default, reprogram dynamically
 export SANE_USB_WORKAROUND=1      #: Conrad's trick / dunno
 
 #.  local vars
+echo count $COUNT
 COUNT=$(($(cat $COUNTTRACK)+1))
+echo "----------------------------------------new count $COUNT"
 now=$(date)
 nows=$(date +%s)
 SCANNER_LIST=$(scanimage -f "%d%n")
@@ -156,6 +158,7 @@ fi
 echo "-----------------------------"
 #..	update status file
 echo "update status file"
+echo count is $COUNT
 source $FUNCDIR/status.sh
 
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
