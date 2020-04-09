@@ -23,12 +23,12 @@ initlights(){
 
     #: lout to make $LPROG
     lout=$thisplate                      #:
-    [ $thisplate == "ON" ] && lout="+"
-    [ $thisplate == "OFF" ] && lout="-"
+    [ "$thisplate" == "ON" ] && lout="+"
+    [ "$thisplate" == "OFF" ] && lout="-"
     listarray+=$lout
 
     #: make the human readable report line 0
-    [ $thisplate != "ON" -a $thisplate != "OFF" ] && thisplate+="0%"
+    [ "$thisplate" != "ON" -a "$thisplate" != "OFF" ] && thisplate+="0%"
     echo -n " D$((di+1)):$thisplate">> $LIGHTLOG
     echo -n
 
