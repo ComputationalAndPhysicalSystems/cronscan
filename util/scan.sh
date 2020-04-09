@@ -13,6 +13,7 @@ source $LABPATH/.func/assigned
 
 #.  status data
 source $STATUSFILE
+source $LLIST  #. get $llist string
 
 #.  announce data
 source $LABPATH/release
@@ -78,7 +79,8 @@ fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #:  scan command loop
-for scanner in $SCANNER_LIST; do
+for scanner in $SCANNER_LIST
+do
   pad=`printf %04d $COUNT`
   SCANFILE="$pad.$EXP.s$si.$nows.png"
   MPEGFILE="$pad.$EXP.s$si.png"
@@ -100,6 +102,14 @@ for scanner in $SCANNER_LIST; do
   #: restore lights
   echo "-> Scanning $scanner to $SCANFILE"
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$SCANFILE
+
+  #. upload the crop fils to phil
+  pad=`printf %04d $COUNT`
+
+  ssh caps@129.101.130.90 "echo llist=$llist touch > ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"
+  ssh caps@129.101.130.90 "echo llist=$llist touch >> ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"    
+
+
 
   ((si++)) #! begins at 1
 done
@@ -152,8 +162,7 @@ then
   #: talk to phil, movie server
   rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$EXP/
   rsync $STATUSFILE caps@129.101.130.90:~/lab/movie/$EXP/
-  pad=`printf %04d $COUNT`
-  ssh caps@129.101.130.90 "touch ~/lab/movie/$EXP.$pad.crop"
+
   rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
 
   #!! can't get this remote server copy command to work. not ssh, not cp, not scp, not rsync...

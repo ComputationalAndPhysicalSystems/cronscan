@@ -1,7 +1,7 @@
 #/bin/bash
 # test image offset
-# reqd $1: exp name $2: path  $3: number four padded
-# optional $4: offset-x, $5: offset-y
+# reqd $1: exp name $2: scanner number  $3: number four padded
+# optional  offset-x, offset-y
 
 #.. SOURCES
 #.  source golbal
@@ -11,24 +11,23 @@ source /usr/local/bin/caps_settings/labpath
 source $LABPATH/release
 
 #.  attr reassignment
-OFFX=$4
-OFFY=$5
-
-#--announce
-echo
-printf '~%.0s' {1..45}
-echo -e "\nGLOBAL||r:$release git:$gitlog"
-echo "<<crop.sh>> | name=$1 | path=$2 | numb=$3 | (offsetx=$4) | (offsety=$5)"
-printf '~%.0s' {1..29}
-echo
+# OFFX=$6
+# OFFY=$7
 
 #.. local vars
 #. dynamic vars
 label=()
 crops=()
+label+=("dummy") #. fill the zero index
+for i in {1..6}
+do
+  label+=("$1: plate $i")
+done
 
 #.  constants
-
+mp="/home/caps/lab/movie/${2}"
+fullimg=${mp}/${img}
+movimg=${1}.${2}.s${3}
 crops+=("696x696") #. crop[0] = image size
 crops+=("900+79")
 crops+=("900+868")
@@ -36,27 +35,32 @@ crops+=("900+1656")
 crops+=("116+1656")
 crops+=("116+868")
 crops+=("116+79")
-
 S=${crops[0]}
 
-label+=("dummy")
+#--announce
+echo
+printf '~%.0s' {1..45}
+echo -e "\n<<crop.sh>> | num=$1 | name=$2 | scanner=$3 | time=$4 | img=$5 | llist=$6" # (offsetx=$6) | (offsety=$7)
+printf '~%.0s' {1..29}
+echo -e "\nset path: $mp"
+echo
 
+#.  make directories if needed
 for i in {1..6}
 do
-  label+=("$1: plate $i")
+  [ -d ${mp}/$i ] || mkdir ${mp}/$i
 done
 
-
-for i in {1..6}
-do
-  [ -d $2/$i ] || mkdir $2/$i
-done
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #. first crop
-# for i in {1..6}
-# do
-#   convert $2/${1}.png -crop $S+${crops[$i]} $2/${i}/${1}_${i}.png
-# done
+echo gonna crop em
+for i in {1..6}
+do
+  convert ${fullimg} -crop $S+${crops[$i]} ${mp}/${i}/${movimg}_${i}.png
+  echo "...plate $i cropped"
+done
+
+
 
 #. apply labels
 # for i in {1..6}
@@ -85,10 +89,14 @@ done
 # i=5
 # l=${label[5]}
 # y="boooo"
+
+echo -e "\nAppend labels"
+
 for i in {1..6}
 do
-convert $2/${i}/${1}_${i}x.png -background black -fill white label:"${label[$i]}" \
-        +swap -gravity west -append $2/${i}/${1}_${i}.png
+  convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${label[$i]}" \
+        +swap -gravity west -append ${mp}/${i}/${movimg}_${i}.png
+  echo "...plate $i appended"
 done
 #
 #

@@ -1,4 +1,4 @@
-
+#!/bin/bash
 #-------------assigning to array variable in a loop
 # label=()
 #
@@ -10,10 +10,11 @@
 # echo ${label[@]}
 #-------------next..
 
-croparray=( util/*.crop )
+croparray=( /home/caps/lab/movie/*.crop )
 echo "found jobs: ${croparray[@]}"
 echo "------------------------"
-
+echo pause--
+read
 for c in "${croparray[@]}"
 do
   basename "$c"
@@ -21,5 +22,6 @@ do
   act="${act%.*}"
   echo "crop file $act"
   IFS='.' read -r -a parms <<< $act
+  echo ${parms[2]:1}
   echo result: ${parms[@]}
 done

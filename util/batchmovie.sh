@@ -7,34 +7,39 @@ gitlog=`git log --pretty=format:'%h' -n 1`
 
 #--announce
 echo
-printf '~%.0s' {1..45}
 echo -e "\nGLOBAL||r:$release git:$gitlog"
+printf '=%.0s' {1..45}
+
+echo
 echo "<<batchmovie.sh>> "
 printf '~%.0s' {1..29}
-echo
+echo -e "\n"
 #.. assignments
-PATH="~/lab/movie"
+
 
 #. first crop the latest file
-# reqd $1: exp name $2: path  $3: number four padded
-# optional $4: offset-x, $5: offset-y
+
 
 #. find crop job files on the server
 
 croparray=( ~/lab/movie/*.crop )
-echo "found jobs: ${croparray[@]}"
-echo "------------------------"
-echo pause--
-read
+for job in $croparray
+do
+  echo "found job: $(basename -- $job)"
+done
+
 for c in "${croparray[@]}"
 do
+  source $c
   basename "$c"
   act="$(basename -- $c)"
   act="${act%.*}"
   echo "crop file $act"
   IFS='.' read -r -a parms <<< $act
   echo result: ${parms[@]}
-  . crop.sh ${parms[0]} $PATH ${parms[1]}
+  # crop.sh ~ [reqd] $1: exp name $2: scanner number $3: number (four padded) $4 full image name
+  # optional $4: offset-x, $5: offset-y
+  . crop.sh ${parms[0]} ${parms[1]} ${parms[2]:1} ${parms[3]} ${act} $llist
 done
 
 
