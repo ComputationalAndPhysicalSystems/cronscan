@@ -13,7 +13,7 @@ source $LABPATH/.func/assigned
 
 #.  status data
 source $STATUSFILE
-source $LLIST  #. get $llist string
+#source $LLIST  #. get $llist string #!! not using this yet
 
 #.  announce data
 source $LABPATH/release
@@ -105,7 +105,11 @@ do
 
   #. upload the crop files to phil
   cropfile=$TRACKDIR/s${scanner}.crop
+  echo "sync cropfile $cropfile to phil"
   rsync $cropfile caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
+  rsync $cropfile caps@129.101.130.90:~/lab/
+  rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
+
 
 
 

@@ -467,7 +467,7 @@ movieservice(){
 	printf '.%.0s' {1..34} >> $MOVIE_XTABFILE
 	echo >> $MOVIE_XTABFILE
 	echo "sp=$LABPATH" >> $MOVIE_XTABFILE
-	echo "logfile=~/lab/movie/LOG \n" >> $MOVIE_XTABFILE
+	echo -e "logfile=~/lab/movie/LOG \n" >> $MOVIE_XTABFILE
 	printf "*/$INT * * * * " >> $MOVIE_XTABFILE
 	printf "\$sp/util/batchmovie.sh 2>&1 | tee -a \$logfile; " >> $MOVIE_XTABFILE
 	echo >> $MOVIE_XTABFILE ###- blank line needed before EOF
