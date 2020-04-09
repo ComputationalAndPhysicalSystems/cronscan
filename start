@@ -6,7 +6,7 @@ source /usr/local/bin/caps_settings/labpath
 source /usr/local/bin/caps_settings/config
 
 #.  make startup variable assign cheatsheet
-. $LABPATH/.func/assign.sh $EXP
+#? or Don't?? . $LABPATH/.func/assign.sh $EXP
 
 #.. assignments
 
@@ -841,6 +841,7 @@ cronit(){
 
 	#..	make status file
 	COUNT=0
+
 	source $FUNCDIR/status.sh; update
 
 	#:	startup the crop file
@@ -935,7 +936,10 @@ saveit(){
 	fi
 
 	#: now make the files....
+	#.  make assignemnets
 	. $LABPATH/.func/assign.sh $EXP
+
+	#.	load ass in memory
 	source $ASSIGNED
 	#? CAPACITY=6 #! I don't know why, but this needs to be declared again. makes no sense to me
 	PLATE_CNT=$((CAPACITY*SCANNERS))

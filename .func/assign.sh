@@ -22,7 +22,7 @@ ASSIGNED=$LABPATH/.func/assigned #: the output from this script
 
 #.  local use for lazy
 eroot=$LABPATH/exp
-ebase=$ebase/$EXP
+ebase=$eroot/$EXP
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~ output to file
