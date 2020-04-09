@@ -135,8 +135,8 @@ do
     col="black"
   fi
   echo col ${col}
-  convert ${mp}/${i}/${movimg}_${i}.png -background "${col}" -gravity West -extent 716x716 \
-    -background black -gravity East -extent 736x716 ${mp}/${i}/${movimg}_${i}.png
+  convert ${mp}/${i}/${movimg}_${i}.png -background "${col}" -gravity West -extent 716x736 \
+    -background black -gravity East -extent 736x736 ${mp}/${i}/${movimg}_${i}.png
   echo "...plate $i appended"
 done
 
