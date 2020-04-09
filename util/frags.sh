@@ -10,18 +10,41 @@
 # echo ${label[@]}
 #-------------next..
 
-croparray=( /home/caps/lab/movie/*.crop )
-echo "found jobs: ${croparray[@]}"
-echo "------------------------"
-echo pause--
-read
-for c in "${croparray[@]}"
-do
-  basename "$c"
-  act="$(basename -- $c)"
-  act="${act%.*}"
-  echo "crop file $act"
-  IFS='.' read -r -a parms <<< $act
-  echo ${parms[2]:1}
-  echo result: ${parms[@]}
-done
+# croparray=( /home/caps/lab/movie/*.crop )
+# echo "found jobs: ${croparray[@]}"
+# echo "------------------------"
+# echo pause--
+# read
+# for c in "${croparray[@]}"
+# do
+#   basename "$c"
+#   act="$(basename -- $c)"
+#   act="${act%.*}"
+#   echo "crop file $act"
+#   IFS='.' read -r -a parms <<< $act
+#   echo ${parms[2]:1}
+#   echo result: ${parms[@]}
+# done
+
+
+#-------------next..
+# args+=("thing")
+# args+=("boo")
+#
+# thing=1
+# boo=2
+#
+# for arg in "${args[@]}"
+# do
+#    echo ${arg}=\"${!arg}\"
+#    if grep -q "oo" <<< "$arg"
+#    then
+#      echo "found oo"
+#    fi
+# done
+
+#------------.DYNAMIC VARIABLE
+# suffix=bzz
+# declare prefix_$suffix=mystr
+# varname=prefix_$suffix
+# echo ${!varname}

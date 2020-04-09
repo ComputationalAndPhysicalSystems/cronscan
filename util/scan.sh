@@ -90,7 +90,7 @@ do
   then
     echo -e "\nScanning on scanner $si"
     i1=$((CAPACITY*si-1))
-    i0=$((i1-CAPACITY+1))
+    i0=$((i1-CAPACITY+1))s
     echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
@@ -103,11 +103,10 @@ do
   echo "-> Scanning $scanner to $SCANFILE"
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$SCANFILE
 
-  #. upload the crop fils to phil
-  pad=`printf %04d $COUNT`
+  #. upload the crop files to phil
 
-  ssh caps@129.101.130.90 "echo llist=$llist touch > ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"
-  ssh caps@129.101.130.90 "echo llist=$llist touch >> ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"    
+  # ssh caps@129.101.130.90 "echo llist=$llist touch > ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"
+  # ssh caps@129.101.130.90 "echo =$llist touch >> ~/lab/movie/$EXP/$SCANFILE.crop" #. ${s}.$pad.crop"
 
 
 

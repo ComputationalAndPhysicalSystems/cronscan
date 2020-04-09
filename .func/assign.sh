@@ -33,6 +33,7 @@ echo \#!bin/bash > $ASSIGNED
 echo SEG_XTABFILE=$SEG_XTABFILE >> $ASSIGNED
 echo MOVIE_XTABFILE=$MOVIE_XTABFILE >> $ASSIGNED
 
+
 echo -e "\n#~~~~~~~~~~~" >> $ASSIGNED
 echo EXP=$EXP >> $ASSIGNED
 

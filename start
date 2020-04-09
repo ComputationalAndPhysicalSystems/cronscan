@@ -843,6 +843,25 @@ cronit(){
 	COUNT=0
 	source $FUNCDIR/status.sh; update
 
+	#:	startup the crop file
+	for i in $(seq 1 $SCANNERS)
+	do
+		fetch=PROGRAM
+		echo $fetch=${!fetch} > $TRACKDIR/s$i.crop
+		fetch=SCANNER${i}_ID
+		echo $fetch=${!fetch} >> $TRACKDIR/s$i.crop
+		fetch=TEMPLATE${i}_ID
+		echo $fetch=${!fetch} >> $TRACKDIR/s$i.crop
+		fetch=HOOD${i}
+		echo $fetch=${!fetch} >> $TRACKDIR/s$i.crop
+		for j in $(seq 1 $CAPACITY)
+		do
+			fetch=PLATE${i}_${j}
+			echo $fetch=${!fetch} >> $TRACKDIR/s$i.crop
+		done
+
+	done
+
 	#.. scan counter
 	# handled elsewhere now..  !! echo 0 >> $COUNTTRACK
 
