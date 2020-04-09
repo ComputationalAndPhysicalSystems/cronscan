@@ -136,8 +136,8 @@ do
   else
     col2=teal
   fi
-  convert ${mp}/${i}/${movimg}_${i}.png -background teal -gravity West -extent 707x718 \
-    -background "${col2}" -gravity East -extent 718x718 ${mp}/${i}/${movimg}_${i}.png
+  convert ${mp}/${i}/${movimg}_${i}.png -background "${col2}" -gravity West -extent 707x718 \
+    -background teal -gravity East -extent 718x718 ${mp}/${i}/${movimg}_${i}.png
   # echo "...plate $i appended"
 done
 
