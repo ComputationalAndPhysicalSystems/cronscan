@@ -127,16 +127,17 @@ done
 echo -e "\nAppend light/hood markers"
 
 fetch=HOOD${3}
+co11=teal
 for i in {1..6}
 do
   if grep -q "$i" <<< "${!fetch}"
   then
-    col="teal"
+    col2=black
   else
-    col="black"
+    col2=teal
   fi
-  convert ${mp}/${i}/${movimg}_${i}.png -background "${col}" -gravity West -extent 705x714 \
-    -background black -gravity East -extent 714x714 ${mp}/${i}/${movimg}_${i}.png
+  convert ${mp}/${i}/${movimg}_${i}.png -background teal -gravity West -extent 707x718 \
+    -background "${col2}" -gravity East -extent 718x718 ${mp}/${i}/${movimg}_${i}.png
   # echo "...plate $i appended"
 done
 
