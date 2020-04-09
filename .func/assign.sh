@@ -27,7 +27,11 @@ EP=$ep/$EXP
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~ output to file
 #!  be careful for first entry >
+
 echo \#!bin/bash > $ASSIGNED
+
+echo SEG_XTABFILE=$SEG_XTABFILE >> $ASSIGNED
+echo MOVIE_XTABFILE=$MOVIE_XTABFILE >> $ASSIGNED
 
 echo -e "\n#~~~~~~~~~~~" >> $ASSIGNED
 echo EXP=$EXP >> $ASSIGNED
@@ -53,8 +57,10 @@ echo STATUSFILE=$ep/status.env >> $ASSIGNED
 echo LASTFILE=$ep/last.exp >> $ASSIGNED
 echo SAVEFILE=$EP/$EXP.tmp >> $ASSIGNED
 echo EXPFILE=$EP/$EXP.exp >> $ASSIGNED
+#echo EXPREMOTE=
 echo PROG=$EP/$EXP.exp >> $ASSIGNED		          #: complete exp program file
 echo XTABFILE=$EP/xtab >> $ASSIGNED
+
 echo LOGFILE=$EP/LOG >> $ASSIGNED
 echo LIGHTLOG=$EP/light.log >> $ASSIGNED       #. log the light results
 echo SETPY=$EP/.track/setpy >> $ASSIGNED
