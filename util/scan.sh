@@ -144,7 +144,9 @@ fi
 
 echo "-----------------------------"
 #..	update status file
-source $FUNCDIR/status.sh; update
+echo "update status file"
+echo "*******  exp: $EXP"
+. $FUNCDIR/status.sh; update
 
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
 rsync $STATUSFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/
