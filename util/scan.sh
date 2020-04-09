@@ -40,7 +40,7 @@ export APP_SLACK_WEBHOOK=$DEVHOOK #: set as default, reprogram dynamically
 export SANE_USB_WORKAROUND=1      #: Conrad's trick / dunno
 
 #.  local vars
-((SCANS++))
+
 echo "----------------------------------------new SCANS $SCANS"
 now=$(date)
 nows=$(date +%s)
@@ -87,21 +87,23 @@ do
   SCANFILE="$pad.$EXP.s$si.$nows.png"
   MPEGFILE="$pad.$EXP.s$si.png"
 
-  #: turn off lights
-  if [[ $USELIGHTS == "on" ]]
+  if [[ $SCANS -eq 0 ]]
   then
-    echo -e "\nScanning on scanner $si"
-    i1=$((CAPACITY*si-1))
-    i0=$((i1-CAPACITY+1))
-    echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
-    r0=$i0
-    r1=$i1
-    . $LABPATH/util/lights.sh $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
-
-#    . $LABPATH/util/lights.sh scan $EXP $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
+    echo "preview scan, lights on, check cropping"
+  else
+    #: turn off lights
+    if [[ $USELIGHTS == "on" ]]
+    then
+      echo -e "\nScanning on scanner $si"
+      i1=$((CAPACITY*si-1))
+      i0=$((i1-CAPACITY+1))
+      echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
+      r0=$i0
+      r1=$i1
+      . $LABPATH/util/lights.sh $nows $i0 $i1 >> $LOGFILE #. turn off lights if exp is using
+    fi
   fi
 
-  #: restore lights
   echo "-> Scanning $scanner to $SCANFILE"
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$SCANFILE
 
@@ -125,7 +127,7 @@ do
 
 
 
-
+  ((SCANS++))
   ((si++)) #! begins at 1
 done
 
@@ -151,8 +153,6 @@ then
   #restore lights for new state
   nows=$(date +%s)
   . $LABPATH/util/lights.sh $nows 0 "-1" >> $LOGFILE #. turn off lights if exp is using
-
-  #. $LABPATH/util/lights.sh on $EXP $nows >> $LOGFILE #. turn on lights if exp is using
 fi
 
 echo "-----------------------------"
