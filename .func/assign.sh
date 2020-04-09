@@ -21,8 +21,8 @@ echo "<<assign.sh>> | $1 | ($2)"
 ASSIGNED=$LABPATH/.func/assigned #: the output from this script
 
 #.  local use for lazy
-ep=$LABPATH/exp
-EP=$ep/$EXP
+eroot=$LABPATH/exp
+ebase=$ebase/$EXP
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~ output to file
@@ -50,26 +50,26 @@ echo SLIMEHOOK=$SLIMEHOOK >> $ASSIGNED
 
 echo -e "\n#.  pathing" >> $ASSIGNED
 echo FUNCDIR=$LABPATH/.func >> $ASSIGNED
-echo EP=$EP >> $ASSIGNED             #: experiment path
-echo TRACKDIR=$EP/.track >> $ASSIGNED
+echo EP=$ebase >> $ASSIGNED             #: experiment path
+echo TRACKDIR=$ebase/.track >> $ASSIGNED
 
 echo -e "\n#.  output files" >> $ASSIGNED
-echo STATUSFILE=$ep/status.env >> $ASSIGNED
-echo LASTFILE=$ep/last.exp >> $ASSIGNED
-echo SAVEFILE=$EP/$EXP.tmp >> $ASSIGNED
-echo EXPFILE=$EP/$EXP.exp >> $ASSIGNED
+echo STATUSFILE=$eroot/status.env >> $ASSIGNED
+echo LASTFILE=$eroot/last.exp >> $ASSIGNED
+echo SAVEFILE=$ebase/$EXP.tmp >> $ASSIGNED
+echo EXPFILE=$ebase/$EXP.exp >> $ASSIGNED
 #echo EXPREMOTE=
-echo PROG=$EP/$EXP.exp >> $ASSIGNED		          #: complete exp program file
-echo XTABFILE=$EP/xtab >> $ASSIGNED
+echo PROG=$ebase/$EXP.exp >> $ASSIGNED		          #: complete exp program file
+echo XTABFILE=$ebase/xtab >> $ASSIGNED
 
-echo LOGFILE=$EP/LOG >> $ASSIGNED
-echo LIGHTLOG=$EP/light.log >> $ASSIGNED       #. log the light results
-echo SETPY=$EP/.track/setpy >> $ASSIGNED
-echo STATETRACK=$EP/.track/state >> $ASSIGNED
-echo TOGTRACK=$EP/.track/tog	>> $ASSIGNED	      #. special toggle track file
-echo COUNTTRACK=$EP/.track/count >> $ASSIGNED
-echo RESTORETRACK=$EP/.track/restore >> $ASSIGNED
-echo -n LLIST=$EP/.track/llist >> $ASSIGNED     #: cheatsheet for lights, one string
+echo LOGFILE=$ebase/LOG >> $ASSIGNED
+echo LIGHTLOG=$ebase/light.log >> $ASSIGNED       #. log the light results
+echo SETPY=$ebase/.track/setpy >> $ASSIGNED
+echo STATETRACK=$ebase/.track/state >> $ASSIGNED
+echo TOGTRACK=$ebase/.track/tog	>> $ASSIGNED	      #. special toggle track file
+echo COUNTTRACK=$ebase/.track/count >> $ASSIGNED
+echo RESTORETRACK=$ebase/.track/restore >> $ASSIGNED
+echo -n LLIST=$ebase/.track/llist >> $ASSIGNED     #: cheatsheet for lights, one string
 
 
 echo -e "\n#.  scripts" >> $ASSIGNED
