@@ -90,7 +90,7 @@ do
   then
     echo -e "\nScanning on scanner $si"
     i1=$((CAPACITY*si-1))
-    i0=$((i1-CAPACITY+1))s
+    i0=$((i1-CAPACITY+1))
     echo "...turn $((i0+1)) to $((i1+1)) OFF for scan"
     r0=$i0
     r1=$i1
