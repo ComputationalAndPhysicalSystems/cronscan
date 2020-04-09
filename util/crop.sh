@@ -1,7 +1,7 @@
 #/bin/bash
 # test image offset
-# reqd $1: exp name $2: path
-# optional $3: offset-x, $4: offset-y
+# reqd $1: exp name $2: path  $3: number four padded
+# optional $4: offset-x, $5: offset-y
 
 #.. SOURCES
 #.  source golbal
@@ -11,14 +11,14 @@ source /usr/local/bin/caps_settings/labpath
 source $LABPATH/release
 
 #.  attr reassignment
-OFFX=$3
-OFFY=$4
+OFFX=$4
+OFFY=$5
 
 #--announce
 echo
 printf '~%.0s' {1..45}
 echo -e "\nGLOBAL||r:$release git:$gitlog"
-echo "<<crop.sh>> | name=$1 | path=$2 | offsetx=$3 | offsety=$4"
+echo "<<crop.sh>> | name=$1 | path=$2 | numb=$3 | (offsetx=$4) | (offsety=$5)"
 printf '~%.0s' {1..29}
 echo
 

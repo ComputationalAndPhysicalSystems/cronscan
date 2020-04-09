@@ -1,11 +1,25 @@
 
 #-------------assigning to array variable in a loop
-label=()
+# label=()
+#
+# for i in {1..6}
+# do
+#   resultarray+=($B)
+#   label+=("name, plate $i")
+# done
+# echo ${label[@]}
+#-------------next..
 
-for i in {1..6}
+croparray=( util/*.crop )
+echo "found jobs: ${croparray[@]}"
+echo "------------------------"
+
+for c in "${croparray[@]}"
 do
-  resultarray+=($B)
-  label+=("name, plate $i")
+  basename "$c"
+  act="$(basename -- $c)"
+  act="${act%.*}"
+  echo "crop file $act"
+  IFS='.' read -r -a parms <<< $act
+  echo result: ${parms[@]}
 done
-echo ${label[@]}
-#-------------

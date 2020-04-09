@@ -152,6 +152,8 @@ then
   #: talk to phil, movie server
   rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$EXP/
   rsync $STATUSFILE caps@129.101.130.90:~/lab/movie/$EXP/
+  pad=`printf %04d $COUNT`
+  ssh caps@129.101.130.90 "touch ~/lab/movie/$EXP.$pad.crop"
   rsync -za --quiet --remove-source-files $EP/$SCANFILE caps@129.101.130.90:~/lab/movie/$EXP/$MPEGFILE
 
   #!! can't get this remote server copy command to work. not ssh, not cp, not scp, not rsync...
