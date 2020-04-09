@@ -912,8 +912,8 @@ cronit(){
 		#!!!
 		#. $LABPATH/util/lights.sh on $EXP #!! >> $LOGFILE
 	fi
-	export ep=$EP #! this is just for easy troubleshooting in terminal
-	export sp=$SP
+	# export ep=$EP #! this is just for easy troubleshooting in terminal
+	# export sp=$SP
 	exit
 }
 
