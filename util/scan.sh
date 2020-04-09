@@ -104,11 +104,11 @@ do
   scanimage -d $scanner --mode Color --format png --resolution $RESOLUTION > $EP/$SCANFILE
 
   #. upload the crop files to phil
-  cropfile=$TRACKDIR/s${scanner}.crop
-  echo "sync cropfile $cropfile to phil"
+  cropfile=$TRACKDIR/s${si}.crop
+  echo "sync cropfile: $(basename -- $cropfile) to phil"
   rsync $cropfile caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
-  rsync $cropfile caps@129.101.130.90:~/lab/
-  rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
+  # rsync $cropfile caps@129.101.130.90:~/lab/
+  # rsync $EXPFILE caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
 
 
 
