@@ -840,7 +840,7 @@ cronit(){
 	cp $EXPFILE $LASTFILE
 
 	#..	make status file
-	COUNT=0
+	SCANS=0
 
 	source $FUNCDIR/status.sh; update
 
@@ -863,8 +863,6 @@ cronit(){
 
 	done
 
-	#.. scan counter
-	# handled elsewhere now..  !! echo 0 >> $COUNTTRACK
 
 	echo "# programatic crontab file generated for CAPS scanner control"> $XTABFILE
 	echo -n "#" >> $XTABFILE

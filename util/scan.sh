@@ -13,6 +13,7 @@ source $LABPATH/.func/assigned
 
 #.  status data
 source $STATUSFILE
+echo the scan count is: $SCANS
 #source $LLIST  #. get $llist string #!! not using this yet
 
 #.  announce data
@@ -39,9 +40,8 @@ export APP_SLACK_WEBHOOK=$DEVHOOK #: set as default, reprogram dynamically
 export SANE_USB_WORKAROUND=1      #: Conrad's trick / dunno
 
 #.  local vars
-echo count $COUNT
-COUNT=$(($(cat $COUNTTRACK)+1))
-echo "----------------------------------------new count $COUNT"
+((SCAN++))
+echo "----------------------------------------new SCANS $SCANS"
 now=$(date)
 nows=$(date +%s)
 SCANNER_LIST=$(scanimage -f "%d%n")
@@ -62,7 +62,7 @@ then
   slack "[WARNING]: The gitlog has changed, indiating a code update since the experiment began."
   GITALERT="warned"
 fi
-echo -e "\n==Beginning Scan \"$EXP\"=================================(#$COUNT)"
+echo -e "\n==Beginning Scan \"$EXP\"=================================(#$SCANS)"
 echo "$now || UNIX: $nows"
 
 #:  check on scanners
@@ -76,14 +76,14 @@ then
 	slack "[LAB ALERT] <EXP: $EXP>: Only detected $SCANNER_COUNT/$SCANNERS scanners. Scanners may require physical inspection."
   [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
   slack "[WARNING]: Only detected $SCANNER_COUNT/$SCANNERS scanners."
-  slack "RIP Acquisition #$COUNT, ~$(date +%s)"
+  slack "RIP Acquisition #$SCANS, ~$(date +%s)"
 fi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #:  scan command loop
 for scanner in $SCANNER_LIST
 do
-  pad=`printf %04d $COUNT`
+  pad=`printf %04d $SCANS`
   SCANFILE="$pad.$EXP.s$si.$nows.png"
   MPEGFILE="$pad.$EXP.s$si.png"
 
@@ -132,7 +132,7 @@ done
 
 #: sloppy code here; essentially reports to the slack channels, two channels of interest...
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$PHYHOOK
-if [ $COUNT -eq 1 ]
+if [ $SCANS -eq 1 ]
 then
   echo "* slack report first scan"
   slack "[LAUNCH] First scan for experiment $EXP"
@@ -140,10 +140,10 @@ fi
 
 [[ $DIAGNOSTICS == "off" ]] && export APP_SLACK_WEBHOOK=$SLIMEHOOK
 
-if [ $(( $COUNT % $SLACK_INTERVAL )) -eq 0 ]
+if [ $(( $SCANS % $SLACK_INTERVAL )) -eq 0 ]
 then
     echo "* slack scan frequency report "
-    slack "[UPDATE $EXP] SCAN# $COUNT"
+    slack "[UPDATE $EXP] SCAN# $SCANS"
 fi
 
 if [[ $USELIGHTS == "on" ]]
@@ -158,7 +158,7 @@ fi
 echo "-----------------------------"
 #..	update status file
 echo "update status file"
-echo count is $COUNT
+echo SCANS is $SCANS
 source $FUNCDIR/status.sh
 
 rsync $EXPFILE caps@129.101.130.89:/beta/data/CAPS/experiments/$EXP/

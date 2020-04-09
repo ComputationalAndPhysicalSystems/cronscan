@@ -67,7 +67,6 @@ echo LIGHTLOG=$ebase/light.log >> $ASSIGNED       #. log the light results
 echo SETPY=$ebase/.track/setpy >> $ASSIGNED
 echo STATETRACK=$ebase/.track/state >> $ASSIGNED
 echo TOGTRACK=$ebase/.track/tog	>> $ASSIGNED	      #. special toggle track file
-echo COUNTTRACK=$ebase/.track/count >> $ASSIGNED
 echo RESTORETRACK=$ebase/.track/restore >> $ASSIGNED
 echo -n LLIST=$ebase/.track/llist >> $ASSIGNED     #: cheatsheet for lights, one string
 
