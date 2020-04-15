@@ -444,7 +444,7 @@ report (){
 	fi
 
 	echo "moviejob on phil - 'n' to skip"
-	read -n 1
+	read -n 1 zkey
 	if [[ "$zkey" != "n" ]]
 	then
 		echo "rename files for FFMPEG batch"
