@@ -448,7 +448,7 @@ report (){
 	if [[ "$zkey" != "n" ]]
 	then
 		echo "rename files for FFMPEG batch"
-		ssh caps@129.101.130.90 'cd ~/lab/movie/$EXP; bash -s' < util/prepmovie.sh
+		ssh caps@129.101.130.90 'bash -s' < util/prepmovie.sh $EXP
 		MOVIEJOB=$LABPATH/exp/$EXP/moviejob
 		echo $now > $MOVIEJOB
 		#. talk to phil
