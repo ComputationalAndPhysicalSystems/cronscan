@@ -16,6 +16,15 @@
 #? add $2=scanner count, $3=release
 
 #-------------
+echo "rename files for FFMPEG batch"
+
+files=$1/*.png
+for f in $files
+do
+  echo $f
+  mv "$f" "${f%??????????????}png"
+done
+
 r="20"
 f="image2"
 s="1700x2354"
