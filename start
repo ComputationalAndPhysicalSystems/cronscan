@@ -436,13 +436,15 @@ report (){
 	now=$(date)
 	source $LABPATH/exp/$EXP/$EXP.exp
 
-	echo "copy files to Repeller for Segment"
+	echo "copy files to Repeller for Segment - 'n' to skip"
 	read -n 1 zkey
 	if [[ "$zkey" != "n" ]]
 	then
+		echo "rename files for FFMPEG batch"
+		ssh caps@129.101.130.90 'cd ~/lab/movie/$EXP; bash -s' < util/prepmovie.sh
 		ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < util/copyforseg.sh $EXP
 	fi
-		
+
 	echo "moviejob on phil: key to continue"
 	read -n 1
 	MOVIEJOB=$LABPATH/exp/$EXP/moviejob
