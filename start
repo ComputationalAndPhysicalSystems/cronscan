@@ -436,7 +436,7 @@ report (){
 	now=$(date)
 	source $LABPATH/exp/$EXP/$EXP.exp
 
-	echo "copy files to Repeller for Segment"
+	echo "copy files to Repeller for Segment  - 'n' to skip "
 	read -n 1 zkey
 	if [[ "$zkey" != "n" ]]
 	then

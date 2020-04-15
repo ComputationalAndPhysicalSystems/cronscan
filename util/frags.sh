@@ -55,7 +55,10 @@
 # cropfile=$TRACKDIR/s${scanner}.crop
 # SCANFILE=0001.theoretical.s1.45464564.png
 # rsync $cropfile caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
-for f in *png; do
-  mv "$f" "${f%??????????????}png"
-   #mv -- "$f" "${f:0:$position-1}${f:$position}"
-done
+
+#------------.rename directory of files, remove x characters
+# 
+# for f in *png; do
+#   mv "$f" "${f%??????????????}png"
+#    #mv -- "$f" "${f:0:$position-1}${f:$position}"
+# done
