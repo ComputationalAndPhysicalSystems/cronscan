@@ -3,6 +3,7 @@ echo $PWD
 cd "/home/caps/lab/movie/$1"
 echo $PWD
 read
-for f in *png; do
+files=$PWD/*png
+for f in $files; do
   mv "$f" "${f%??????????????}png"
 done
