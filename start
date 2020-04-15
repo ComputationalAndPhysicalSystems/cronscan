@@ -76,14 +76,13 @@ declare -a subvals #: the value to store in the associated EXP ARG, if different
 declare -a trueopts
 # declare -a lprog
 
-keys=(e s i r z x l a f o c d)
+keys=(e s i r x l a f o c d)
 mkeys=(I T Z R F S Q)
 
 opts+=("*/...")
 opts+=("C/1..9")
 opts+=("I/minutes")
 opts+=("C/1/2/3/6")
-opts+=("T")
 opts+=("T")
 opts+=("T")
 opts+=("*/...")
@@ -103,13 +102,11 @@ optslist+=("")
 optslist+=("")
 optslist+=("")
 optslist+=("")
-optslist+=("")
 
 subvals+=("")
 subvals+=("C/^")
 subvals+=("")
 subvals+=("C/100/200/300/600")
-subvals+=("")
 subvals+=("")
 subvals+=("")
 subvals+=("")
@@ -129,13 +126,11 @@ trueopts+=("")
 trueopts+=("")
 trueopts+=("")
 trueopts+=("")
-trueopts+=("")
 
 args+=("EXP")
 args+=("SCANNERS")
 args+=("INT")
 args+=("RES")
-args+=("REF")
 args+=("XFER")
 args+=("USELIGHTS")
 args+=("SPECIES")
@@ -148,7 +143,6 @@ blurbs+=("Exp Name")
 blurbs+=("Scanner Count")
 blurbs+=("Scan Interval Time")
 blurbs+=("Scan resolution")
-blurbs+=("* REF scan every frame")
 blurbs+=("* server file transfer")
 blurbs+=("* use lights")
 blurbs+=("test animals")
@@ -167,7 +161,6 @@ mblurbs+=("SAVE program")
 mblurbs+=("QUIT")
 
 #: subsections
-subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
@@ -715,7 +708,7 @@ update(){
 		local ix j ins ini inj
 
 		#!! configure baed on how many special args are added after system setup catagory
-		local ins=12 #: insert point in arrays (index padding)
+		local ins=11 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
 
 		#: hunt down plate entries and remove them
@@ -877,9 +870,8 @@ cronit(){
 	echo "sp=$LABPATH" >> $XTABFILE
 	echo "logfile=$LOGFILE" >> $XTABFILE
 	printf "*/$INT * * * * " >> $XTABFILE
-	[[ $REF > 0 ]] && \
-	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile; " >> $XTABFILE #? I don't know why REF > 0 check is being made?
-	echo @daily root /sbin/shutdown -r now >> $XTABFILE
+	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile; " >> $XTABFILE
+	echo -e "\n0  0 * * * root reboot" >> $XTABFILE
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo -e "\nxtab exported"
 	echo -e "\ninstalling crontab..."
