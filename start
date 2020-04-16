@@ -401,6 +401,8 @@ testlights(){
 		read
 	fi
 	echo make a zero scan, check crop offsets
+	read -p "Offset X" $OFFX
+	read -p "Offset Y" $OFFY
 	. $LABPATH/util/scan.sh 200
 
 }
@@ -875,7 +877,8 @@ cronit(){
 			fetch=PLATE${i}_${j}
 			echo $fetch=${!fetch} >> $TRACKDIR/s$i.crop
 		done
-
+		echo OFFX=$OFFX >> $TRACKDIR/s$i.crop
+		echo OFFY=$OFFY >> $TRACKDIR/s$i.crop
 	done
 
 

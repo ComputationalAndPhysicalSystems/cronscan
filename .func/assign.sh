@@ -69,6 +69,7 @@ echo STATETRACK=$ebase/.track/state >> $ASSIGNED
 echo TOGTRACK=$ebase/.track/tog	>> $ASSIGNED	      #. special toggle track file
 echo RESTORETRACK=$ebase/.track/restore >> $ASSIGNED
 echo -n LLIST=$ebase/.track/llist >> $ASSIGNED     #: cheatsheet for lights, one string
+echo OFFSETTRACK=$ebase/.track/offset >> $ASSIGNED
 
 
 echo -e "\n#.  scripts" >> $ASSIGNED
