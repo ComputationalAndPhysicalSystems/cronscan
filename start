@@ -521,7 +521,7 @@ menukeys(){
 		fi
 	;;
 	"X")			#: run it
-		testlights
+		ex-cute
 	;;
 	"T")			#: zero out crontabs
 		testlights
