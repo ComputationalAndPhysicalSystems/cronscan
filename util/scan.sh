@@ -90,6 +90,12 @@ do
   if [[ $SCANS -eq 0 ]]
   then
     echo "preview scan, lights on, check cropping"
+    if [[ $USELIGHTS == "on" ]]
+    then
+      #restore lights for new state
+      nows=$(date +%s)
+      . $LABPATH/util/lights.sh $nows 0 "-1" >> $LOGFILE #. turn off lights if exp is using
+    fi
   else
     #: turn off lights
     if [[ $USELIGHTS == "on" ]]
