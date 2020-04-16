@@ -400,6 +400,9 @@ testlights(){
 		echo need to write code for this
 		read
 	fi
+	echo make a zero scan, check crop offsets
+	. $LABPATH/util/scan.sh 200
+
 }
 
 clearpix(){
