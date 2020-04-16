@@ -970,9 +970,9 @@ saveit(){
 		#!!!
 		#. write out the L's; 10 = on, 0 = OFF
 		do
-			[[ $larg -eq 0 ]] && echo -n 0 >> $SETPY || echo -n 1 >> $SETPY
 			iq=${larg:1} #: eg, 'L0' = '0'
 			test="${!largs[$iq]}" #: get the value at index iq
+			[[ $test == "OFF" ]] && echo -n 0 >> $SETPY || echo -n 1 >> $SETPY
 			case $test in
 			  "OFF")
 			    echo ${larg}=OFF >> $SAVEFILE
@@ -990,6 +990,7 @@ saveit(){
 			    ;;
 			esac
 		done
+		cp $SETPY $STATETRACK
 	else
 		# unset largs
 		declare -a largs
