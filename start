@@ -392,6 +392,9 @@ testlights(){
 		echo need to write code for this
 		read
 	fi
+	echo make a zero scan, check crop offsets
+	. $LABPATH/util/scan.sh 200
+
 }
 
 clearpix(){
@@ -865,7 +868,8 @@ cronit(){
 			fetch=PLATE${i}_${j}
 			echo $fetch=${!fetch} >> $TRACKDIR/s$i.crop
 		done
-
+		echo OFFX= >> $TRACKDIR/s$i.crop
+		echo OFFY= >> $TRACKDIR/s$i.crop
 	done
 
 
