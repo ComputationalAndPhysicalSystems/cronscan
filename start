@@ -76,13 +76,14 @@ declare -a subvals #: the value to store in the associated EXP ARG, if different
 declare -a trueopts
 # declare -a lprog
 
-keys=(e s i r x l a f o c d)
-mkeys=(I T Z R F S Q)
+keys=(e s i r z x l a f o c d)
+mkeys=(I T Z R F S X Q)
 
 opts+=("*/...")
 opts+=("C/1..9")
 opts+=("I/minutes")
 opts+=("C/1/2/3/6")
+opts+=("T")
 opts+=("T")
 opts+=("T")
 opts+=("*/...")
@@ -102,11 +103,13 @@ optslist+=("")
 optslist+=("")
 optslist+=("")
 optslist+=("")
+optslist+=("")
 
 subvals+=("")
 subvals+=("C/^")
 subvals+=("")
 subvals+=("C/100/200/300/600")
+subvals+=("")
 subvals+=("")
 subvals+=("")
 subvals+=("")
@@ -126,11 +129,13 @@ trueopts+=("")
 trueopts+=("")
 trueopts+=("")
 trueopts+=("")
+trueopts+=("")
 
 args+=("EXP")
 args+=("SCANNERS")
 args+=("INT")
 args+=("RES")
+args+=("REF")
 args+=("XFER")
 args+=("USELIGHTS")
 args+=("SPECIES")
@@ -143,6 +148,7 @@ blurbs+=("Exp Name")
 blurbs+=("Scanner Count")
 blurbs+=("Scan Interval Time")
 blurbs+=("Scan resolution")
+blurbs+=("* REF scan every frame")
 blurbs+=("* server file transfer")
 blurbs+=("* use lights")
 blurbs+=("test animals")
@@ -158,9 +164,11 @@ mblurbs+=("STOP experiment")
 mblurbs+=("Make Report")
 mblurbs+=("LOAD from file")
 mblurbs+=("SAVE program")
+mblurbs+=("Ex-cute")
 mblurbs+=("QUIT")
 
 #: subsections
+subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
 subs+=("_exp")
@@ -392,9 +400,6 @@ testlights(){
 		echo need to write code for this
 		read
 	fi
-	echo make a zero scan, check crop offsets
-	. $LABPATH/util/scan.sh 200
-
 }
 
 clearpix(){
@@ -438,30 +443,18 @@ report (){
 	echo report...
 	now=$(date)
 	source $LABPATH/exp/$EXP/$EXP.exp
-
-	echo "copy files to Repeller for Segment  - 'n' to skip "
-	read -n 1 zkey
-	if [[ "$zkey" != "n" ]]
-	then
-		ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < util/copyforseg.sh $EXP
-	fi
-
-	echo "moviejob on phil - 'n' to skip"
-	read -n 1 zkey
-	if [[ "$zkey" != "n" ]]
-	then
-		MOVIEJOB=$LABPATH/exp/$EXP/moviejob
-		echo $now > $MOVIEJOB
-		#. talk to phil
-		#? is -A necessary? "Enables forwarding of the authentication agent connection."
-		rsync $MOVIEJOB caps@129.101.130.90:~/lab/movie/$EXP.job
-		# example: ssh -A caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh test 1 3.4.4
-		echo "start movie------------------------------------------------------------------------"
-		ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < util/movie.sh $EXP $SCANNERS $release
-		echo "movie finished: key to continue"
-		read -n 1
-	fi
-
+	MOVIEJOB=$LABPATH/exp/$EXP/moviejob
+	echo $now > $MOVIEJOB
+	#. talk to phil
+	#? is -A necessary? "Enables forwarding of the authentication agent connection."
+	echo "copy moviejob to phil: key to continue"
+	rsync $MOVIEJOB caps@129.101.130.90:~/lab/movie/$EXP.job
+	read -n 1
+	# example: ssh -A caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh test 1 3.4.4
+	echo "start movie------------------------------------------------------------------------"
+	ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < util/movie.sh $EXP $SCANNERS $release
+	echo "movie finished: key to continue"
+	read -n 1
 
 	#ffmpeg code to run on client
 	#ffmpeg -i halflight_pink_1b.mp4  -vf "transpose=1" rotate.mp4
@@ -498,6 +491,14 @@ installservice(){
 	[[ $1 == "m" ]] && movieservice || segmentservice
 }
 
+ex-cute(){
+	echo -e "\ninstalling crontab..."
+	echo -e "\n--scanning enabled"
+	sudo crontab $XTABFILE
+	exit
+}
+
+
 menukeys(){
 	case $key in
 	"I")			#: zero out crontabs
@@ -515,6 +516,9 @@ menukeys(){
 		else
 			installservice $key2
 		fi
+	;;
+	"X")			#: run it
+		testlights
 	;;
 	"T")			#: zero out crontabs
 		testlights
@@ -723,7 +727,7 @@ update(){
 		local ix j ins ini inj
 
 		#!! configure baed on how many special args are added after system setup catagory
-		local ins=11 #: insert point in arrays (index padding)
+		local ins=12 #: insert point in arrays (index padding)
 		local xindex=$((remember_scanners*CAPACITY+remember_scanners))
 
 		#: hunt down plate entries and remove them
@@ -868,8 +872,7 @@ cronit(){
 			fetch=PLATE${i}_${j}
 			echo $fetch=${!fetch} >> $TRACKDIR/s$i.crop
 		done
-		echo OFFX= >> $TRACKDIR/s$i.crop
-		echo OFFY= >> $TRACKDIR/s$i.crop
+
 	done
 
 
@@ -886,19 +889,11 @@ cronit(){
 	echo "sp=$LABPATH" >> $XTABFILE
 	echo "logfile=$LOGFILE" >> $XTABFILE
 	printf "*/$INT * * * * " >> $XTABFILE
-	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile; " >> $XTABFILE
-	echo -e "\n0  0 * * * root reboot" >> $XTABFILE
+	[[ $REF > 0 ]] && \
+	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile; " >> $XTABFILE #? I don't know why REF > 0 check is being made?
+	echo @daily root /sbin/shutdown -r now >> $XTABFILE
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo -e "\nxtab exported"
-	echo -e "\ninstalling crontab..."
-	echo -e "\n--scanning enabled"
-
-	#!!!! temp disable !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	# launch first scan
-	#echo -e "\nBEGIN first scan"
-	#. $sp/util/scan.sh $RES 2>&1 | tee -a \$logfile
-
-	sudo crontab $XTABFILE
 
 	#. initialize LOG with some project info
 	cp $EXPFILE $LOGFILE
@@ -921,7 +916,6 @@ cronit(){
 	fi
 	# export ep=$EP #! this is just for easy troubleshooting in terminal
 	# export sp=$SP
-	exit
 }
 
 saveit(){
