@@ -950,6 +950,7 @@ saveit(){
 	echo "working with directory $EP"
 	echo "temp save: $SAVEFILE"
 
+	[ ! -d $TRACKDIR ] && mkdir $TRACKDIR
 	#: write out $EXP.exp and last.exp record files
 	echo "#exp parameters for \"$EXP\"" > $SAVEFILE
 	echo release=$release >> $SAVEFILE
@@ -964,9 +965,12 @@ saveit(){
 	done
 	if [[ $USELIGHTS == "on" ]]
 	then
+		touch $SETPY
 		for larg in "${largs[@]}"
+		#!!!
 		#. write out the L's; 10 = on, 0 = OFF
 		do
+			[[ $larg -eq 0 ]] && echo -n 0 >> $SETPY || echo -n 1 >> $SETPY
 			iq=${larg:1} #: eg, 'L0' = '0'
 			test="${!largs[$iq]}" #: get the value at index iq
 			case $test in
