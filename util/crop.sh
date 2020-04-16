@@ -13,8 +13,7 @@ source $LABPATH/release
 #.  attr reassignment
 time=$4
 img=$5
-# OFFX=$6
-# OFFY=$7
+
 
 #.. local vars
 #. dynamic vars
@@ -33,30 +32,58 @@ pLab+=("dummy") #. fill the zero index
 for i in {1..6}
 do
   fetch=PLATE${3}_${i}
-  pLab+=("$2: $fetch=${!fetch}")
+  pLab+=("$fetch=${!fetch}")
 done
 
+
 #.  constants
-crops+=("696x696") #. crop[0] = image size
-crops+=("900+79")
-crops+=("900+868")
-crops+=("900+1656")
-crops+=("116+1656")
-crops+=("116+868")
-crops+=("116+79")
+PAD=6
+RES=684
+IMAGE=$((RES+PAD+PAD))
+COL1=$((900+OFFX-PAD))
+COL2=$((116+OFFX-PAD))
+ROW1=$((79+OFFY-PAD))
+ROW2=$((868+OFFY-PAD))
+ROW3=$((1656+OFFY-PAD))
+
+M1x=$((PAD))
+M1y=$((60))
+M1u=$((M1x+13))
+M1v=$((M1y+13))
+#-draw "rectangle 0,63 13,76" -fill "${col2}" -draw "rectangle 683,646 696,659" \
+MARK1="$M1x,$M1y $M1u,$M1v"
+
+Lx=$((PAD+9))
+Ly=$((IMAGE-26))
+#-draw "text 20,666 '"${pLab[$i]}"" \
+LABEL="$Lx,$Ly"
+
+M2x=$((IMAGE-13-PAD))
+M2u=$((IMAGE-PAD))
+M2v=$((IMAGE-M1y))
+M2y=$((M2v-13))
+
+MARK2="$M2x,$M2y $M2u,$M2v"
+crops+=("${IMAGE}x${IMAGE}") #. crop[0] = image size
+crops+=("$COL1+$ROW1")
+crops+=("$COL1+$ROW2")
+crops+=("$COL1+$ROW3")
+crops+=("$COL2+$ROW3")
+crops+=("$COL2+$ROW2")
+crops+=("$COL2+$ROW1")
 S=${crops[0]}
 
 
 #--announce
 echo
 printf '~%.0s' {1..45}
-echo -e "\n<<crop.sh>> | num=$1 | name=$2 | scanner=$3 | time=$4 | img=$5 " # (offsetx=$6) | (offsety=$7)
+echo -e "\n<<crop2.sh>> | num=$1 | name=$2 | scanner=$3 | time=$4 | img=$5 " # (offsetx=$6) | (offsety=$7)
 printf '~%.0s' {1..29}
 echo -e "\nset path: $mp"
 echo
 
 #.  make directories if needed
-for i in {1..6}
+for i in {0..6}
 do
   [ -d ${mp}/$i ] || mkdir ${mp}/$i
 done
@@ -70,75 +97,43 @@ do
   # echo "...plate $i cropped"
 done
 
-
-
-#. apply labels
-# for i in {1..6}
-# do
-#   echo $i
-#   echo ${label[$i]}
-#   # read
-#   convert $2/${i}/${1}_${i}.png -background black -splice 0x20 -gravity south \
-#   -splice 0x20 -pointsize 18 -fill white -gravity north -annotate +150+84 \
-#   "${label[$i]}" $2/${i}/${1}_${i}x.png
-# done
-
-
-# convert $2/2/${1}_2.png -background black -splice 0x20 -gravity south \
-# -splice 0x20 -pointsize 18 -fill white -gravity north -annotate +150+84 \
-# "$L1" $2/2/${1}_2.png
-# convert $2/3/${1}_3.png -background black -splice 0x20 -gravity south \
-# -splice 0x20 -pointsize 18 -fill white -gravity north -annotate +150+84 \
-# "$L1" $2/3/${1}_3.png
-# convert $2/4/${1}_4.png -background black -splice 0x20 -gravity south \
-# -splice 0x20 -pointsize 18 -fill white -gravity north -annotate +150+84 \
-# "$L1" $2/4/${1}_4.png
-# convert $2/5/${1}_5.png -background black -splice 0x20 -gravity south \
-# -splice 0x20 -pointsize 18 -fill white -gravity north -annotate +150+84 \
-# "$L1" $2/5/${1}_5.png
-# i=5
-# l=${label[5]}
-# y="boooo"
-
-
-
-
-
-echo -e "\nAppend plate labels"
-
-for i in {1..6}
-do
-
-  convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${pLab[$i]}" \
-    -font Times-New-Roman -pointsize 24 \
-    +swap -gravity west -append ${mp}/${i}/${movimg}_${i}.png
-  # echo "...plate $i appended"
-done
-
-echo -e "\nAppend date (( $dLab ))"
-
-for i in {1..6}
-do
-  convert ${mp}/${i}/${movimg}_${i}.png -background black -fill white label:"${time}  ${dLab}" \
-    -font Times-New-Roman -pointsize 24 \
-    -gravity west -append ${mp}/${i}/${movimg}_${i}.png
-done
-
 echo -e "\nAppend light/hood markers"
-
+#-font helvetica -pointsize 9 -draw "text 167,554 'userName'"
 fetch=HOOD${3}
-co11=teal
+col1=red
 for i in {1..6}
 do
   if grep -q "$i" <<< "${!fetch}"
   then
     col2=black
   else
-    col2=teal
+    col2=green
   fi
-  convert ${mp}/${i}/${movimg}_${i}.png -background "${col2}" -gravity West -extent 707x718 \
-    -background teal -gravity East -extent 718x718 ${mp}/${i}/${movimg}_${i}.png
-  # echo "...plate $i appended"
+  convert ${mp}/${i}/${movimg}_${i}.png +repage \
+  -pointsize 12 -stroke black -strokewidth 1 \
+  -draw "text ${LABEL} '"${pLab[$i]}"" \
+  -fill "${col1}" -stroke black -strokewidth 2 \
+  -draw "rectangle ${MARK1}" -fill "${col2}" -draw "rectangle ${MARK2}" \
+  ${mp}/${i}/${movimg}_${i}.png
+
 done
 
-rm -f $data
+echo -e "\n assemble summary"
+
+montage ${mp}/1/${movimg}_1.png ${mp}/2/${movimg}_2.png ${mp}/3/${movimg}_3.png \
+  ${mp}/4/${movimg}_4.png ${mp}/5/${movimg}_5.png ${mp}/6/${movimg}_6.png \
+  -geometry +0+0 -border 0 -tile 3x2 -background black ${mp}/0/${movimg}_0.png
+
+echo -e "\nAppend date (( $dLab ))"
+
+for i in {0..6}
+do
+  convert ${mp}/${i}/${movimg}_${i}.png -font Times-New-Roman -pointsize 14 \
+  -background black -fill white label:"${time}  ${dLab}" \
+  -gravity west -append ${mp}/${i}/${movimg}_${i}.png
+done
+
+
+
+
+# rm -f $data
