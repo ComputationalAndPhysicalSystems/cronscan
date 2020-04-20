@@ -404,7 +404,7 @@ testlights(){
 	read -p "Offset X" OFFX
 	read -p "Offset Y" OFFY
 	echo OFFX=$OFFX >> $TRACKDIR/s$i.crop
-	echo OFFY=$OFFY >> $TRACKDIR/s$i.crop	
+	echo OFFY=$OFFY >> $TRACKDIR/s$i.crop
 	. $LABPATH/util/scan.sh 200
 
 }
@@ -478,6 +478,7 @@ movieservice(){
 	echo -e "logfile=/home/caps/lab/movie/LOG \n" >> $MOVIE_XTABFILE
 	printf "*/$INT * * * * " >> $MOVIE_XTABFILE
 	printf "\$sp/util/batchmovie.sh 2>&1 | tee -a \$logfile; " >> $MOVIE_XTABFILE
+
 	echo >> $MOVIE_XTABFILE ###- blank line needed before EOF
 	echo movieservice- any key to install on Phil
 	read -n 1
@@ -897,8 +898,9 @@ cronit(){
 	echo "logfile=$LOGFILE" >> $XTABFILE
 	printf "*/$INT * * * * " >> $XTABFILE
 	[[ $REF > 0 ]] && \
-	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile; " >> $XTABFILE #? I don't know why REF > 0 check is being made?
-	echo @daily root /sbin/shutdown -r now >> $XTABFILE
+	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile " >> $XTABFILE #? I don't know why REF > 0 check is being made?
+	printf "\n\0  0 * * * root reboot 2>&1 | tee -a \$logfile " >> $XTABFILE
+
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo -e "\nxtab exported"
 
@@ -908,7 +910,8 @@ cronit(){
 	echo -e -n "\nCrontab code: " >> $LOGFILE
 	printf "*/$INT * * * * " >> $LOGFILE
 	[[ $REF > 0 ]] && \
-	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE;\n" >> $LOGFILE
+	printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$LOGFILE\n" >> $LOGFILE
+	printf "\n\0  0 * * * root reboot 2>&1 | tee -a \$LOGFILE\n " >> $LOGFILE
 	printf '=%.0s' {1..31} >> $LOGFILE
 
 	echo -e "\nWORKING DIRECTORY on $HOSTNAME: $EP" >> $LOGFILE
