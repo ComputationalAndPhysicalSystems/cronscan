@@ -18,16 +18,18 @@
 #-------------
 echo "rename files for FFMPEG batch"
 
-files=$1/*.png
-for f in $files
-do
-  echo $f
-  mv "$f" "${f%??????????????}png"
-done
+#files=$1/*.png
+# files=$1/0/*.png
+# for f in $files
+# do
+#   echo $f
+#   mv "$f" "${f%??????????????}png"
+# done
 
 r="20"
 f="image2"
-s="1700x2354"
+#s="1700x2354"
+s="2088x1408"
 vcodec="libx264"
 crf="25"
 pix_fmt="yuv420p"
@@ -36,8 +38,9 @@ now=$(date)
 for (( i=1; i<=$2; i++ ))
 do
   echo "starting on $i of $2"
-  movie="${1}.s${i}.mp4"
-  ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$i.png -vcodec $vcodec -vf "transpose=2" -crf $crf -pix_fmt $pix_fmt $movie < /dev/null
+  movie="${1}.s${i}.X.mp4"
+  ffmpeg -r $r -f $f -s $s -i ${1}/0/%04d.${1}.s${i}_0.png -vcodec $vcodec -crf $crf -pix_fmt $pix_fmt $movie < /dev/null
+#  ffmpeg -r $r -f $f -s $s -i $1/%04d.$1.s$i.png -vcodec $vcodec -vf "transpose=2" -crf $crf -pix_fmt $pix_fmt $movie < /dev/null
 done
 
 echo "$2 movies generated for $1, on $now. R $3" >> joblog
