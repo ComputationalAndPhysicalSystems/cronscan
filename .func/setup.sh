@@ -34,7 +34,7 @@ initlights(){
 
 
   done
-  echo llist=$listarray > $LLIST
+  # echo llist=$listarray > $LLIST
   echo >> $LIGHTLOG
   echo "===========================" >> $LIGHTLOG
 }
