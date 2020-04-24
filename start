@@ -899,7 +899,7 @@ cronit(){
 	printf "*/$INT * * * * " >> $XTABFILE
 	[[ $REF > 0 ]] && \
 	  printf "\$sp/util/scan.sh $RES 2>&1 | tee -a \$logfile " >> $XTABFILE #? I don't know why REF > 0 check is being made?
-	printf "\n\0  0 * * * root reboot 2>&1 | tee -a \$logfile " >> $XTABFILE
+	printf "\n0  0 * * * root reboot 2>&1 | tee -a \$logfile " >> $XTABFILE
 
 	echo >> $XTABFILE ###- blank line needed before EOF
 	echo -e "\nxtab exported"
