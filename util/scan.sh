@@ -150,6 +150,8 @@ fi
 
 if [ $(( $SCANS % $SLACK_INTERVAL )) -eq 0 ]
 then
+    echo diagnostics: $DIAGNOSTICS
+    echo slimehook: $SLIMEHOOK
     echo "* slack scan frequency report "
     slack "[UPDATE $EXP] SCAN# $SCANS"
 fi
