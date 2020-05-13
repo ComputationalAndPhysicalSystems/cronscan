@@ -16,7 +16,7 @@
 #? add $2=scanner count, $3=release
 
 #-------------
-echo "rename files for FFMPEG batch"
+#echo "rename files for FFMPEG batch"
 
 #files=$1/*.png
 # files=$1/0/*.png
