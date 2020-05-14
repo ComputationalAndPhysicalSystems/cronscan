@@ -87,6 +87,7 @@ for i in {0..6}
 do
   [ -d ${mp}/$i ] || mkdir ${mp}/$i
 done
+[ -d ${mp}/track ] || mkdir ${mp}/track
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #. first crop
@@ -136,4 +137,4 @@ done
 
 
 
-rm -f $data
+mv -f $data ${mp}/track/
