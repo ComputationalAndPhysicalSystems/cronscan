@@ -456,7 +456,6 @@ report (){
 	#? is -A necessary? "Enables forwarding of the authentication agent connection."
 	echo "copy moviejob to phil: key to continue"
 	rsync $MOVIEJOB caps@129.101.130.90:~/lab/movie/$EXP.job
-	read -n 1
 	# example: ssh -A caps@129.101.130.90 'cd ~/lab/movie; bash -s' < movie.sh test 1 3.4.4
 	echo "start movie------------------------------------------------------------------------"
 	ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < util/movie.sh $EXP $SCANNERS $release

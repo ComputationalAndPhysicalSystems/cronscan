@@ -57,8 +57,17 @@
 # rsync $cropfile caps@129.101.130.90:~/lab/movie/$SCANFILE.crop
 
 #------------.rename directory of files, remove x characters
-# 
+#
 # for f in *png; do
 #   mv "$f" "${f%??????????????}png"
 #    #mv -- "$f" "${f:0:$position-1}${f:$position}"
 # done
+
+echo "shot:"
+read shot
+
+zipit()
+
+zipit(){
+  echo shot
+}
