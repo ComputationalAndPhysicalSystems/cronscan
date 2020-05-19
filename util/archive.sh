@@ -1,47 +1,32 @@
-
 #!/bin/bash
-echo "shot:"
-read -s shot
 
-echo "action"
-echo "------"
-echo "1 : segmovie"
-echo "2 : archive seg files"
-echo "3 : "
-
-read -s -n 1 action
-
-case $action in
-	"1")			#: segmovie
-		segmovie(${shot}_seg)
-	;;
-	*)
-		;;
-	esac
+zipit(){
+		# zip -9 -r -m RQIKPEMF-0_scan.zip 200328_shadow-pink-clock-12_1
+		# ssh caps@129.101.130.90 'cd ~/lab/movie; bash -s' < util/movie.sh $EXP $SCANNERS $release
+		echo "zipdir = ${1}"
+		echo "zip -9 -r -m ${1}.zip ${shot}"
+}
 
 
-segmovie(){
+movie(){
 	echo "shotdir = ${1}"
 	echo "what file type >> tiff/png [t,p]"
 	read -s -n 1 k
 	[[ $k = "t" ]] && type="tiff"
 	[[ $k = "p" ]] && type="png"
 	echo -e $type
-
 	echo "rename files for FFMPEG batch"
 	x=0
 	files=${1}/*.${type}
 	for f in $files
 	do
-	   echo $f
-	   x=`printf %04d $x`
-	   # mv "$f" "${f%??????????????}${type}"
-	#  mv "$f" "${1}/${x}.${1}.${type}"
-	   echo $x                                                                                                                  read -n 1                                                                                                                 (( x++ ))
+		a=a
+	  echo $f
+	  x=$(printf %04d $x)
+		echo $x
 	done
 	r="20"
 	f="image2"
-	#s="1700x2354"
 	s="2088x1408"
 	vcodec="libx264"
 	crf="25"
@@ -53,7 +38,37 @@ segmovie(){
 	echo "movie generated for $1, on $now." >> joblog
 }
 
-zipit(){
-	echo "zipdir = ${1}"
-	rm ${1} -R
-}
+echo "shot:"
+read shot
+
+echo -e "\nLevel: master or plate?"
+echo "--------"
+echo "0 : master"
+echo "1-6 : plate"
+read -s -n 1 level
+
+echo -e "\nwhich"
+echo "------"
+echo "1 : scans"
+echo "2 : segments"
+read -s -n 1 ask
+[[ $ask -eq 1 ]] && which="_scan" || which="_seg"
+
+echo -e "\naction"
+echo "------"
+echo "1 : movie"
+echo "2 : archive files"
+
+read -s -n 1 action
+
+case $action in
+	1)			#: segmovie
+		movie "${shot}${level}"
+	;;
+	2)			#: segmovie
+		zipit "${shot}-${level}"
+	;;
+
+	*)
+	;;
+	esac
